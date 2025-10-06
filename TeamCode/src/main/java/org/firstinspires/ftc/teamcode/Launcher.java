@@ -33,19 +33,17 @@
 // Importing things
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 
 // Setup
-@TeleOp(name="Outreach", group="Linear Opmode")
-public class Outreach extends LinearOpMode {
+@TeleOp(name="Launcher", group="Linear Opmode")
+public class Launcher extends LinearOpMode {
 
     // Declare OpMode objects
     private final ElapsedTime runtime = new ElapsedTime();
@@ -73,17 +71,12 @@ public class Outreach extends LinearOpMode {
 
 LS:
  x -> Strafe
- y -> Drive Forward*
+ y -> Drive Forward
 RS:
- x -> Turn*
-A -> Open/Close Claw
-B -> Turn Claw
-X -> Operate Wrist
-B1 -> Lower Arm
-B2 -> Raise Arm
-T1 -> Slides In
-T2 -> Slides Out
-* these are technically opposite
+ x -> Turn
+A -> FASTER WHEEEL
+B -> slower wheeel
+Y -> slower drive
     */
     @Override
 
