@@ -21,6 +21,8 @@
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -30,6 +32,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.drive.PinpointDrive;
 
 /*
  * This OpMode illustrates how to use the GoBildaPinpoint
@@ -58,15 +61,20 @@ public class GoBildaPinpointTest extends OpMode {
         // Set the location of the robot - this should be the place you are starting the robot from
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
     }
+    Pose2d beginPose = new Pose2d(9, -64.5, 0);
+    PinpointDrive drive = new PinpointDrive(hardwareMap, beginPose);
 
     @Override
     public void loop() {
         telemetry.addLine("Push your robot around to see it track");
-        telemetry.addLine("Press A to reset the position");
-        if(gamepad1.a){
-            // You could use readings from April Tags here to give a new known position to the pinpoint
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
-        }
+//        telemetry.addLine("Press A to reset the position");
+//        if(gamepad1.a){
+//            // You could use readings from April Tags here to give a new known position to the pinpoint
+//            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+//        }
+        Actions.runBlocking(drive.actionBuilder(new Pose2d(9,-37,0))
+                .waitSeconds(0.1)
+                .build());
         pinpoint.update();
         Pose2D pose2D = pinpoint.getPosition();
 

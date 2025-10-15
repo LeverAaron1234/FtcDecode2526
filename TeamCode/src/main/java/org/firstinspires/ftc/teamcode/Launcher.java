@@ -33,12 +33,17 @@
 // Importing things
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+
+import java.util.concurrent.TimeUnit;
 
 
 // Setup
@@ -53,6 +58,10 @@ public class Launcher extends LinearOpMode {
     private DcMotor frontRightDrive = null;
     private DcMotor backRightDrive = null;
     private DcMotor wheeel = null;
+    private HuskyLens camq = null;
+
+
+    private final int READ_PERIOD = 1;
 
 
     //timer
@@ -89,6 +98,7 @@ Y -> slower drive
         //frontRightDrive = hardwareMap.get(DcMotor.class, "motorFR");
         backRightDrive = hardwareMap.get(DcMotor.class, "motorBR");
         wheeel = hardwareMap.get(DcMotor.class, "wheeel");
+        camq = hardwareMap.get(HuskyLens.class, "camq");
 
 //        inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
 //        inOutRight = hardwareMap.get(DcMotor.class, "inOutRight");
@@ -110,6 +120,36 @@ Y -> slower drive
 //        inOutRight.setDirection(DcMotorSimple.Direction.FORWARD);
         wheeel.setDirection(DcMotorSimple.Direction.FORWARD);
 
+
+
+        /*
+         * This sample rate limits the reads solely to allow a user time to observe
+         * what is happening on the Driver Station telemetry.  Typical applications
+         * would not likely rate limit.
+         */
+
+        Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
+
+        /*
+         * Immediately expire so that the first time through we'll do the read.
+         */
+        rateLimit.expire();
+
+        /*
+         * Basic check to see if the device is alive and communicating.  This is not
+         * technically necessary here as the HuskyLens class does this in its
+         * doInitialization() method which is called when the device is pulled out of
+         * the hardware map.  However, sometimes it's unclear why a device reports as
+         * failing on initialization.  In the case of this device, it's because the
+         * call to knock() failed.
+         */
+        if (!camq.knock()) {
+            telemetry.addData(">>", "Problem communicating with " + camq.getDeviceName());
+        } else {
+            telemetry.addData(">>", "Press start to continue");
+        }
+
+        camq.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
 
 
         waitForStart();
@@ -142,11 +182,30 @@ Y -> slower drive
         double backLeftPower;
         double backRightPower;
         double wheeelSpeed;
+        int tagx;
+        int tagy;
+        int tagw;
+        int tagh;
+        int tagid;
         wheeelSpeed = 0;
 
 
 
         while (opModeIsActive()) {
+
+
+            HuskyLens.Block[] blocks = camq.blocks();
+            telemetry.addData("Block count", blocks.length);
+            for (int i = 0; i < blocks.length; i++) {
+                telemetry.addData("Block", blocks[i].toString());
+            tagx = blocks[0].x;
+            tagy = blocks[0].y;
+            tagw = blocks[0].width;
+            tagh = blocks[0].height;
+            tagid = blocks[0].id;
+            }
+
+
 
 
             // Drive variables
@@ -163,6 +222,10 @@ Y -> slower drive
                 changed = true;
             } else if(!gamepad1.y) changed = false;
 
+
+
+            // LAUNCHER speed about 71 - 78% for the back launch zone w/ flywheel
+            // w/o flywheel, it takes approx 15% extra power
             if (gamepad1.a) {
                 wheeelSpeed += 0.001;
             }
