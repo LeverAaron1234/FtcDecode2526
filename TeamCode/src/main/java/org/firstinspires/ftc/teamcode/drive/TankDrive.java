@@ -43,14 +43,8 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-
-import org.firstinspires.ftc.teamcode.drive.DriveCommandMessage;
-import org.firstinspires.ftc.teamcode.drive.PoseMessage;
-import org.firstinspires.ftc.teamcode.drive.TankCommandMessage;
-import org.firstinspires.ftc.teamcode.drive.TankLocalizerInputsMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
