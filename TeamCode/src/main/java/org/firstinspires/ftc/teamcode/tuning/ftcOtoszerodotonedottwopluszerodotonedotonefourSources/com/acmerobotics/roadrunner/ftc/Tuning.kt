@@ -13,10 +13,10 @@ import com.qualcomm.robotcore.hardware.VoltageSensor
 import com.qualcomm.robotcore.util.SerialNumber
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
-import org.firstinspires.ftc.teamcode.tuning.`ftc-otos-0`.`1`.`2+0`.`1`.ftcOtoszerodotonedottwopluszerodotonedotonefourSources.com.acmerobotics.roadrunner.ftc.Encoder
-import org.firstinspires.ftc.teamcode.tuning.`ftc-otos-0`.`1`.`2+0`.`1`.ftcOtoszerodotonedottwopluszerodotonedotonefourSources.com.acmerobotics.roadrunner.ftc.LazyImu
-import org.firstinspires.ftc.teamcode.tuning.`ftc-otos-0`.`1`.`2+0`.`1`.ftcOtoszerodotonedottwopluszerodotonedotonefourSources.com.acmerobotics.roadrunner.ftc.OverflowEncoder
-import org.firstinspires.ftc.teamcode.tuning.`ftc-otos-0`.`1`.`2+0`.`1`.ftcOtoszerodotonedottwopluszerodotonedotonefourSources.com.acmerobotics.roadrunner.ftc.TuningFiles
+import org.firstinspires.ftc.teamcode.tuning.ftcOtoszerodotonedottwopluszerodotonedotonefourSources.com.acmerobotics.roadrunner.ftc.Encoder
+import org.firstinspires.ftc.teamcode.tuning.ftcOtoszerodotonedottwopluszerodotonedotonefourSources.com.acmerobotics.roadrunner.ftc.LazyImu
+import org.firstinspires.ftc.teamcode.tuning.ftcOtoszerodotonedottwopluszerodotonedotonefourSources.com.acmerobotics.roadrunner.ftc.OverflowEncoder
+import org.firstinspires.ftc.teamcode.tuning.ftcOtoszerodotonedottwopluszerodotonedotonefourSources.com.acmerobotics.roadrunner.ftc.TuningFiles
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
