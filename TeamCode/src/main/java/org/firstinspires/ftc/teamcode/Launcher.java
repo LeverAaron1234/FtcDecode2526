@@ -198,12 +198,12 @@ Y -> slower drive
       telemetry.addData("Block count", blocks.length);
       for (int i = 0; i < blocks.length; i++) {
         telemetry.addData("Block", blocks[i].toString());
-        tagx = blocks[0].x;
-        tagy = blocks[0].y;
-        tagw = blocks[0].width;
-        tagh = blocks[0].height;
-        tagid = blocks[0].id;
       }
+      tagx = blocks[0].x;
+      tagy = blocks[0].y;
+      tagw = blocks[0].width;
+      tagh = blocks[0].height;
+      tagid = blocks[0].id;
 
 
 
