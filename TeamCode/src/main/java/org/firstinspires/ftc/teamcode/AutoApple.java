@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "AutoAppple", preselectTeleOp = "Launcher")
+@Autonomous
 public class AutoApple extends LinearOpMode {
   private final ElapsedTime runtime = new ElapsedTime();
 
@@ -35,11 +36,8 @@ public class AutoApple extends LinearOpMode {
   //timer
   private final ElapsedTime timer = new ElapsedTime();
 
-  public void move(int x,int y,float power) {
-    while () {
 
-    }
-  }
+
 
 
   @Override
@@ -47,9 +45,9 @@ public class AutoApple extends LinearOpMode {
     // Defining motors
     frontLeftDrive = hardwareMap.get(DcMotor.class, "motorFL");
     backLeftDrive = hardwareMap.get(DcMotor.class, "motorBL");
-    //frontRightDrive = hardwareMap.get(DcMotor.class, "motorFR");
+    frontRightDrive = hardwareMap.get(DcMotor.class, "motorFR");
     backRightDrive = hardwareMap.get(DcMotor.class, "motorBR");
-    wheeel = hardwareMap.get(DcMotor.class, "wheeel");
+    //wheeel = hardwareMap.get(DcMotor.class, "wheeel");
     camq = hardwareMap.get(HuskyLens.class, "camq");
     pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
     pinpoint.setOffsets(-84.0, -168.0, DistanceUnit.MM);
@@ -64,9 +62,9 @@ public class AutoApple extends LinearOpMode {
     // Motor directions
     frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
     backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-    //frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+    frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
     backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-    wheeel.setDirection(DcMotorSimple.Direction.FORWARD);
+    //wheeel.setDirection(DcMotorSimple.Direction.FORWARD);
 
     /*
      * This sample rate limits the reads solely to allow a user time to observe
@@ -99,5 +97,45 @@ public class AutoApple extends LinearOpMode {
 
     waitForStart();
     runtime.reset();
+    move(10,-10,0.5);
+
+    //sleep(1000000);
+  }
+  void move(int x,int y,double power) {
+    while ((((pinpoint.getPosX(DistanceUnit.INCH) != x)) && (pinpoint.getPosY(DistanceUnit.INCH) != y))) {
+      if (!opModeIsActive()){break;}
+
+      double a = (pinpoint.getPosX(DistanceUnit.INCH) - x);
+      double b = (pinpoint.getPosY(DistanceUnit.INCH) - y);
+      double dir;
+      if (b == 0) {
+        if (a < 0){dir = -90;}
+        else {dir = 90;}
+      } else {
+        if (b < 0){dir = 180 + Math.atan(a/b);}
+        else {dir = Math.atan(a/b);}
+      }
+      double sin = Math.sin(dir - Math.PI/4);
+      double cos = Math.cos(dir - Math.PI/4);
+      //double max = Math.max(Math.abs(sin),Math.abs(cos));
+      telemetry.addData("sin",sin);
+      telemetry.addData("cos",cos);
+      //telemetry.addData("max",max);
+
+      frontLeftDrive.setPower(power*cos);
+      frontRightDrive.setPower(power*sin);
+      backLeftDrive.setPower(power*sin);
+      backRightDrive.setPower(power*cos);
+      telemetry.addData("FrontLeft",frontLeftDrive.getPower());
+      telemetry.addData("FrontRight",frontRightDrive.getPower());
+      telemetry.addData("BackLeft",frontLeftDrive.getPower());
+      telemetry.addData("BackRight",frontRightDrive.getPower());
+      telemetry.update();
+      pinpoint.update();
+    }
+    frontLeftDrive.setPower(0);
+    frontRightDrive.setPower(0);
+    backLeftDrive.setPower(0);
+    backRightDrive.setPower(0);
   }
 }
