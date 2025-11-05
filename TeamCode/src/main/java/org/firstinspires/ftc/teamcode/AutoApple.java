@@ -99,39 +99,140 @@ public class AutoApple extends LinearOpMode {
     runtime.reset();
     move(10,-10,0.5);
 
-    //sleep(1000000);
   }
   void move(int x,int y,double power) {
-    while ((((pinpoint.getPosX(DistanceUnit.INCH) != x)) && (pinpoint.getPosY(DistanceUnit.INCH) != y))) {
-      if (!opModeIsActive()){break;}
+    if (pinpoint.getPosX(DistanceUnit.INCH) < x && pinpoint.getPosY(DistanceUnit.INCH) < y) {
+      // right & forwards
+      while (pinpoint.getPosX(DistanceUnit.INCH) < x && pinpoint.getPosY(DistanceUnit.INCH) < y) {
+        if (!opModeIsActive()){break;}
 
-      double a = (pinpoint.getPosX(DistanceUnit.INCH) - x);
-      double b = (pinpoint.getPosY(DistanceUnit.INCH) - y);
-      double dir;
-      if (b == 0) {
-        if (a < 0){dir = -90;}
-        else {dir = 90;}
-      } else {
-        if (b < 0){dir = 180 + Math.atan(a/b);}
-        else {dir = Math.atan(a/b);}
+        double a = (pinpoint.getPosX(DistanceUnit.INCH) - x);
+        double b = (pinpoint.getPosY(DistanceUnit.INCH) - y);
+        double dir;
+        if (b == 0) {
+          if (a < 0) {dir = -90;}
+          else {dir = 90;}
+        } else {
+          if (b < 0){dir = 180 + Math.atan(a/b);}
+          else {dir = Math.atan(a/b);}
+        }
+        double sin = Math.sin(dir - Math.PI/4);
+        double cos = Math.cos(dir - Math.PI/4);
+        //double max = Math.max(Math.abs(sin),Math.abs(cos));
+        telemetry.addData("sin",sin);
+        telemetry.addData("cos",cos);
+        //telemetry.addData("max",max);
+
+        frontLeftDrive.setPower(power*cos);
+        frontRightDrive.setPower(power*sin);
+        backLeftDrive.setPower(power*sin);
+        backRightDrive.setPower(power*cos);
+        telemetry.addData("FrontLeft",frontLeftDrive.getPower());
+        telemetry.addData("FrontRight",frontRightDrive.getPower());
+        telemetry.addData("BackLeft",frontLeftDrive.getPower());
+        telemetry.addData("BackRight",frontRightDrive.getPower());
+        telemetry.update();
+        pinpoint.update();
       }
-      double sin = Math.sin(dir - Math.PI/4);
-      double cos = Math.cos(dir - Math.PI/4);
-      //double max = Math.max(Math.abs(sin),Math.abs(cos));
-      telemetry.addData("sin",sin);
-      telemetry.addData("cos",cos);
-      //telemetry.addData("max",max);
+    } else if (pinpoint.getPosX(DistanceUnit.INCH) > x && pinpoint.getPosY(DistanceUnit.INCH) > y) {
+      // left & backwards
+      while (pinpoint.getPosX(DistanceUnit.INCH) > x && pinpoint.getPosY(DistanceUnit.INCH) > y) {
+        if (!opModeIsActive()){break;}
 
-      frontLeftDrive.setPower(power*cos);
-      frontRightDrive.setPower(power*sin);
-      backLeftDrive.setPower(power*sin);
-      backRightDrive.setPower(power*cos);
-      telemetry.addData("FrontLeft",frontLeftDrive.getPower());
-      telemetry.addData("FrontRight",frontRightDrive.getPower());
-      telemetry.addData("BackLeft",frontLeftDrive.getPower());
-      telemetry.addData("BackRight",frontRightDrive.getPower());
-      telemetry.update();
-      pinpoint.update();
+        double a = (pinpoint.getPosX(DistanceUnit.INCH) - x);
+        double b = (pinpoint.getPosY(DistanceUnit.INCH) - y);
+        double dir;
+        if (b == 0) {
+          if (a < 0){dir = -90;}
+          else {dir = 90;}
+        } else {
+          if (b < 0){dir = 180 + Math.atan(a/b);}
+          else {dir = Math.atan(a/b);}
+        }
+        double sin = Math.sin(dir - Math.PI/4);
+        double cos = Math.cos(dir - Math.PI/4);
+        //double max = Math.max(Math.abs(sin),Math.abs(cos));
+        telemetry.addData("sin",sin);
+        telemetry.addData("cos",cos);
+        //telemetry.addData("max",max);
+
+        frontLeftDrive.setPower(power*cos);
+        frontRightDrive.setPower(power*sin);
+        backLeftDrive.setPower(power*sin);
+        backRightDrive.setPower(power*cos);
+        telemetry.addData("FrontLeft",frontLeftDrive.getPower());
+        telemetry.addData("FrontRight",frontRightDrive.getPower());
+        telemetry.addData("BackLeft",frontLeftDrive.getPower());
+        telemetry.addData("BackRight",frontRightDrive.getPower());
+        telemetry.update();
+        pinpoint.update();
+      }
+    } else if (pinpoint.getPosX(DistanceUnit.INCH) < x && pinpoint.getPosY(DistanceUnit.INCH) > y) {
+      // right & backwards
+      while (pinpoint.getPosX(DistanceUnit.INCH) < x && pinpoint.getPosY(DistanceUnit.INCH) > y) {
+        if (!opModeIsActive()){break;}
+
+        double a = (pinpoint.getPosX(DistanceUnit.INCH) - x);
+        double b = (pinpoint.getPosY(DistanceUnit.INCH) - y);
+        double dir;
+        if (b == 0) {
+          if (a < 0){dir = -90;}
+          else {dir = 90;}
+        } else {
+          if (b < 0){dir = 180 + Math.atan(a/b);}
+          else {dir = Math.atan(a/b);}
+        }
+        double sin = Math.sin(dir - Math.PI/4);
+        double cos = Math.cos(dir - Math.PI/4);
+        //double max = Math.max(Math.abs(sin),Math.abs(cos));
+        telemetry.addData("sin",sin);
+        telemetry.addData("cos",cos);
+        //telemetry.addData("max",max);
+
+        frontLeftDrive.setPower(power*cos);
+        frontRightDrive.setPower(power*sin);
+        backLeftDrive.setPower(power*sin);
+        backRightDrive.setPower(power*cos);
+        telemetry.addData("FrontLeft",frontLeftDrive.getPower());
+        telemetry.addData("FrontRight",frontRightDrive.getPower());
+        telemetry.addData("BackLeft",frontLeftDrive.getPower());
+        telemetry.addData("BackRight",frontRightDrive.getPower());
+        telemetry.update();
+        pinpoint.update();
+      }
+    } else if (pinpoint.getPosX(DistanceUnit.INCH) > x && pinpoint.getPosY(DistanceUnit.INCH) < y) {
+      // left & forwards
+      while (pinpoint.getPosX(DistanceUnit.INCH) > x && pinpoint.getPosY(DistanceUnit.INCH) < y) {
+        if (!opModeIsActive()){break;}
+
+        double a = (pinpoint.getPosX(DistanceUnit.INCH) - x);
+        double b = (pinpoint.getPosY(DistanceUnit.INCH) - y);
+        double dir;
+        if (b == 0) {
+          if (a < 0){dir = -90;}
+          else {dir = 90;}
+        } else {
+          if (b < 0){dir = 180 + Math.atan(a/b);}
+          else {dir = Math.atan(a/b);}
+        }
+        double sin = Math.sin(dir - Math.PI/4);
+        double cos = Math.cos(dir - Math.PI/4);
+        //double max = Math.max(Math.abs(sin),Math.abs(cos));
+        telemetry.addData("sin",sin);
+        telemetry.addData("cos",cos);
+        //telemetry.addData("max",max);
+
+        frontLeftDrive.setPower(power*cos);
+        frontRightDrive.setPower(power*sin);
+        backLeftDrive.setPower(power*sin);
+        backRightDrive.setPower(power*cos);
+        telemetry.addData("FrontLeft",frontLeftDrive.getPower());
+        telemetry.addData("FrontRight",frontRightDrive.getPower());
+        telemetry.addData("BackLeft",frontLeftDrive.getPower());
+        telemetry.addData("BackRight",frontRightDrive.getPower());
+        telemetry.update();
+        pinpoint.update();
+      }
     }
     frontLeftDrive.setPower(0);
     frontRightDrive.setPower(0);
