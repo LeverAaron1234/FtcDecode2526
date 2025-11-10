@@ -93,11 +93,11 @@ Y -> slower drive
 
 
     // Defining motors
-    frontLeftDrive = hardwareMap.get(DcMotor.class, "motorFL");
-    backLeftDrive = hardwareMap.get(DcMotor.class, "motorBL");
-    //frontRightDrive = hardwareMap.get(DcMotor.class, "motorFR");
-    backRightDrive = hardwareMap.get(DcMotor.class, "motorBR");
-    wheeel = hardwareMap.get(DcMotor.class, "wheeel");
+    frontLeftDrive = hardwareMap.get(DcMotor.class, "leftFront");
+    backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
+    frontRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
+    backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
+    //wheeel = hardwareMap.get(DcMotor.class, "wheeel");
     camq = hardwareMap.get(HuskyLens.class, "camq");
 
 //        inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
@@ -114,11 +114,11 @@ Y -> slower drive
     // Motor directions
     frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
     backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-    //frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+    frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
     backRightDrive.setDirection(DcMotor.Direction.REVERSE);
 //        inOutLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 //        inOutRight.setDirection(DcMotorSimple.Direction.FORWARD);
-    wheeel.setDirection(DcMotorSimple.Direction.FORWARD);
+    //wheeel.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
 
@@ -243,12 +243,12 @@ Y -> slower drive
 
       frontLeftDrive.setPower(frontLeftPower);
       backLeftDrive.setPower(backLeftPower);
-      //frontRightDrive.setPower(frontRightPower);
+      frontRightDrive.setPower(frontRightPower);
       backRightDrive.setPower(backRightPower);
 
       wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
 
-      wheeel.setPower(wheeelSpeed);
+      //wheeel.setPower(wheeelSpeed);
 
 
 
@@ -257,7 +257,7 @@ Y -> slower drive
       telemetry.addData("Status", "Run Time: " + runtime);
       telemetry.addData("Motors", "left (%.2f), right (%.2f)", frontLeftPower, frontRightPower, backLeftPower, backRightPower);
       telemetry.addData("FL Encoder", frontLeftDrive.getCurrentPosition());
-      //telemetry.addData("FR Encoder", frontRightDrive.getCurrentPosition());
+      telemetry.addData("FR Encoder", frontRightDrive.getCurrentPosition());
       telemetry.addData("BL Encoder", backLeftDrive.getCurrentPosition());
       telemetry.addData("BR Encoder", backRightDrive.getCurrentPosition());
 
@@ -268,8 +268,8 @@ Y -> slower drive
 
       telemetry.addData("Set Power", wheeelSpeed);
 
-      telemetry.addData("Wheeel Power", wheeel.getPower());
-      telemetry.addData("Wheeel Encoder", wheeel.getCurrentPosition());
+      //telemetry.addData("Wheeel Power", wheeel.getPower());
+      //telemetry.addData("Wheeel Encoder", wheeel.getCurrentPosition());
 
 
 

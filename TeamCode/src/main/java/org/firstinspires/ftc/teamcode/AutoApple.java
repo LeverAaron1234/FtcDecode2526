@@ -43,10 +43,10 @@ public class AutoApple extends LinearOpMode {
   @Override
   public void runOpMode() {
     // Defining motors
-    frontLeftDrive = hardwareMap.get(DcMotor.class, "motorFL");
-    backLeftDrive = hardwareMap.get(DcMotor.class, "motorBL");
-    frontRightDrive = hardwareMap.get(DcMotor.class, "motorFR");
-    backRightDrive = hardwareMap.get(DcMotor.class, "motorBR");
+    frontLeftDrive = hardwareMap.get(DcMotor.class, "leftFront");
+    backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
+    frontRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
+    backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
     //wheeel = hardwareMap.get(DcMotor.class, "wheeel");
     camq = hardwareMap.get(HuskyLens.class, "camq");
     pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");

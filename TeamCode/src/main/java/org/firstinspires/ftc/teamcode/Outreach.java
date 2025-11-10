@@ -206,13 +206,13 @@ T2 -> Slides Out
 
       if(gamepad1.x && !changed4){
 
-        if(wrist.getPosition() == 0.9) {
+        if(wrist.getPosition() == 0.8) {
           wrist.setPosition(0.6);
           changed4 = true;
           backarm = false;
         }
         else{
-          wrist.setPosition(0.9);
+          wrist.setPosition(0.8);
           changed4 = true;
           backarm = true;
         }
@@ -300,28 +300,26 @@ T2 -> Slides Out
 
 
       // TELEMETRY
-      telemetry.addData("Status", "Run Time: " + runtime);
-      telemetry.addData("Motors", "left (%.2f), right (%.2f)", frontLeftPower, frontRightPower, backLeftPower, backRightPower);
-      telemetry.addData("FL Encoder", frontLeftDrive.getCurrentPosition());
-      telemetry.addData("FR Encoder", frontRightDrive.getCurrentPosition());
-      telemetry.addData("BL Encoder", backLeftDrive.getCurrentPosition());
-      telemetry.addData("BR Encoder", backRightDrive.getCurrentPosition());
-
-      telemetry.addData("Lim L", limL.isPressed());
-      telemetry.addData("Lim R", limR.isPressed());
-
-      telemetry.addData("teeth", teeth.getPosition());
-      telemetry.addData("spin", spin.getPosition());
-
-      telemetry.addData("target pos var", inOutPosition);
-      telemetry.addData("left pos", inOutLeft.getCurrentPosition());
-      telemetry.addData("right pos", inOutRight.getCurrentPosition());
-      telemetry.addData("Arm Swing", armSwing.getCurrentPosition());
-
-      telemetry.addData("FL Power", frontLeftPower);
-      telemetry.addData("FR Power", frontRightPower);
-      telemetry.addData("BL Power", backLeftPower);
-      telemetry.addData("BR Power", backRightPower);
+      telemetry.addData("Runtime",runtime);
+      telemetry.addLine(" /=\\<[B1/T2][B2/T2]>/=\\");
+      telemetry.addLine("/===\\______________/===\\");
+      telemetry.addLine("|      ^                     [Y]   |");
+      telemetry.addLine("|  < * >             [X] [B] |");
+      telemetry.addLine("|      v                     [A]   |");
+      telemetry.addLine("\\         _(*)____(*)_          /");
+      telemetry.addLine(" \\___/ [LS]  [RS] \\___/");
+      telemetry.addLine("LS:");
+      telemetry.addLine("x -> Strafe");
+      telemetry.addLine("y -> Drive Forward");
+      telemetry.addLine("RS:");
+      telemetry.addLine("x -> Turn");
+      telemetry.addLine("A -> Open/Close Claw");
+      telemetry.addLine("B -> Turn Claw");
+      telemetry.addLine("X -> Operate Wrist");
+      telemetry.addLine("B1 -> Lower Arm");
+      telemetry.addLine("B2 -> Raise Arm");
+      telemetry.addLine("T1 -> Slides In");
+      telemetry.addLine("T2 -> Slides Out");
 
 
 
