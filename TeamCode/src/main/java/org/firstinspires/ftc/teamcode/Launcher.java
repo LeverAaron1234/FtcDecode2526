@@ -196,15 +196,22 @@ Y -> slower drive
 
       HuskyLens.Block[] blocks = camq.blocks();
       telemetry.addData("Block count", blocks.length);
-      for (int i = 0; i < blocks.length; i++) {
-        telemetry.addData("Block", blocks[i].toString());
+      if (blocks.length > 0) {
+        for (int i = 0; i < blocks.length; i++) {
+          telemetry.addData("Block", blocks[i].toString());
+        }
+        tagx = blocks[0].x;
+        tagy = blocks[0].y;
+        tagw = blocks[0].width;
+        tagh = blocks[0].height;
+        tagid = blocks[0].id;
+      } else {
+        tagx = -1;
+        tagy = -1;
+        tagw = -1;
+        tagh = -1;
+        tagid = -1;
       }
-      tagx = blocks[0].x;
-      tagy = blocks[0].y;
-      tagw = blocks[0].width;
-      tagh = blocks[0].height;
-      tagid = blocks[0].id;
-
 
 
 
@@ -261,10 +268,8 @@ Y -> slower drive
       telemetry.addData("BL Encoder", backLeftDrive.getCurrentPosition());
       telemetry.addData("BR Encoder", backRightDrive.getCurrentPosition());
 
-      telemetry.addData("FL Power", frontLeftPower);
-      telemetry.addData("FR Power", frontRightPower);
-      telemetry.addData("BL Power", backLeftPower);
-      telemetry.addData("BR Power", backRightPower);
+      telemetry.addData("Tag in view?", (blocks.length > 0));
+
 
       telemetry.addData("Set Power", wheeelSpeed);
 
