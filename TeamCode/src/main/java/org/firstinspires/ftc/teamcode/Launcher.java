@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -58,7 +59,9 @@ public class Launcher extends LinearOpMode {
   private DcMotor frontRightDrive = null;
   private DcMotor backRightDrive = null;
   private DcMotor wheeel = null;
+  private DcMotor intake = null;
   private HuskyLens camq = null;
+  private Servo pew = null;
 
 
   private final int READ_PERIOD = 1;
@@ -97,8 +100,10 @@ Y -> slower drive
     backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
     frontRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
     backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
-    //wheeel = hardwareMap.get(DcMotor.class, "wheeel");
+    wheeel = hardwareMap.get(DcMotor.class, "launcher");
+    intake = hardwareMap.get(DcMotor.class, "intake");
     camq = hardwareMap.get(HuskyLens.class, "camq");
+    pew = hardwareMap.get(Servo.class, "pew");
 
 //        inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
 //        inOutRight = hardwareMap.get(DcMotor.class, "inOutRight");
@@ -118,8 +123,8 @@ Y -> slower drive
     backRightDrive.setDirection(DcMotor.Direction.REVERSE);
 //        inOutLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 //        inOutRight.setDirection(DcMotorSimple.Direction.FORWARD);
-    //wheeel.setDirection(DcMotorSimple.Direction.FORWARD);
-
+    wheeel.setDirection(DcMotorSimple.Direction.FORWARD);
+    intake.setDirection(DcMotor.Direction.FORWARD);
 
 
     /*
@@ -173,6 +178,7 @@ Y -> slower drive
 
     // Declare random variables
     boolean changed = false;
+    boolean changed2 = false;
 
     double drive;
     double strafe;
@@ -182,12 +188,14 @@ Y -> slower drive
     double backLeftPower;
     double backRightPower;
     double wheeelSpeed;
+    double intakeSpeed;
     int tagy;
     int tagx;
     int tagw;
     int tagh;
     int tagid;
     wheeelSpeed = 0;
+    intakeSpeed = 0;
 
 
 
@@ -229,15 +237,24 @@ Y -> slower drive
         changed = true;
       } else if(!gamepad1.y) changed = false;
 
+      if (gamepad1.dpad_down && !changed2) {
+        intakeSpeed = 1;
+        changed2 = true;
+      } else if (!gamepad1.y) {
+        changed2 = false;
+        intakeSpeed = 0;
+      }
 
 
-      // LAUNCHER speed about 71 - 78% for the back launch zone w/ flywheel
-      // w/o flywheel, it takes approx 15% extra power
       if (gamepad1.a) {
-        wheeelSpeed += 0.001;
+        if (wheeelSpeed == 0) {
+          wheeelSpeed = 0.4;
+        } else {
+        wheeelSpeed += 0.005;
+        }
       }
       if (gamepad1.b) {
-        wheeelSpeed -= 0.001;
+        wheeelSpeed = 0;
       }
 
 
@@ -255,7 +272,8 @@ Y -> slower drive
 
       wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
 
-      //wheeel.setPower(wheeelSpeed);
+      wheeel.setPower(wheeelSpeed);
+      intake.setPower(intakeSpeed);
 
 
 
