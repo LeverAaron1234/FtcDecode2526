@@ -36,6 +36,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -62,6 +63,7 @@ public class Launcher extends LinearOpMode {
   private DcMotor intake = null;
   private HuskyLens camq = null;
   private Servo pew = null;
+  private CRServo helper = null;
 
 
   private final int READ_PERIOD = 1;
@@ -104,6 +106,7 @@ Y -> slower drive
     intake = hardwareMap.get(DcMotor.class, "intake");
     camq = hardwareMap.get(HuskyLens.class, "camq");
     pew = hardwareMap.get(Servo.class, "pew");
+    helper = hardwareMap.get(CRServo.class, "helper");
 
 //        inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
 //        inOutRight = hardwareMap.get(DcMotor.class, "inOutRight");
@@ -125,6 +128,8 @@ Y -> slower drive
 //        inOutRight.setDirection(DcMotorSimple.Direction.FORWARD);
     wheeel.setDirection(DcMotorSimple.Direction.FORWARD);
     intake.setDirection(DcMotor.Direction.FORWARD);
+    pew.setPosition(0);
+    helper.setPower(0);
 
 
     /*
@@ -179,6 +184,7 @@ Y -> slower drive
     // Declare random variables
     boolean changed = false;
     boolean changed2 = false;
+    boolean changed3 = false;
 
     double drive;
     double strafe;
@@ -230,22 +236,27 @@ Y -> slower drive
 
       // Slides
 
-
+      // Y button -> Slow mode
       if (gamepad1.y && !changed) {
         if (slow == 3) slow = 1;
         else slow = 3;
         changed = true;
       } else if(!gamepad1.y) changed = false;
 
+      // down-dpad -> Run intake and the helper motor
+      // to get the ball into the launcher
       if (gamepad1.dpad_down && !changed2) {
         intakeSpeed = 1;
+        if (!(gamepad1.right_trigger >= 0.2)) {helper.setPower(1);}
         changed2 = true;
-      } else if (!gamepad1.y) {
-        changed2 = false;
+      } else if (!gamepad1.dpad_down) {
         intakeSpeed = 0;
+        if (!(gamepad1.right_trigger >= 0.2)) {helper.setPower(0);}
+        changed2 = false;
       }
 
 
+      // A button -> starts the launcher, hold  for more power
       if (gamepad1.a) {
         if (wheeelSpeed == 0) {
           wheeelSpeed = 0.4;
@@ -253,11 +264,21 @@ Y -> slower drive
         wheeelSpeed += 0.005;
         }
       }
+      // B button -> stop the launcher
       if (gamepad1.b) {
         wheeelSpeed = 0;
       }
 
-
+      // Right trigger -> push ball into launcher
+      // stops the helper servo so balls don't get stuck under
+      if (gamepad1.right_trigger >= 0.2 && !changed3) {
+        helper.setPower(0);
+        if (pew.getPosition() == 0) {pew.setPosition(1);}
+        changed3 = true;
+      } else if (!(gamepad1.right_trigger >= 0.2)) {
+        pew.setPosition(0);
+        changed3 = false;
+      }
 
       // Drive equations
       frontLeftPower = Range.clip((drive + strafe - turn) / slow, -1, 1);
