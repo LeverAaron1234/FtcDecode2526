@@ -272,11 +272,11 @@ Y -> slower drive
       // Right trigger -> push ball into launcher
       // stops the helper servo so balls don't get stuck under
       if (gamepad1.right_trigger >= 0.2 && !changed3) {
-        helper.setPower(0);
-        if (pew.getPosition() == 0) {pew.setPosition(1);}
+        helper.setPower(-1);
+        if (pew.getPosition() == 1) {pew.setPosition(0);}
         changed3 = true;
       } else if (!(gamepad1.right_trigger >= 0.2)) {
-        pew.setPosition(0);
+        pew.setPosition(1);
         changed3 = false;
       }
 
