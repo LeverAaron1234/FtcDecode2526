@@ -309,7 +309,7 @@ Y -> slower drive
       wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
 
       wheeel.setPower(wheeelSpeed);
-      intake.setPower(intakeSpeed);
+      intake.setPower(intakeSpeed);;
 
 
 
