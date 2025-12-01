@@ -116,7 +116,7 @@ Y -> slower drive
 //        limL = hardwareMap.get(RevTouchSensor.class, "limL");
 //        limR = hardwareMap.get(RevTouchSensor.class,"limR");
 
-    int slow = 1;
+
 
 
     // Motor directions
@@ -185,6 +185,7 @@ Y -> slower drive
     boolean changed = false;
     boolean changed2 = false;
     boolean changed3 = false;
+    boolean slow = false;
 
     double drive;
     double strafe;
@@ -195,8 +196,9 @@ Y -> slower drive
     double backRightPower;
     double wheeelSpeed;
     double intakeSpeed;
-    int tagy;
+    double wheeelOffset;
     int tagx;
+    int tagy;
     int tagw;
     int tagh;
     int tagid;
@@ -233,40 +235,53 @@ Y -> slower drive
       drive = -gamepad1.left_stick_x;
       strafe = gamepad1.left_stick_y;
       turn = gamepad1.right_stick_x;
+      wheeelOffset = 0;
 
       // Slides
 
-      // Y button -> Slow mode
+      // Y button -> Fine tuning mode
       if (gamepad1.y && !changed) {
-        if (slow == 3) slow = 1;
-        else slow = 3;
+        slow = !slow;
         changed = true;
       } else if(!gamepad1.y) changed = false;
 
+      if (slow) {
+        drive = 0;
+        strafe = 0;
+        turn *= 0.2;
+        wheeelOffset = gamepad1.left_stick_y;
+      }
+
       // down-dpad -> Run intake and the helper motor
       // to get the ball into the launcher
-      if (gamepad1.dpad_down && !changed2) {
+      if ((gamepad1.left_trigger >= 0.2) && !changed2) {
         intakeSpeed = 1;
         if (!(gamepad1.right_trigger >= 0.2)) {helper.setPower(1);}
         changed2 = true;
-      } else if (!gamepad1.dpad_down) {
+      } else if (!(gamepad1.left_trigger >= 0.2)) {
         intakeSpeed = 0;
         if (!(gamepad1.right_trigger >= 0.2)) {helper.setPower(0);}
         changed2 = false;
       }
 
 
-      // A button -> starts the launcher, hold  for more power
-      if (gamepad1.a) {
+      // up button -> starts the launcher, preset to 'near'
+      // on clicking again, it stops the launcher
+      if (gamepad1.dpad_up) {
         if (wheeelSpeed == 0) {
-          wheeelSpeed = 0.4;
+          wheeelSpeed = 0.5 + (wheeelOffset*0.3);
         } else {
-        wheeelSpeed += 0.005;
+        wheeelSpeed = 0;
         }
       }
-      // B button -> stop the launcher
-      if (gamepad1.b) {
-        wheeelSpeed = 0;
+      // down button -> starts the launcher, preset to 'far'
+      // on clicking again, it stops the launcher
+      if (gamepad1.dpad_down) {
+        if (wheeelSpeed == 0) {
+          wheeelSpeed = 0.77 + (wheeelOffset*0.3);
+        } else {
+          wheeelSpeed = 0;
+        }
       }
 
       // Right trigger -> push ball into launcher
@@ -281,10 +296,10 @@ Y -> slower drive
       }
 
       // Drive equations
-      frontLeftPower = Range.clip((drive + strafe - turn) / slow, -1, 1);
-      frontRightPower = Range.clip((drive - strafe - turn) / slow, -1, 1);
-      backLeftPower = Range.clip((drive - strafe + turn) / slow, -1, 1);
-      backRightPower = Range.clip((drive + strafe + turn) / slow, -1, 1);
+      frontLeftPower = Range.clip((drive + strafe - turn), -1, 1);
+      frontRightPower = Range.clip((drive - strafe - turn), -1, 1);
+      backLeftPower = Range.clip((drive - strafe + turn), -1, 1);
+      backRightPower = Range.clip((drive + strafe + turn), -1, 1);
 
       frontLeftDrive.setPower(frontLeftPower);
       backLeftDrive.setPower(backLeftPower);
