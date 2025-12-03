@@ -64,6 +64,7 @@ public class Launcher extends LinearOpMode {
   private HuskyLens camq = null;
   private Servo pew = null;
   private CRServo helper = null;
+  private Servo angle = null;
 
 
   private final int READ_PERIOD = 1;
@@ -107,6 +108,8 @@ Y -> slower drive
     camq = hardwareMap.get(HuskyLens.class, "camq");
     pew = hardwareMap.get(Servo.class, "pew");
     helper = hardwareMap.get(CRServo.class, "helper");
+    angle = hardwareMap.get(Servo.class, "angle");
+
 
 //        inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
 //        inOutRight = hardwareMap.get(DcMotor.class, "inOutRight");
@@ -130,6 +133,7 @@ Y -> slower drive
     intake.setDirection(DcMotor.Direction.FORWARD);
     pew.setPosition(0);
     helper.setPower(0);
+    angle.setPosition(0);
 
 
     /*
@@ -196,6 +200,7 @@ Y -> slower drive
     double backRightPower;
     double wheeelSpeed;
     double intakeSpeed;
+    double anglePos;
     double wheeelOffset;
     int tagx;
     int tagy;
@@ -204,6 +209,8 @@ Y -> slower drive
     int tagid;
     wheeelSpeed = 0;
     intakeSpeed = 0;
+    anglePos = 0;
+
 
 
 
@@ -245,14 +252,15 @@ Y -> slower drive
         changed = true;
       } else if(!gamepad1.y) changed = false;
 
+      // During slow mode, you can only turn, and use
       if (slow) {
         drive = 0;
         strafe = 0;
         turn *= 0.2;
-        wheeelOffset = gamepad1.left_stick_y;
+        //wheeelOffset = gamepad1.left_stick_y;
       }
 
-      // down-dpad -> Run intake and the helper motor
+      // left trigger -> Run intake and the helper motor
       // to get the ball into the launcher
       if ((gamepad1.left_trigger >= 0.2) && !changed2) {
         intakeSpeed = 1;
@@ -268,20 +276,23 @@ Y -> slower drive
       // up button -> starts the launcher, preset to 'near'
       // on clicking again, it stops the launcher
       if (gamepad1.dpad_up) {
-        if (wheeelSpeed == 0) {
-          wheeelSpeed = 0.5 + (wheeelOffset*0.3);
-        } else {
-        wheeelSpeed = 0;
-        }
+          wheeelSpeed += 0.01;
       }
       // down button -> starts the launcher, preset to 'far'
+      // SET TO 0.82 SPEED && 0.77 ANGLE
       // on clicking again, it stops the launcher
       if (gamepad1.dpad_down) {
-        if (wheeelSpeed == 0) {
-          wheeelSpeed = 0.77 + (wheeelOffset*0.3);
-        } else {
-          wheeelSpeed = 0;
-        }
+          wheeelSpeed -= 0.01;
+      }
+
+      if (gamepad1.b) {
+        wheeelSpeed = 0.0;
+      }
+      if (gamepad1.a) {
+        anglePos += 0.01;
+      }
+      if (gamepad1.x) {
+        anglePos -= 0.01;
       }
 
       // Right trigger -> push ball into launcher
@@ -307,9 +318,12 @@ Y -> slower drive
       backRightDrive.setPower(backRightPower);
 
       wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
+      anglePos = Range.clip(anglePos, 0.28,1);
 
       wheeel.setPower(wheeelSpeed);
-      intake.setPower(intakeSpeed);;
+      intake.setPower(intakeSpeed);
+
+      angle.setPosition(anglePos);
 
 
 
@@ -321,6 +335,7 @@ Y -> slower drive
       telemetry.addData("FR Encoder", frontRightDrive.getCurrentPosition());
       telemetry.addData("BL Encoder", backLeftDrive.getCurrentPosition());
       telemetry.addData("BR Encoder", backRightDrive.getCurrentPosition());
+      telemetry.addData("Angle Position", angle.getPosition());
 
       telemetry.addData("Tag in view?", (blocks.length > 0));
 
