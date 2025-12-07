@@ -189,7 +189,11 @@ Y -> slower drive
     boolean changed = false;
     boolean changed2 = false;
     boolean changed3 = false;
+    boolean changed4 = false;
+    boolean changed5 = false;
+    boolean changed6 = false;
     boolean slow = false;
+    boolean shootable = false;
 
     double drive;
     double strafe;
@@ -211,7 +215,10 @@ Y -> slower drive
     intakeSpeed = 0;
     anglePos = 0;
 
-
+    //Presets for the robot angle and speed based on the position
+    // FAR    0.71 ANGLE | 0.83 SPEED
+    // MEDIUM 0.28 ANGLE | 0.69 SPEED
+    // CLOSE  0.10 ANGLE | 0.60 SPEED
 
 
     while (opModeIsActive()) {
@@ -246,11 +253,11 @@ Y -> slower drive
 
       // Slides
 
-      // Y button -> Fine tuning mode
-      if (gamepad1.y && !changed) {
+      // DPAD_DOWN button -> Fine tuning mode
+      if (gamepad1.dpad_down && !changed) {
         slow = !slow;
         changed = true;
-      } else if(!gamepad1.y) changed = false;
+      } else if(!gamepad1.dpad_down) changed = false;
 
       // During slow mode, you can only turn, and use
       if (slow) {
@@ -273,26 +280,34 @@ Y -> slower drive
       }
 
 
-      // up button -> starts the launcher, preset to 'near'
-      // on clicking again, it stops the launcher
-      if (gamepad1.dpad_up) {
-          wheeelSpeed += 0.01;
-      }
-      // down button -> starts the launcher, preset to 'far'
-      // SET TO 0.82 SPEED && 0.77 ANGLE
-      // on clicking again, it stops the launcher
-      if (gamepad1.dpad_down) {
-          wheeelSpeed -= 0.01;
-      }
 
-      if (gamepad1.b) {
+      if (gamepad1.x) {
+        anglePos = 0.0;
         wheeelSpeed = 0.0;
       }
-      if (gamepad1.a) {
-        anglePos += 0.01;
+
+      if (gamepad1.a && !changed4) {
+        anglePos = 0.71;
+        wheeelSpeed = 0.83;
+        changed4 = true;
+      } else if (!gamepad1.a) {
+        changed4 = false;
       }
-      if (gamepad1.x) {
-        anglePos -= 0.01;
+
+      if (gamepad1.b && !changed5) {
+        anglePos = 0.28;
+        wheeelSpeed = 0.69;
+        changed5 = true;
+      } else if (!gamepad1.b) {
+        changed5 = false;
+      }
+
+      if (gamepad1.y && !changed6) {
+        anglePos = 0.10;
+        wheeelSpeed = 0.60;
+        changed6 = true;
+      } else if (!gamepad1.y) {
+        changed6 = false;
       }
 
       // Right trigger -> push ball into launcher
@@ -304,6 +319,15 @@ Y -> slower drive
       } else if (!(gamepad1.right_trigger >= 0.2)) {
         pew.setPosition(1);
         changed3 = false;
+      }
+
+      if (gamepad1.left_bumper) {
+        intakeSpeed = -1;
+        helper.setPower(-1);
+      }
+
+      if (tagid != -1) {
+        shootable = -5 <= tagx && tagx <= 5;
       }
 
       // Drive equations
@@ -318,7 +342,7 @@ Y -> slower drive
       backRightDrive.setPower(backRightPower);
 
       wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
-      anglePos = Range.clip(anglePos, 0.28,1);
+      anglePos = Range.clip(anglePos, 0.1,1);
 
       wheeel.setPower(wheeelSpeed);
       intake.setPower(intakeSpeed);
@@ -341,6 +365,7 @@ Y -> slower drive
 
 
       telemetry.addData("Set Power", wheeelSpeed);
+      telemetry.addData("Correct Direction?", shootable);
 
       //telemetry.addData("Wheeel Power", wheeel.getPower());
       //telemetry.addData("Wheeel Encoder", wheeel.getCurrentPosition());
