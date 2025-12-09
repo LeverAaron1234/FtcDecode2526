@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.appendeges
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 
@@ -24,7 +25,7 @@ class Shooter(hardwareMap: HardwareMap) {
 
     var armState = Shooter.Neutral
 
-    private val shooter = hardwareMap.get(DcMotor::class.java, "launcher")
+    private val shooter = hardwareMap.get(DcMotorEx::class.java, "launcher")
 
 
     private val power = 1.0
@@ -36,8 +37,10 @@ class Shooter(hardwareMap: HardwareMap) {
         shooter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         shooter.direction = DcMotorSimple.Direction.FORWARD
         shooter.power = 0.0
+        shooter.targetPosition = 0
         shooter.mode = DcMotor.RunMode.RUN_TO_POSITION
         shooter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        shooter.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         shooter.mode = DcMotor.RunMode.RUN_TO_POSITION
         shooter.power = power
     }
@@ -54,9 +57,10 @@ class Shooter(hardwareMap: HardwareMap) {
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
-                targetPower = state.pwr.toDouble()
+                targetPower = state.pwr
                 shooter.power = targetPower
                 armState = state
+
                 initialized = true
             }
             shooter.currentPosition

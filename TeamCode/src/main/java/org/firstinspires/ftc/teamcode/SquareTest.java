@@ -2,14 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
@@ -17,11 +16,10 @@ import org.firstinspires.ftc.teamcode.appendeges.Helper;
 import org.firstinspires.ftc.teamcode.appendeges.Intake;
 import org.firstinspires.ftc.teamcode.appendeges.Pew;
 import org.firstinspires.ftc.teamcode.appendeges.Shooter;
-import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 import java.util.concurrent.TimeUnit;
 
-@TeleOp
+@Autonomous
 public final class SquareTest extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     private HuskyLens camq = null;
@@ -37,18 +35,20 @@ public final class SquareTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(48, 48, Math.toRadians(45));
+        Pose2d beginPose = new Pose2d(-62, 29, Math.toRadians(0));
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
         Pew pew = new Pew(hardwareMap);
         Helper helper = new Helper(hardwareMap);
-        SequentialAction init = new SequentialAction(
-                shooter.stop(),
-                intake.off(),
+
+
+        /*SequentialAction init = new SequentialAction(
+                shooter.full(),
+                intake.on(),
                 pew.set(),
-                helper.off()
-        );
+                helper.forward()
+        );*/
 
 
 
@@ -66,6 +66,64 @@ public final class SquareTest extends LinearOpMode {
 
         camq.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
 
+/*        Actions.runBlocking(new SequentialAction(
+                shooter.stop(),
+                pew.set(),
+                helper.off(),
+                intake.off()
+        ));
+*/
+
+        telemetry.update();
+        waitForStart();
+        Actions.runBlocking(shooter.full());
+        sleep(10000);
+/*        //shooter.setTargetPower(1);
+
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        shooter.full(),
+                        intake.on(),
+                        pew.set(),
+                        helper.forward()
+                )
+        );
+
+        //updateCam();
+
+        if (tagid == 21) { // GPP
+            Actions.runBlocking(new SequentialAction(
+                    drive.actionBuilder(new Pose2d(-48,29,Math.toRadians(-90)))
+                            .strafeTo(new Vector2d(-48,58))
+                            .build()
+            ));
+        } else if (tagid == 22){ // PGP
+            Actions.runBlocking(new SequentialAction(
+                    drive.actionBuilder(new Pose2d(-24,29,Math.toRadians(-90)))
+                            .strafeTo(new Vector2d(-24,58))
+                            .build()
+            ));
+        } else if (tagid == 23){ // PPG
+            Actions.runBlocking(new SequentialAction(
+                    drive.actionBuilder(new Pose2d(12,29,Math.toRadians(-90)))
+                            .strafeTo(new Vector2d(12,58))
+                            .build()
+            ));
+        }
+
+        Actions.runBlocking(new SequentialAction(
+                drive.actionBuilder(new Pose2d(24,24,-45))
+                        .build(),
+                pew.launch(),
+                new SleepAction(0.2),
+                pew.set()
+        ));
+
+*/
+    }
+
+    /*public void updateCam() {
         HuskyLens.Block[] blocks = camq.blocks();
         telemetry.addData("Block count", blocks.length);
         if (blocks.length > 0) {
@@ -84,23 +142,5 @@ public final class SquareTest extends LinearOpMode {
             tagh = -1;
             tagid = -1;
         }
-
-        waitForStart();
-
-        Actions.runBlocking(init);
-        Actions.runBlocking(new SequentialAction(
-                        drive.actionBuilder(beginPose)
-                                .strafeTo(new Vector2d(0,48))
-                                .waitSeconds(1)
-                                .strafeTo(new Vector2d(0,0))
-                                .build(),
-                        drive.actionBuilder(new Pose2d(0,48,0))
-                                .lineToX(48)
-                                .strafeTo(new Vector2d(48,0))
-                                .build()
-                )
-        );
-
-
-    }
+    }*/
 }
