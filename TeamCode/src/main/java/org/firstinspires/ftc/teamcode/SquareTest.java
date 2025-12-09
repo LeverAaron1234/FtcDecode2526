@@ -43,12 +43,12 @@ public final class SquareTest extends LinearOpMode {
         Helper helper = new Helper(hardwareMap);
 
 
-        /*SequentialAction init = new SequentialAction(
+        SequentialAction init = new SequentialAction(
                 shooter.full(),
                 intake.on(),
                 pew.set(),
                 helper.forward()
-        );*/
+        );
 
 
 
@@ -66,19 +66,17 @@ public final class SquareTest extends LinearOpMode {
 
         camq.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
 
-/*        Actions.runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(
                 shooter.stop(),
                 pew.set(),
                 helper.off(),
                 intake.off()
         ));
-*/
+
 
         telemetry.update();
         waitForStart();
         Actions.runBlocking(shooter.full());
-        sleep(10000);
-/*        //shooter.setTargetPower(1);
 
 
         Actions.runBlocking(
@@ -90,7 +88,7 @@ public final class SquareTest extends LinearOpMode {
                 )
         );
 
-        //updateCam();
+        updateCam();
 
         if (tagid == 21) { // GPP
             Actions.runBlocking(new SequentialAction(
@@ -120,10 +118,10 @@ public final class SquareTest extends LinearOpMode {
                 pew.set()
         ));
 
-*/
+
     }
 
-    /*public void updateCam() {
+    public void updateCam() {
         HuskyLens.Block[] blocks = camq.blocks();
         telemetry.addData("Block count", blocks.length);
         if (blocks.length > 0) {
@@ -142,5 +140,5 @@ public final class SquareTest extends LinearOpMode {
             tagh = -1;
             tagid = -1;
         }
-    }*/
+    }
 }

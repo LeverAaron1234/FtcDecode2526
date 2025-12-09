@@ -35,10 +35,10 @@ class Intake(hardwareMap: HardwareMap) {
         intake.direction = DcMotorSimple.Direction.FORWARD
         intake.power = 0.0
         intake.targetPosition = 0
-        intake.mode = DcMotor.RunMode.RUN_TO_POSITION
-        intake.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        //intake.mode = DcMotor.RunMode.RUN_TO_POSITION
+        //intake.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        //intake.mode = DcMotor.RunMode.RUN_TO_POSITION
         intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        intake.mode = DcMotor.RunMode.RUN_TO_POSITION
         intake.power = power
     }
 

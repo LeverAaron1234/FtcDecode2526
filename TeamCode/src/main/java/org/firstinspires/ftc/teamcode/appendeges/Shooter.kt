@@ -38,10 +38,10 @@ class Shooter(hardwareMap: HardwareMap) {
         shooter.direction = DcMotorSimple.Direction.FORWARD
         shooter.power = 0.0
         shooter.targetPosition = 0
-        shooter.mode = DcMotor.RunMode.RUN_TO_POSITION
-        shooter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        //shooter.mode = DcMotor.RunMode.RUN_TO_POSITION
+        //shooter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        //shooter.mode = DcMotor.RunMode.RUN_TO_POSITION
         shooter.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        shooter.mode = DcMotor.RunMode.RUN_TO_POSITION
         shooter.power = power
     }
 
