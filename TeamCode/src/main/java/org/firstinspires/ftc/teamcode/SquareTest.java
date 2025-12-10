@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -35,11 +36,12 @@ public final class SquareTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(-62, 29, Math.toRadians(0));
+        Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(0));
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
         Pew pew = new Pew(hardwareMap);
+        Actions.runBlocking(pew.set());
         Helper helper = new Helper(hardwareMap);
 
 
@@ -76,11 +78,9 @@ public final class SquareTest extends LinearOpMode {
 
         telemetry.update();
         waitForStart();
-        Actions.runBlocking(shooter.full());
-
 
         Actions.runBlocking(
-                new SequentialAction(
+                new ParallelAction(
                         shooter.full(),
                         intake.on(),
                         pew.set(),
@@ -88,15 +88,17 @@ public final class SquareTest extends LinearOpMode {
                 )
         );
 
-        updateCam();
+        updateCam(); // MOVE THE ROBOT FORWARD!!!
+        telemetry.update();
 
-        if (tagid == 21) { // GPP
-            Actions.runBlocking(new SequentialAction(
-                    drive.actionBuilder(new Pose2d(-48,29,Math.toRadians(-90)))
-                            .strafeTo(new Vector2d(-48,58))
-                            .build()
-            ));
-        } else if (tagid == 22){ // PGP
+        //if (tagid == 21) { // GPP
+        Actions.runBlocking(new SequentialAction(
+                drive.actionBuilder(new Pose2d(0,0,Math.toRadians(-90)))
+                        .strafeTo(new Vector2d(20,20))
+                        .build(),
+                new SleepAction(10)
+        ));
+        /*} else if (tagid == 22){ // PGP
             Actions.runBlocking(new SequentialAction(
                     drive.actionBuilder(new Pose2d(-24,29,Math.toRadians(-90)))
                             .strafeTo(new Vector2d(-24,58))
@@ -108,7 +110,7 @@ public final class SquareTest extends LinearOpMode {
                             .strafeTo(new Vector2d(12,58))
                             .build()
             ));
-        }
+        }*/
 
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(new Pose2d(24,24,-45))
