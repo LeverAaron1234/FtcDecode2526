@@ -9,10 +9,10 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.appendeges.Angle;
 import org.firstinspires.ftc.teamcode.appendeges.Helper;
 import org.firstinspires.ftc.teamcode.appendeges.Intake;
 import org.firstinspires.ftc.teamcode.appendeges.Pew;
@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.appendeges.Shooter;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public final class SquareTest extends LinearOpMode {
+public final class BlueAuto extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
     private HuskyLens camq = null;
     private final int READ_PERIOD = 1;
@@ -36,22 +36,34 @@ public final class SquareTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(0));
+        Pose2d beginPose = new Pose2d(-63, 24, Math.toRadians(0));
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
         Pew pew = new Pew(hardwareMap);
+        Angle angle = new Angle(hardwareMap);
         Actions.runBlocking(pew.set());
         Helper helper = new Helper(hardwareMap);
 
 
         SequentialAction init = new SequentialAction(
-                shooter.full(),
+                shooter.medium(),
                 intake.on(),
                 pew.set(),
-                helper.forward()
+                helper.forward(),
+                angle.middle()
         );
-
+        SequentialAction fire = new SequentialAction(
+                helper.backward(),
+                intake.off(),
+                new SleepAction(0.1),
+                pew.launch(),
+                new SleepAction(0.5),
+                pew.set(),
+                new SleepAction(4),
+                helper.forward(),
+                intake.on()
+        );
 
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
@@ -72,7 +84,8 @@ public final class SquareTest extends LinearOpMode {
                 shooter.stop(),
                 pew.set(),
                 helper.off(),
-                intake.off()
+                intake.off(),
+                angle.down()
         ));
 
 
@@ -84,7 +97,8 @@ public final class SquareTest extends LinearOpMode {
                         shooter.full(),
                         intake.on(),
                         pew.set(),
-                        helper.forward()
+                        helper.forward(),
+                        angle.far()
                 )
         );
 
@@ -93,11 +107,58 @@ public final class SquareTest extends LinearOpMode {
 
         //if (tagid == 21) { // GPP
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(0,0,Math.toRadians(-90)))
-                        .strafeTo(new Vector2d(20,20))
+                drive.actionBuilder(beginPose)
+                        .strafeTo(new Vector2d(-60, 20))
+                        .turnTo(Math.toRadians(17))
                         .build(),
-                new SleepAction(10)
+                new SleepAction(2)
         ));
+
+        for (int i=0; i<3; i++){
+            Actions.runBlocking(new SequentialAction(
+                    helper.backward(),
+                    intake.off(),
+                    new SleepAction(0.1),
+                    pew.launch(),
+                    new SleepAction(0.5),
+                    pew.set(),
+                    new SleepAction(0.5),
+                    helper.forward(),
+                    intake.on(),
+                    new SleepAction(2)
+            ));
+        }
+
+        Actions.runBlocking(new SequentialAction(
+                angle.middle(),
+                shooter.medium()
+        ));
+        Actions.runBlocking(new SequentialAction(
+                drive.actionBuilder(new Pose2d(-60,24,Math.toRadians(15)))
+                        .strafeTo(new Vector2d(-49,28))
+                        .turnTo(Math.toRadians(80))
+                        .strafeTo(new Vector2d(-49, 50))
+                        .build(),
+                drive.actionBuilder(new Pose2d(-49, 50, Math.toRadians(80)))
+                        .strafeTo(new Vector2d(-49,30))
+                        .strafeTo(new Vector2d(-20,30))
+                        .turnTo(Math.toRadians(45))
+                        .build()
+                ));
+        for (int i=0; i<3; i++){
+            Actions.runBlocking(new SequentialAction(
+                    helper.backward(),
+                    intake.off(),
+                    new SleepAction(0.1),
+                    pew.launch(),
+                    new SleepAction(0.5),
+                    pew.set(),
+                    new SleepAction(0.5),
+                    helper.forward(),
+                    intake.on(),
+                    new SleepAction(2)
+            ));
+        }
         /*} else if (tagid == 22){ // PGP
             Actions.runBlocking(new SequentialAction(
                     drive.actionBuilder(new Pose2d(-24,29,Math.toRadians(-90)))
@@ -112,13 +173,6 @@ public final class SquareTest extends LinearOpMode {
             ));
         }*/
 
-        Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(24,24,-45))
-                        .build(),
-                pew.launch(),
-                new SleepAction(0.2),
-                pew.set()
-        ));
 
 
     }

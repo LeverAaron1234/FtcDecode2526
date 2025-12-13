@@ -2,31 +2,29 @@ package org.firstinspires.ftc.teamcode.appendeges
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
+import com.acmerobotics.roadrunner.clamp
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
 
-class Pew(hardwareMap: HardwareMap) {
+class Angle(hardwareMap: HardwareMap) {
 
     /**
      * @param position the position of the scoringArm in that state, -1 means we don't currently
      * know the position of the scoringArm
      */
-    enum class PewPos(val position: Double) {
-        set(1.0),
-        launch(0.0)
+    enum class AnglePos(val position: Double) {
+        Far(0.75),
+        Middle(0.28),
+        Close(0.1)
 
     }
 
 
-    private val pew = hardwareMap.get(Servo::class.java, "pew")
+    private val angle = hardwareMap.get(Servo::class.java, "angle")
 
 
-
-
-    var targetPosition = 0.0
+    var targetPosition = 0.28
 
 
     /**
@@ -35,19 +33,18 @@ class Pew(hardwareMap: HardwareMap) {
      *
      * @param state the state (and associated position) to set the arm to
      */
-    inner class SetState(private val state: PewPos) : Action {
+    inner class SetState(private val state: AnglePos) : Action {
         private var initialized = false
 
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
                 targetPosition = state.position.toDouble()
-                pew.position = targetPosition
+                angle.position = clamp(targetPosition, 0.1,1.0)
 
                 initialized = true
             }
-            pew.position
-
+            packet.put("Angle Positon",angle.position)
 
             return false
         }
@@ -64,7 +61,8 @@ class Pew(hardwareMap: HardwareMap) {
      * alongside a collect action
      */
 
-    fun set(): Action = SetState(PewPos.set)
-    fun launch(): Action = SetState(PewPos.launch)
+    fun far(): Action = SetState(AnglePos.Far)
+    fun middle(): Action = SetState(AnglePos.Middle)
+    fun down(): Action = SetState(AnglePos.Close)
 
 }

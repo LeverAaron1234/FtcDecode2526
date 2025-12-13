@@ -16,14 +16,14 @@ class Shooter(hardwareMap: HardwareMap) {
      */
 
     enum class Shooter(val pwr: Double) {
-        full(1.0),
-        medium(0.75),
-        low(0.5),
-        Neutral(0.0)
+        full(0.79),
+        medium(0.69),
+        low(0.60),
+        off(0.0)
 
     }
 
-    var armState = Shooter.Neutral
+    var armState = Shooter.off
 
     private val shooter = hardwareMap.get(DcMotorEx::class.java, "launcher")
 
@@ -84,6 +84,6 @@ class Shooter(hardwareMap: HardwareMap) {
     fun full(): Action = SetState(Shooter.full)
     fun medium(): Action = SetState(Shooter.medium)
     fun low(): Action = SetState(Shooter.low)
-    fun stop(): Action = SetState(Shooter.Neutral)
+    fun stop(): Action = SetState(Shooter.off)
 
 }
