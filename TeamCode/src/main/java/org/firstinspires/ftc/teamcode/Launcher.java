@@ -213,7 +213,8 @@ Y -> slower drive
     int tagid;
     wheeelSpeed = 0;
     intakeSpeed = 0;
-    anglePos = 0;
+    anglePos = 0.28; // UNTESTED!!! TEST THIS!!!
+    angle.setPosition(anglePos);
 
     //Presets for the robot angle and speed based on the position
     // FAR    0.71 ANGLE | 0.83 SPEED
