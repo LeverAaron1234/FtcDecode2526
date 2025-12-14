@@ -109,7 +109,7 @@ public final class RedAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
                         .strafeTo(new Vector2d(-60, -20))
-                        .turnTo(Math.toRadians(-17))
+                        .turnTo(Math.toRadians(340))
                         .build(),
                 new SleepAction(2)
         ));
@@ -130,19 +130,20 @@ public final class RedAuto extends LinearOpMode {
         }
 
         Actions.runBlocking(new SequentialAction(
-                angle.middle(),
-                shooter.medium()
+                angle.mid(),
+                shooter.low()
         ));
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-60,-24,Math.toRadians(15)))
-                        .strafeTo(new Vector2d(-49,-28))
-                        .turnTo(Math.toRadians(-80))
-                        .strafeTo(new Vector2d(-49, -50))
+                drive.actionBuilder(new Pose2d(-60,-20,Math.toRadians(338)))
+                        .strafeTo(new Vector2d(-49,-20))
+                        .turn(Math.toRadians(-60))
+                        .strafeTo(new Vector2d(-49, -40))
                         .build(),
-                drive.actionBuilder(new Pose2d(-49, -50, Math.toRadians(80)))
-                        .strafeTo(new Vector2d(-49,-30))
-                        .strafeTo(new Vector2d(-20,-30))
-                        .turnTo(Math.toRadians(-45))
+                drive.actionBuilder(new Pose2d(-49, -40, Math.toRadians(278)))
+                        .strafeTo(new Vector2d(-49,-20))
+                        .waitSeconds(0.5)
+                        .strafeTo(new Vector2d(-20,-20))
+                        .turn(Math.toRadians(50))
                         .build()
                 ));
         for (int i=0; i<3; i++){

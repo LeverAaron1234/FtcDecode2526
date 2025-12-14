@@ -38,11 +38,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
 import java.util.concurrent.TimeUnit;
@@ -59,8 +61,8 @@ public class Launcher extends LinearOpMode {
   private DcMotor backLeftDrive = null;
   private DcMotor frontRightDrive = null;
   private DcMotor backRightDrive = null;
-  private DcMotor wheeel = null;
-  private DcMotor intake = null;
+  private DcMotorEx wheeel = null;
+  private DcMotorEx intake = null;
   private HuskyLens camq = null;
   private Servo pew = null;
   private CRServo helper = null;
@@ -103,8 +105,8 @@ Y -> slower drive
     backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
     frontRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
     backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
-    wheeel = hardwareMap.get(DcMotor.class, "launcher");
-    intake = hardwareMap.get(DcMotor.class, "intake");
+    wheeel = hardwareMap.get(DcMotorEx.class, "launcher");
+    intake = hardwareMap.get(DcMotorEx.class, "intake");
     camq = hardwareMap.get(HuskyLens.class, "camq");
     pew = hardwareMap.get(Servo.class, "pew");
     helper = hardwareMap.get(CRServo.class, "helper");
@@ -129,8 +131,8 @@ Y -> slower drive
     backRightDrive.setDirection(DcMotor.Direction.REVERSE);
 //        inOutLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 //        inOutRight.setDirection(DcMotorSimple.Direction.FORWARD);
-    wheeel.setDirection(DcMotorSimple.Direction.FORWARD);
-    intake.setDirection(DcMotor.Direction.FORWARD);
+    wheeel.setDirection(DcMotorEx.Direction.FORWARD);
+    intake.setDirection(DcMotorEx.Direction.FORWARD);
     pew.setPosition(0);
     helper.setPower(0);
     angle.setPosition(0);
@@ -213,7 +215,7 @@ Y -> slower drive
     int tagid;
     wheeelSpeed = 0;
     intakeSpeed = 0;
-    anglePos = 0.28; // UNTESTED!!! TEST THIS!!!
+    anglePos = 0.28;
     angle.setPosition(anglePos);
 
     //Presets for the robot angle and speed based on the position
@@ -311,6 +313,14 @@ Y -> slower drive
         changed6 = false;
       }
 
+      if (gamepad1.dpad_left) {
+        anglePos -= 0.01;
+      }
+
+      if (gamepad1.dpad_right) {
+        anglePos += 0.01;
+      }
+
       // Right trigger -> push ball into launcher
       // stops the helper servo so balls don't get stuck under
       if (gamepad1.right_trigger >= 0.2 && !changed3) {
@@ -342,10 +352,11 @@ Y -> slower drive
       frontRightDrive.setPower(frontRightPower);
       backRightDrive.setPower(backRightPower);
 
-      wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
-      anglePos = Range.clip(anglePos, 0.1,1);
+      wheeelSpeed = Range.clip(wheeelSpeed,-1,1) * 6000;
+      anglePos = Range.clip(anglePos, 0.20,1);
 
-      wheeel.setPower(wheeelSpeed);
+      //wheeel.setPower(wheeelSpeed);
+      wheeel.setVelocity(wheeelSpeed);
       intake.setPower(intakeSpeed);
 
       angle.setPosition(anglePos);
@@ -365,8 +376,9 @@ Y -> slower drive
       telemetry.addData("Tag in view?", (blocks.length > 0));
 
 
-      telemetry.addData("Set Power", wheeelSpeed);
-      telemetry.addData("Correct Direction?", shootable);
+      telemetry.addData("Shooter Power", wheeelSpeed);
+      telemetry.addData("Shooter Velocity", wheeel.getVelocity());
+      telemetry.addData("Shooter Current Use", wheeel.getCurrent(CurrentUnit.AMPS));
 
       //telemetry.addData("Wheeel Power", wheeel.getPower());
       //telemetry.addData("Wheeel Encoder", wheeel.getCurrentPosition());
