@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.DriveConstants
 
 
 class Shooter(hardwareMap: HardwareMap) {
@@ -16,9 +17,9 @@ class Shooter(hardwareMap: HardwareMap) {
      */
 
     enum class Shooter(val pwr: Double) {
-        full(0.78),
-        medium(0.69),
-        low(0.60),
+        full(0.63),
+        medium(0.56),
+        low(0.46),
         off(0.0)
 
     }
@@ -38,11 +39,16 @@ class Shooter(hardwareMap: HardwareMap) {
         shooter.direction = DcMotorSimple.Direction.FORWARD
         shooter.power = 0.0
         shooter.targetPosition = 0
-        //shooter.mode = DcMotor.RunMode.RUN_TO_POSITION
-        //shooter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        //shooter.mode = DcMotor.RunMode.RUN_TO_POSITION
-        shooter.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        shooter.power = power
+
+
+        shooter.setVelocityPIDFCoefficients(
+            DriveConstants.p,
+            DriveConstants.i,
+            DriveConstants.d,
+            DriveConstants.f
+        )
+        shooter.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        shooter.velocity = power
     }
 
     /**
@@ -58,12 +64,12 @@ class Shooter(hardwareMap: HardwareMap) {
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
                 targetPower = state.pwr
-                shooter.power = targetPower
+                shooter.velocity = targetPower
                 armState = state
 
                 initialized = true
             }
-            shooter.currentPosition
+
             packet.put("Target Power", targetPower)
             packet.put("Current Power", shooter.power)
             return false
@@ -71,15 +77,10 @@ class Shooter(hardwareMap: HardwareMap) {
     }
 
     /**
-     * manually changes the position of the scoringArm (typically with a joystick)
-     *
-     * @param input the percent speed (-1 to 1) normalized by delta time (the time between each loop)
-     */
-
-    /**
-     * Only use in the collect position; used to reset the positions of the arm; should be called
-     * alongside a collect action
-     */
+      Make usable functions for the code.
+      These set the velocity to, for example,
+      "full" or "medium" which are set above, in ```Shooter(val pwr...)```.
+      */
 
     fun full(): Action = SetState(Shooter.full)
     fun medium(): Action = SetState(Shooter.medium)

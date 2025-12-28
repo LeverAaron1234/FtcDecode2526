@@ -15,14 +15,14 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.appendeges.Angle;
 import org.firstinspires.ftc.teamcode.appendeges.Helper;
 import org.firstinspires.ftc.teamcode.appendeges.Intake;
+import org.firstinspires.ftc.teamcode.appendeges.LimelightCam;
 import org.firstinspires.ftc.teamcode.appendeges.Pew;
 import org.firstinspires.ftc.teamcode.appendeges.Shooter;
 
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public final class BlueAuto extends LinearOpMode {
-    private final ElapsedTime runtime = new ElapsedTime();
+public final class BlueFarAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -34,29 +34,14 @@ public final class BlueAuto extends LinearOpMode {
         Angle angle = new Angle(hardwareMap);
         Actions.runBlocking(pew.set());
         Helper helper = new Helper(hardwareMap);
+        LimelightCam camq = new LimelightCam(hardwareMap);
 
 
-        SequentialAction init = new SequentialAction(
-                shooter.medium(),
-                intake.on(),
-                pew.set(),
-                helper.forward(),
-                angle.middle()
-        );
-        SequentialAction fire = new SequentialAction(
-                helper.backward(),
-                intake.off(),
-                new SleepAction(0.1),
-                pew.launch(),
-                new SleepAction(0.5),
-                pew.set(),
-                new SleepAction(4),
-                helper.forward(),
-                intake.on()
-        );
-
+        camq.setPipeline(LimelightCam.Camera.Obelisk);
+        camq.switchPipeline(1); //Obelisk
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+
 
 
         Actions.runBlocking(new SequentialAction(
@@ -71,8 +56,19 @@ public final class BlueAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
+
+
+        Actions.runBlocking(camq.update());
+        telemetry.addData("Tag Area", camq.getTagArea());
+        telemetry.addData("Tagx", camq.getTagx());
+        telemetry.addData("Tagy", camq.getTagy());
+        telemetry.addData("TagID", camq.getTagid());
+        telemetry.update();
+
+
         Actions.runBlocking(
                 new ParallelAction(
+                        camq.update(),
                         shooter.full(),
                         intake.on(),
                         pew.set(),
@@ -84,7 +80,20 @@ public final class BlueAuto extends LinearOpMode {
 
         telemetry.update();
 
-        //if (tagid == 21) { // GPP
+        //tagid == 21: GPP
+        //tagid == 22: PGP
+        //tagid == 23: PPG
+        /*
+        while (camq.getTagid() != 0) {
+            Actions.runBlocking(camq.update());
+        }
+        if (camq.getTagid() == 21) {        // GPP
+
+        } else if (camq.getTagid() == 22) { // PGP
+
+        } else if (camq.getTagid() == 23) { // PPG
+
+        }*/
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
                         .strafeTo(new Vector2d(-60, 20))
@@ -109,52 +118,14 @@ public final class BlueAuto extends LinearOpMode {
         }
 
         Actions.runBlocking(new SequentialAction(
-                angle.middle(),
-                shooter.medium()
-        ));
-        Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-60,28,Math.toRadians(15)))
-                        .strafeTo(new Vector2d(-50.5,30))
-                        .turnTo(Math.toRadians(80))
-                        .strafeTo(new Vector2d(-50.5, 50))
-                        .build(),
-                drive.actionBuilder(new Pose2d(-50.5, 50, Math.toRadians(80)))
-                        .strafeTo(new Vector2d(-50.5,30))
-                        .strafeTo(new Vector2d(-20,30))
-                        .turnTo(Math.toRadians(45))
+                drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(17)))
+
                         .build()
-                ));
-        for (int i=0; i<3; i++){
-            Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
-                    intake.off(),
-                    new SleepAction(0.1),
-                    pew.launch(),
-                    new SleepAction(0.5),
-                    pew.set(),
-                    new SleepAction(0.5),
-                    helper.forward(),
-                    intake.on(),
-                    new SleepAction(2)
-            ));
-        }
-        /*} else if (tagid == 22){ // PGP
-            Actions.runBlocking(new SequentialAction(
-                    drive.actionBuilder(new Pose2d(-24,29,Math.toRadians(-90)))
-                            .strafeTo(new Vector2d(-24,58))
-                            .build()
-            ));
-        } else if (tagid == 23){ // PPG
-            Actions.runBlocking(new SequentialAction(
-                    drive.actionBuilder(new Pose2d(12,29,Math.toRadians(-90)))
-                            .strafeTo(new Vector2d(12,58))
-                            .build()
-            ));
-        }*/
+        ));
+
 
 
 
     }
-
 
 }

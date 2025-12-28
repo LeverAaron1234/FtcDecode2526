@@ -33,6 +33,8 @@
 // Importing things
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -43,6 +45,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
@@ -63,10 +67,11 @@ public class Launcher extends LinearOpMode {
   private DcMotor backRightDrive = null;
   private DcMotorEx wheeel = null;
   private DcMotorEx intake = null;
-  private HuskyLens camq = null;
+  //private HuskyLens camq = null;
   private Servo pew = null;
   private CRServo helper = null;
   private Servo angle = null;
+  private TelemetryPacket packet = null;
 
 
   private final int READ_PERIOD = 1;
@@ -107,10 +112,11 @@ Y -> slower drive
     backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
     wheeel = hardwareMap.get(DcMotorEx.class, "launcher");
     intake = hardwareMap.get(DcMotorEx.class, "intake");
-    camq = hardwareMap.get(HuskyLens.class, "camq");
+    //camq = hardwareMap.get(HuskyLens.class, "camq");
     pew = hardwareMap.get(Servo.class, "pew");
     helper = hardwareMap.get(CRServo.class, "helper");
     angle = hardwareMap.get(Servo.class, "angle");
+    packet = new TelemetryPacket(true);
 
 
 //        inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
@@ -159,14 +165,14 @@ Y -> slower drive
      * failing on initialization.  In the case of this device, it's because the
      * call to knock() failed.
      */
-    if (!camq.knock()) {
+    /*if (!camq.knock()) {
       telemetry.addData(">>", "Problem communicating with " + camq.getDeviceName());
     } else {
       telemetry.addData(">>", "Press start to continue");
     }
 
     camq.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
-
+    */
 
     waitForStart();
     runtime.reset();
@@ -213,6 +219,12 @@ Y -> slower drive
     int tagw;
     int tagh;
     int tagid;
+
+    double p = DriveConstants.p;
+    double i = DriveConstants.i;
+    double d = DriveConstants.d;
+    double f = DriveConstants.f;
+
     wheeelSpeed = 0;
     intakeSpeed = 0;
     anglePos = 0.28;
@@ -226,12 +238,19 @@ Y -> slower drive
 
     while (opModeIsActive()) {
 
+      p = DriveConstants.p;
+      i = DriveConstants.i;
+      d = DriveConstants.d;
+      f = DriveConstants.f;
 
-      HuskyLens.Block[] blocks = camq.blocks();
+      wheeel.setVelocityPIDFCoefficients(p,i,d,f);
+
+
+      /*HuskyLens.Block[] blocks = camq.blocks();
       telemetry.addData("Block count", blocks.length);
       if (blocks.length > 0) {
-        for (int i = 0; i < blocks.length; i++) {
-          telemetry.addData("Block", blocks[i].toString());
+        for (int x = 0; x < blocks.length; x++) {
+          telemetry.addData("Block", blocks[x].toString());
         }
         tagx = blocks[0].x;
         tagy = blocks[0].y;
@@ -244,7 +263,7 @@ Y -> slower drive
         tagw = -1;
         tagh = -1;
         tagid = -1;
-      }
+      }*/
 
 
 
@@ -289,43 +308,59 @@ Y -> slower drive
         wheeelSpeed = 0.0;
       }
 
+
+      // Far
       if (gamepad1.a && !changed4) {
-        anglePos = 0.69;
-        wheeelSpeed = 0.79;
+        anglePos = 1.0;
+        wheeelSpeed = 0.63; // TODO: These need to be faster!
         changed4 = true;
       } else if (!gamepad1.a) {
         changed4 = false;
       }
 
+      // Medium
       if (gamepad1.b && !changed5) {
-        anglePos = 0.28;
-        wheeelSpeed = 0.69;
+        anglePos = 1.0;
+        wheeelSpeed = 0.56;
         changed5 = true;
       } else if (!gamepad1.b) {
         changed5 = false;
       }
 
+      //Close
       if (gamepad1.y && !changed6) {
-        anglePos = 0.10;
-        wheeelSpeed = 0.60;
+        anglePos = 0.61;
+        wheeelSpeed = 0.46;
         changed6 = true;
       } else if (!gamepad1.y) {
         changed6 = false;
       }
 
       if (gamepad1.dpad_left) {
-        anglePos -= 0.01;
+        if (slow) {
+          wheeelSpeed -= 0.01;
+        } else {
+          anglePos -= 0.01;
+        }
       }
 
       if (gamepad1.dpad_right) {
-        anglePos += 0.01;
+        if (slow) {
+          wheeelSpeed += 0.01;
+        } else {
+          anglePos += 0.01;
+        }
       }
 
       // Right trigger -> push ball into launcher
       // stops the helper servo so balls don't get stuck under
       if (gamepad1.right_trigger >= 0.2 && !changed3) {
         helper.setPower(-1);
-        if (pew.getPosition() == 1) {pew.setPosition(0);}
+        if (pew.getPosition() == 1) {
+          pew.setPosition(0);
+        } else {
+          pew.setPosition(0.99);
+        }
         changed3 = true;
       } else if (!(gamepad1.right_trigger >= 0.2)) {
         pew.setPosition(1);
@@ -337,9 +372,9 @@ Y -> slower drive
         helper.setPower(-1);
       }
 
-      if (tagid != -1) {
+      /*if (tagid != -1) {
         shootable = -5 <= tagx && tagx <= 5;
-      }
+      }*/
 
       // Drive equations
       frontLeftPower = Range.clip((drive + strafe - turn), -1, 1);
@@ -352,11 +387,12 @@ Y -> slower drive
       frontRightDrive.setPower(frontRightPower);
       backRightDrive.setPower(backRightPower);
 
-      wheeelSpeed = Range.clip(wheeelSpeed,-1,1) * 6000;
+      wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
       anglePos = Range.clip(anglePos, 0.20,1);
 
       //wheeel.setPower(wheeelSpeed);
-      wheeel.setVelocity(wheeelSpeed);
+      wheeel.setVelocity(wheeelSpeed*2800);
+
       intake.setPower(intakeSpeed);
 
       angle.setPosition(anglePos);
@@ -373,12 +409,26 @@ Y -> slower drive
       telemetry.addData("BR Encoder", backRightDrive.getCurrentPosition());
       telemetry.addData("Angle Position", angle.getPosition());
 
-      telemetry.addData("Tag in view?", (blocks.length > 0));
+      //telemetry.addData("Tag in view?", (blocks.length > 0));
+
+      telemetry.addData("Pew", pew.getPosition());
 
 
-      telemetry.addData("Shooter Power", wheeelSpeed);
-      telemetry.addData("Shooter Velocity", wheeel.getVelocity());
+      telemetry.addData("Shooter enabled?", wheeel.isMotorEnabled());
+      telemetry.addData("Shooter Power", wheeel.getPower());
+      telemetry.addData("Shooter Velocity", wheeel.getVelocity()*60/28);
       telemetry.addData("Shooter Current Use", wheeel.getCurrent(CurrentUnit.AMPS));
+      telemetry.addData("Shooter Encoder Reading", wheeel.getCurrentPosition());
+
+      packet.put("Shooter Power", wheeel.getPower());
+      packet.put("Shooter Target Velocity", (wheeelSpeed*2800)*60/28);
+      packet.put("Shooter Actual Velocity", wheeel.getVelocity()*60/28);
+      packet.put("Shooter Encoder Reading", wheeel.getCurrentPosition());
+
+
+      FtcDashboard dashboard = FtcDashboard.getInstance();
+      dashboard.sendTelemetryPacket(packet);
+
 
       //telemetry.addData("Wheeel Power", wheeel.getPower());
       //telemetry.addData("Wheeel Encoder", wheeel.getCurrentPosition());
