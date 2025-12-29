@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -32,9 +35,9 @@ public final class BlueFarAuto extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Pew pew = new Pew(hardwareMap);
         Angle angle = new Angle(hardwareMap);
-        Actions.runBlocking(pew.set());
         Helper helper = new Helper(hardwareMap);
         LimelightCam camq = new LimelightCam(hardwareMap);
+        Actions.runBlocking(pew.set());
 
 
         camq.setPipeline(LimelightCam.Camera.Obelisk);
@@ -67,7 +70,7 @@ public final class BlueFarAuto extends LinearOpMode {
 
 
         Actions.runBlocking(
-                new ParallelAction(
+                new SequentialAction(
                         camq.update(),
                         shooter.full(),
                         intake.on(),
@@ -119,9 +122,33 @@ public final class BlueFarAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(17)))
-
+                        .strafeTo(new Vector2d(-50,20))
+                        .turnTo(Math.toRadians(90))
+                        .strafeTo(new Vector2d(-50,50), new TranslationalVelConstraint(10.0))
+                        .build(),
+                new SleepAction(0.1),
+                intake.off(),
+                drive.actionBuilder(new Pose2d(-50,50,90))
+                        .strafeTo(new Vector2d(-50,20))
+                        .turnTo(17)
+                        .strafeTo(new Vector2d(-60,20))
                         .build()
         ));
+
+        for (int i=0; i<3; i++){
+            Actions.runBlocking(new SequentialAction(
+                    helper.backward(),
+                    intake.off(),
+                    new SleepAction(0.1),
+                    pew.launch(),
+                    new SleepAction(0.5),
+                    pew.set(),
+                    new SleepAction(0.5),
+                    helper.forward(),
+                    intake.on(),
+                    new SleepAction(2)
+            ));
+        }
 
 
 
