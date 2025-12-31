@@ -115,7 +115,7 @@ public final class BlueAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(new Pose2d(-60,28,Math.toRadians(15)))
                         .strafeTo(new Vector2d(-50.5,30))
-                        .turnTo(Math.toRadians(80))
+                        .turnTo(Math.toRadians(90))
                         .strafeTo(new Vector2d(-50.5, 50))
                         .build(),
                 drive.actionBuilder(new Pose2d(-50.5, 50, Math.toRadians(80)))

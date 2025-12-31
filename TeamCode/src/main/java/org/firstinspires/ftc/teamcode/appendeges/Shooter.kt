@@ -31,12 +31,13 @@ class Shooter(hardwareMap: HardwareMap) {
 
     private val power = 1.0
 
-
+    var scoringArmOffset = 0 //offset used to reset the arm positions mid-match
+    var targetPower = 0.0
 
     init {
+        shooter.mode = DcMotor.RunMode.RUN_USING_ENCODER
         shooter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         shooter.direction = DcMotorSimple.Direction.FORWARD
-        shooter.power = 0.0
         shooter.targetPosition = 0
 
 
@@ -46,7 +47,6 @@ class Shooter(hardwareMap: HardwareMap) {
             DriveConstants.d,
             DriveConstants.f
         )
-        //shooter.mode = DcMotor.RunMode.RUN_USING_ENCODER
         shooter.velocity = power
     }
 
@@ -62,24 +62,32 @@ class Shooter(hardwareMap: HardwareMap) {
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
-                shooter.velocity = state.pwr
+                targetPower = state.pwr
+
+                shooter.velocity = targetPower*2800
                 shooterState = state
 
                 initialized = true
             }
+            packet.put("SHOOTER Speed", shooter.velocity*60/28)
+            packet.put("SHOOTER Current Position",shooter.currentPosition)
+            packet.put("SHOOTER Target Power", targetPower*2800)
+            packet.put("SHOOTER Current Power", shooter.power)
 
-            packet.put("Target Power", state.pwr)
-            packet.put("Current Power", shooter.power)
-            packet.put("Current State", shooterState)
             return false
         }
     }
 
     /**
-      Make usable functions for the code.
-      These set the velocity to, for example,
-      "full" or "medium" which are set above, in ```Shooter(val pwr...)```.
-      */
+     * manually changes the position of the scoringArm (typically with a joystick)
+     *
+     * @param input the percent speed (-1 to 1) normalized by delta time (the time between each loop)
+     */
+
+    /**
+     * Only use in the collect position; used to reset the positions of the arm; should be called
+     * alongside a collect action
+     */
 
     fun full(): Action = SetState(Shooter.full)
     fun medium(): Action = SetState(Shooter.medium)
