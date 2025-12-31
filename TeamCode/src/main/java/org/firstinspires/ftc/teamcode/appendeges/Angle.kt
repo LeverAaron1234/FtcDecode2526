@@ -14,10 +14,9 @@ class Angle(hardwareMap: HardwareMap) {
      * know the position of the scoringArm
      */
     enum class AnglePos(val position: Double) {
-        Far(1.0),
-        Middle2(1.0),
-        Middle(1.0),
-        Close(0.61)
+        Far(0.85),
+        Middle(0.79),
+        Close(0.31)
 
     }
 
@@ -63,7 +62,7 @@ class Angle(hardwareMap: HardwareMap) {
      */
 
     fun far(): Action = SetState(AnglePos.Far)
-    fun mid(): Action = SetState(AnglePos.Middle2)
+    fun mid(): Action = SetState(AnglePos.Middle)
     fun middle(): Action = SetState(AnglePos.Middle)
     fun down(): Action = SetState(AnglePos.Close)
 

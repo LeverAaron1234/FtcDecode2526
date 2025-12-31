@@ -34,7 +34,6 @@ public final class DistanceSensor extends LinearOpMode {
                 pew.set(),
                 intake.off(),
                 angle.down(),
-                shooter.stop(),
                 helper.off()
 
         ));
@@ -46,12 +45,12 @@ public final class DistanceSensor extends LinearOpMode {
 
 
         telemetry.update();
+        Actions.runBlocking(shooter.full());
         waitForStart();
 
 
         while (opModeIsActive()) {
-            Actions.runBlocking(
-                    camq.update());
+            Actions.runBlocking(camq.update());
             telemetry.addData("Distance to Tag",tagDist(camq.getTagArea()));
             telemetry.addData("Tag Area", camq.getTagArea());
             telemetry.addData("Tagx", camq.getTagx());

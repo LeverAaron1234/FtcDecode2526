@@ -135,6 +135,8 @@ Y -> slower drive
     backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
     frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
     backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+
+
 //        inOutLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 //        inOutRight.setDirection(DcMotorSimple.Direction.FORWARD);
     wheeel.setDirection(DcMotorEx.Direction.FORWARD);
@@ -281,12 +283,11 @@ Y -> slower drive
         changed = true;
       } else if(!gamepad1.dpad_down) changed = false;
 
-      // During slow mode, you can only turn, and use
+      // During slow mode, everything is slowed
       if (slow) {
-        drive = 0;
-        strafe = 0;
+        drive = 0.0;
+        strafe = 0.0;
         turn *= 0.2;
-        //wheeelOffset = gamepad1.left_stick_y;
       }
 
       // left trigger -> Run intake and the helper motor
@@ -311,8 +312,8 @@ Y -> slower drive
 
       // Far
       if (gamepad1.a && !changed4) {
-        anglePos = 1.0;
-        wheeelSpeed = 0.63; // TODO: These need to be faster!
+        anglePos = 0.85;
+        wheeelSpeed = 0.78;
         changed4 = true;
       } else if (!gamepad1.a) {
         changed4 = false;
@@ -320,8 +321,8 @@ Y -> slower drive
 
       // Medium
       if (gamepad1.b && !changed5) {
-        anglePos = 1.0;
-        wheeelSpeed = 0.56;
+        anglePos = 0.79;
+        wheeelSpeed = 0.63;
         changed5 = true;
       } else if (!gamepad1.b) {
         changed5 = false;
@@ -329,8 +330,8 @@ Y -> slower drive
 
       //Close
       if (gamepad1.y && !changed6) {
-        anglePos = 0.61;
-        wheeelSpeed = 0.46;
+        anglePos = 0.31;
+        wheeelSpeed = 0.56;
         changed6 = true;
       } else if (!gamepad1.y) {
         changed6 = false;
@@ -381,6 +382,10 @@ Y -> slower drive
       frontRightPower = Range.clip((drive - strafe - turn), -1, 1);
       backLeftPower = Range.clip((drive - strafe + turn), -1, 1);
       backRightPower = Range.clip((drive + strafe + turn), -1, 1);
+
+      if (slow) {
+        frontLeftPower = backRightPower = frontRightPower = backLeftPower = 0.0;
+      }
 
       frontLeftDrive.setPower(frontLeftPower);
       backLeftDrive.setPower(backLeftPower);

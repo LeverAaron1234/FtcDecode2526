@@ -17,22 +17,21 @@ class Shooter(hardwareMap: HardwareMap) {
      */
 
     enum class Shooter(val pwr: Double) {
-        full(0.63),
-        medium(0.56),
-        low(0.46),
+        full(0.78),
+        medium(0.63),
+        low(0.56),
         off(0.0)
 
     }
 
-    var armState = Shooter.off
+    var shooterState = Shooter.off
 
     private val shooter = hardwareMap.get(DcMotorEx::class.java, "launcher")
 
 
     private val power = 1.0
 
-    var scoringArmOffset = 0 //offset used to reset the arm positions mid-match
-    var targetPower = 0.0
+
 
     init {
         shooter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -47,7 +46,7 @@ class Shooter(hardwareMap: HardwareMap) {
             DriveConstants.d,
             DriveConstants.f
         )
-        shooter.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        //shooter.mode = DcMotor.RunMode.RUN_USING_ENCODER
         shooter.velocity = power
     }
 
@@ -63,15 +62,15 @@ class Shooter(hardwareMap: HardwareMap) {
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
-                targetPower = state.pwr
-                shooter.velocity = targetPower
-                armState = state
+                shooter.velocity = state.pwr
+                shooterState = state
 
                 initialized = true
             }
 
-            packet.put("Target Power", targetPower)
+            packet.put("Target Power", state.pwr)
             packet.put("Current Power", shooter.power)
+            packet.put("Current State", shooterState)
             return false
         }
     }

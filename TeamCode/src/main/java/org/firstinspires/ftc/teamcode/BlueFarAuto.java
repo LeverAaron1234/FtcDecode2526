@@ -102,7 +102,8 @@ public final class BlueFarAuto extends LinearOpMode {
                         .strafeTo(new Vector2d(-60, 20))
                         .turnTo(Math.toRadians(17))
                         .build(),
-                new SleepAction(2)
+                new SleepAction(2),
+                shooter.full()
         ));
 
         for (int i=0; i<3; i++){
