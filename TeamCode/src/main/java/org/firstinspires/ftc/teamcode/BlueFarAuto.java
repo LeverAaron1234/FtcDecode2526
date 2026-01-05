@@ -100,7 +100,7 @@ public final class BlueFarAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
                         .strafeTo(new Vector2d(-60, 20))
-                        .turnTo(Math.toRadians(17))
+                        .turnTo(Math.toRadians(14))
                         .build(),
                 new SleepAction(2),
                 shooter.full()
@@ -108,49 +108,59 @@ public final class BlueFarAuto extends LinearOpMode {
 
         for (int i=0; i<3; i++){
             Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
+                    helper.off(),
                     intake.off(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.4),
                     pew.launch(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.4),
                     pew.set(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.4),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(2)
+                    new SleepAction(1.3)
             ));
         }
 
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(17)))
-                        .strafeTo(new Vector2d(-50,20))
-                        .turnTo(Math.toRadians(90))
-                        .strafeTo(new Vector2d(-50,50), new TranslationalVelConstraint(10.0))
+                drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(13)))
+                        .strafeTo(new Vector2d(-49,20))
+                        .turnTo(Math.toRadians(80))
+                        .strafeTo(new Vector2d(-49,35), new TranslationalVelConstraint(5.0))
                         .build(),
                 new SleepAction(0.1),
-                intake.off(),
-                drive.actionBuilder(new Pose2d(-50,50,90))
-                        .strafeTo(new Vector2d(-50,20))
-                        .turnTo(17)
-                        .strafeTo(new Vector2d(-60,20))
+                intake.off()
+        ));
+
+        Actions.runBlocking(new SequentialAction(
+                drive.actionBuilder(new Pose2d(-49,35,Math.toRadians(80)))
+                        .strafeTo(new Vector2d(-49,22))
+                        .turnTo(Math.toRadians(20))
+                        .strafeTo(new Vector2d(-63, 22))
                         .build()
         ));
 
         for (int i=0; i<3; i++){
             Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
+                    helper.off(),
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.4),
                     pew.set(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.4),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(2)
+                    new SleepAction(1.3)
             ));
         }
 
+
+        Actions.runBlocking(new SequentialAction(
+                drive.actionBuilder(new Pose2d(-63,22,Math.toRadians(20)))
+                        .strafeTo(new Vector2d(-58,22))
+                        .build()
+
+        ));
 
 
 
