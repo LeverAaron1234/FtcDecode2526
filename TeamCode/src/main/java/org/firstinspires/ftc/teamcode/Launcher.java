@@ -313,7 +313,7 @@ Y -> slower drive
       // Far
       if (gamepad1.a && !changed4) {
         anglePos = 0.85;
-        wheeelSpeed = 0.78;
+        wheeelSpeed = 0.70;
         changed4 = true;
       } else if (!gamepad1.a) {
         changed4 = false;
@@ -322,7 +322,7 @@ Y -> slower drive
       // Medium
       if (gamepad1.b && !changed5) {
         anglePos = 0.79;
-        wheeelSpeed = 0.63;
+        wheeelSpeed = 0.60;
         changed5 = true;
       } else if (!gamepad1.b) {
         changed5 = false;
@@ -383,9 +383,7 @@ Y -> slower drive
       backLeftPower = Range.clip((drive - strafe + turn), -1, 1);
       backRightPower = Range.clip((drive + strafe + turn), -1, 1);
 
-      if (slow) {
-        frontLeftPower = backRightPower = frontRightPower = backLeftPower = 0.0;
-      }
+
 
       frontLeftDrive.setPower(frontLeftPower);
       backLeftDrive.setPower(backLeftPower);
