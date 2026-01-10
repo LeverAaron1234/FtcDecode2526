@@ -100,7 +100,7 @@ public final class BlueFarAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
                         .strafeTo(new Vector2d(-60, 20))
-                        .turnTo(Math.toRadians(14))
+                        .turnTo(Math.toRadians(17))
                         .build(),
                 new SleepAction(2),
                 shooter.full()
@@ -110,32 +110,30 @@ public final class BlueFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.6),
                     pew.launch(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.2),
                     pew.set(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.6),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(1.3)
+                    new SleepAction(1.0)
             ));
         }
 
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(13)))
-                        .strafeTo(new Vector2d(-49,20))
-                        .turnTo(Math.toRadians(80))
-                        .strafeTo(new Vector2d(-49,35), new TranslationalVelConstraint(5.0))
+                drive.actionBuilder(new Pose2d(-49,20,Math.toRadians(95)))
+                        .strafeTo(new Vector2d(-49,45), new TranslationalVelConstraint(10.0))
                         .build(),
                 new SleepAction(0.1),
                 intake.off()
         ));
 
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-49,35,Math.toRadians(80)))
-                        .strafeTo(new Vector2d(-49,22))
-                        .turnTo(Math.toRadians(20))
-                        .strafeTo(new Vector2d(-63, 22))
+                drive.actionBuilder(new Pose2d(-49,45,Math.toRadians(95)))
+                        .strafeTo(new Vector2d(-49,20))
+                        .turnTo(Math.toRadians(21))
+                        .strafeTo(new Vector2d(-68, 20))
                         .build()
         ));
 
@@ -143,20 +141,20 @@ public final class BlueFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.6),
                     pew.launch(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.2),
                     pew.set(),
-                    new SleepAction(0.4),
+                    new SleepAction(0.6),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(1.3)
+                    new SleepAction(1.0)
             ));
         }
 
 
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-63,22,Math.toRadians(20)))
+                drive.actionBuilder(new Pose2d(-68,20,Math.toRadians(20)))
                         .strafeTo(new Vector2d(-58,22))
                         .build()
 
