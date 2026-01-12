@@ -298,7 +298,7 @@ Y -> slower drive
         changed2 = true;
       } else if (!(gamepad1.left_trigger >= 0.2)) {
         intakeSpeed = 0;
-        if (!(gamepad1.right_trigger >= 0.2)) {helper.setPower(0);}
+        if (!(gamepad1.right_trigger >= 0.2)) {helper.setPower(0.001);}
         changed2 = false;
       }
 
