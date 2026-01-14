@@ -110,14 +110,14 @@ public final class BlueFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.6),
+                    new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.15),
                     pew.set(),
-                    new SleepAction(0.6),
+                    new SleepAction(0.1),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(1.0)
+                    new SleepAction(0.75)
             ));
         }
 
@@ -148,14 +148,14 @@ public final class BlueFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.6),
+                    new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.15),
                     pew.set(),
-                    new SleepAction(0.6),
+                    new SleepAction(0.1),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(1.0)
+                    new SleepAction(0.75)
             ));
         }
 

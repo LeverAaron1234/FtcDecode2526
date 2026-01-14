@@ -14,6 +14,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
@@ -109,29 +110,30 @@ public final class RedFarAuto extends LinearOpMode {
                         .build(),
                 camq.update(),*/
                 drive.actionBuilder(beginPose)
-                        .strafeTo(new Vector2d(-57, -20))
-                        .turnTo(Math.toRadians(-23))
+                        .splineToLinearHeading(new Pose2d(-57, -20,Math.toRadians(-23)),0)
                         .build(),
                 new SleepAction(2)
         ));
 
         for (int i=0; i<3; i++){// Fire the (3) pre-loaded balls
             Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
+                    helper.off(),
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     pew.set(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(2)
+                    new SleepAction(0.75)
             ));
         }
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-49,-20,Math.toRadians(-95)))
-                        .strafeTo(new Vector2d(-49,-45), new TranslationalVelConstraint(7.5))
+                drive.actionBuilder(new Pose2d(-57,-20,Math.toRadians(-23)))
+                        .splineTo(new Vector2d(-24,-39),Math.toRadians(-90))
+                        .strafeTo(new Vector2d(-24,-64), new TranslationalVelConstraint(15.0))
+                        .strafeToSplineHeading(new Vector2d(-54, -18), Math.toRadians(-24))
                         .build(),
                 new SleepAction(0.1),
                 intake.off()
@@ -139,50 +141,23 @@ public final class RedFarAuto extends LinearOpMode {
 
         for (int i=0; i<3; i++){
             Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
+                    helper.off(),
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.15),
                     pew.set(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(2)
+                    new SleepAction(0.75)
             ));
         }
-
-        Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(-17)))
-                        .strafeTo(new Vector2d(-50,20))
-                        .turnTo(Math.toRadians(-90))
-                        .strafeTo(new Vector2d(-50,50), new TranslationalVelConstraint(10.0))
-                        .build(),
-                new SleepAction(0.1),
-                intake.off(),
-                drive.actionBuilder(new Pose2d(-50,50,-90))
-                        .strafeTo(new Vector2d(-50,20))
-                        .turnTo(-17)
-                        .strafeTo(new Vector2d(-60,20))
+        Actions.runBlocking(
+                drive.actionBuilder(new Pose2d(-57,-20,Math.toRadians(-23)))
+                        .strafeTo(new Vector2d(-40,-20))
                         .build()
-        ));
-
-        for (int i=0; i<3; i++){
-            Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
-                    intake.off(),
-                    new SleepAction(0.1),
-                    pew.launch(),
-                    new SleepAction(0.5),
-                    pew.set(),
-                    new SleepAction(0.5),
-                    helper.forward(),
-                    intake.on(),
-                    new SleepAction(2)
-            ));
-        }
-
-
+        );
 
 
     }

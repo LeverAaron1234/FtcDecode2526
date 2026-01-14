@@ -14,7 +14,7 @@ class Angle(hardwareMap: HardwareMap) {
      * know the position of the scoringArm
      */
     enum class AnglePos(val position: Double) {
-        Far(0.85),
+        Far(0.90),
         Middle(0.79),
         Close(0.31)
 

@@ -17,7 +17,7 @@ class Helper(hardwareMap: HardwareMap) {
 
     enum class Helper(val pwr: Double) {
         forward(1.0),
-        Neutral(0.0),
+        Neutral(0.001),
         backward(-1.0)
 
     }
