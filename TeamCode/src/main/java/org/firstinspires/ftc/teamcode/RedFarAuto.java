@@ -78,7 +78,7 @@ public final class RedFarAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         camq.update(),
-                        shooter.full(),
+                        shooter.fuller(),
                         intake.on(),
                         pew.set(),
                         helper.forward(),
@@ -133,7 +133,7 @@ public final class RedFarAuto extends LinearOpMode {
                 drive.actionBuilder(new Pose2d(-57,-20,Math.toRadians(-23)))
                         .splineTo(new Vector2d(-24,-39),Math.toRadians(-90))
                         .strafeTo(new Vector2d(-24,-64), new TranslationalVelConstraint(15.0))
-                        .strafeToSplineHeading(new Vector2d(-54, -18), Math.toRadians(-24))
+                        .strafeToSplineHeading(new Vector2d(-52, -18), Math.toRadians(-24))
                         .build(),
                 new SleepAction(0.1),
                 intake.off()

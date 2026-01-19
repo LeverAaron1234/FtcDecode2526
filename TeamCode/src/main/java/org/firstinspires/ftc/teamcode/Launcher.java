@@ -77,8 +77,7 @@ public class Launcher extends LinearOpMode {
   private final int READ_PERIOD = 1;
 
 
-  //timer
-  private final ElapsedTime timer = new ElapsedTime();
+
 
   /*
   Controls:
@@ -222,6 +221,12 @@ Y -> slower drive
     int tagh;
     int tagid;
 
+    long last = -1;
+    long now;
+    boolean pewForward = false;
+    boolean pewBack = false;
+    boolean intakeOn = false;
+
     double p = DriveConstants.p;
     double i = DriveConstants.i;
     double d = DriveConstants.d;
@@ -313,7 +318,7 @@ Y -> slower drive
       // Far
       if (gamepad1.a && !changed4) {
         anglePos = 0.85;
-        wheeelSpeed = 0.70;
+        wheeelSpeed = 0.75;
         changed4 = true;
       } else if (!gamepad1.a) {
         changed4 = false;
@@ -322,7 +327,7 @@ Y -> slower drive
       // Medium
       if (gamepad1.b && !changed5) {
         anglePos = 0.79;
-        wheeelSpeed = 0.60;
+        wheeelSpeed = 0.58;
         changed5 = true;
       } else if (!gamepad1.b) {
         changed5 = false;
@@ -331,7 +336,7 @@ Y -> slower drive
       //Close
       if (gamepad1.y && !changed6) {
         anglePos = 0.31;
-        wheeelSpeed = 0.56;
+        wheeelSpeed = 0.55;
         changed6 = true;
       } else if (!gamepad1.y) {
         changed6 = false;
@@ -356,7 +361,7 @@ Y -> slower drive
       // Right trigger -> push ball into launcher
       // stops the helper servo so balls don't get stuck under
       if (gamepad1.right_trigger >= 0.2 && !changed3) {
-        helper.setPower(-1);
+        helper.setPower(0.001);
         if (pew.getPosition() == 1) {
           pew.setPosition(0);
         } else {
@@ -366,6 +371,34 @@ Y -> slower drive
       } else if (!(gamepad1.right_trigger >= 0.2)) {
         pew.setPosition(1);
         changed3 = false;
+      }
+
+      /* INCOMPLETE */
+      if (gamepad1.right_bumper) {
+        if (last < 0) {
+          last = runtime.now(TimeUnit.SECONDS);
+          intake.setPower(0);
+          helper.setPower(0.001);
+          pew.setPosition(1);
+        }
+        now = runtime.now(TimeUnit.SECONDS) - last;
+        if (0.2 > now && now > 0.1) {
+          pew.setPosition(0);
+        }
+        if (0.3 > now && now > 0.2) {
+          intake.setPower(1);
+          helper.setPower(1);
+        }
+        if (now > 0.3) {
+          last = -1;
+        }
+
+      } else {
+        last = -1;
+
+        pewForward = false;
+        pewBack = false;
+        intakeOn = false;
       }
 
       if (gamepad1.left_bumper) {

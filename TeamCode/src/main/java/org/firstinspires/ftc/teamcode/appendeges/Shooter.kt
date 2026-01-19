@@ -17,7 +17,8 @@ class Shooter(hardwareMap: HardwareMap) {
      */
 
     enum class Shooter(val pwr: Double) {
-        full(0.73),
+        full(0.75),
+        fullred(0.76),
         medium(0.60),
         low(0.55),
         off(0.0)
@@ -90,6 +91,7 @@ class Shooter(hardwareMap: HardwareMap) {
      */
 
     fun full(): Action = SetState(Shooter.full)
+    fun fuller(): Action = SetState(Shooter.fullred)
     fun medium(): Action = SetState(Shooter.medium)
     fun low(): Action = SetState(Shooter.low)
     fun stop(): Action = SetState(Shooter.off)
