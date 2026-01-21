@@ -53,11 +53,6 @@ class LimelightCam(hardwareMap: HardwareMap) {
                 initialzed = true
             }
             result = camq.latestResult
-            packet.put("TagID of tag 0", tagid)
-            packet.put("X offset", tagx)
-            packet.put("Y offset", tagy)
-            packet.put("Area of screen", tagArea)
-            packet.put("All tag data", result.fiducialResults.toString())
             if (!(result.isValid && result != null)) {
                 tagx = 0.0
                 tagy = 0.0
@@ -69,6 +64,11 @@ class LimelightCam(hardwareMap: HardwareMap) {
                 tagid = result.fiducialResults[0].fiducialId
                 tagArea = result.ta
             }
+            packet.put("TagID of tag 0", tagid)
+            packet.put("X offset", tagx)
+            packet.put("Y offset", tagy)
+            packet.put("Area of screen", tagArea)
+            packet.put("All tag data", result.fiducialResults.toString())
             return false
         }
     }

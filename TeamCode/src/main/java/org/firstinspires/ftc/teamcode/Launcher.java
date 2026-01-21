@@ -36,6 +36,8 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -67,7 +69,7 @@ public class Launcher extends LinearOpMode {
   private DcMotor backRightDrive = null;
   private DcMotorEx wheeel = null;
   private DcMotorEx intake = null;
-  //private HuskyLens camq = null;
+  private Limelight3A camq = null;
   private Servo pew = null;
   private CRServo helper = null;
   private Servo angle = null;
@@ -111,7 +113,7 @@ Y -> slower drive
     backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
     wheeel = hardwareMap.get(DcMotorEx.class, "launcher");
     intake = hardwareMap.get(DcMotorEx.class, "intake");
-    //camq = hardwareMap.get(HuskyLens.class, "camq");
+    camq = hardwareMap.get(Limelight3A.class, "limelight");
     pew = hardwareMap.get(Servo.class, "pew");
     helper = hardwareMap.get(CRServo.class, "helper");
     angle = hardwareMap.get(Servo.class, "angle");
@@ -143,6 +145,18 @@ Y -> slower drive
     pew.setPosition(0);
     helper.setPower(0);
     angle.setPosition(0);
+
+    // Camera Stuff
+
+    camq.pipelineSwitch(1); // {0: "goal", 1: "obelisk"}
+    camq.start();
+    double tagx = 0.0;
+    double tagy = 0.0;
+    double tagArea = -1.0;
+    int tagid = -1;
+    LLResult result = camq.getLatestResult();
+
+
 
 
     /*
@@ -212,20 +226,20 @@ Y -> slower drive
     double backLeftPower;
     double backRightPower;
     double wheeelSpeed;
-    double intakeSpeed;
     double anglePos;
     double wheeelOffset;
-    int tagx;
-    int tagy;
-    int tagw;
-    int tagh;
-    int tagid;
 
-    long last = -1;
-    long now;
+    long cycleStart = -1;
+
     boolean pewForward = false;
     boolean pewBack = false;
     boolean intakeOn = false;
+
+    final double PEW_FORWARD_TIME = 0.0;
+    final double PEW_BACK_TIME = 0.5;
+    final double INTAKE_TIME = 1.0;
+    final double CYCLE_END = 1.5;
+
 
     double p = DriveConstants.p;
     double i = DriveConstants.i;
@@ -233,7 +247,6 @@ Y -> slower drive
     double f = DriveConstants.f;
 
     wheeelSpeed = 0;
-    intakeSpeed = 0;
     anglePos = 0.28;
     angle.setPosition(anglePos);
 
@@ -252,6 +265,19 @@ Y -> slower drive
 
       wheeel.setVelocityPIDFCoefficients(p,i,d,f);
 
+      result = camq.getLatestResult();
+
+      if (result.isValid()) {
+        tagx = result.getTx();
+        tagy = result.getTy();
+        tagArea = result.getTa();
+        tagid = result.getFiducialResults().get(0).getFiducialId();
+      } else {
+        tagx = 0.0;
+        tagy = 0.0;
+        tagArea = -1.0;
+        tagid = -1;
+      }
 
       /*HuskyLens.Block[] blocks = camq.blocks();
       telemetry.addData("Block count", blocks.length);
@@ -298,11 +324,11 @@ Y -> slower drive
       // left trigger -> Run intake and the helper motor
       // to get the ball into the launcher
       if ((gamepad1.left_trigger >= 0.2) && !changed2) {
-        intakeSpeed = 1;
+        intake.setPower(1);
         if (!(gamepad1.right_trigger >= 0.2)) {helper.setPower(1);}
         changed2 = true;
       } else if (!(gamepad1.left_trigger >= 0.2)) {
-        intakeSpeed = 0;
+        intake.setPower(0);
         if (!(gamepad1.right_trigger >= 0.2)) {helper.setPower(0.001);}
         changed2 = false;
       }
@@ -335,8 +361,8 @@ Y -> slower drive
 
       //Close
       if (gamepad1.y && !changed6) {
-        anglePos = 0.31;
-        wheeelSpeed = 0.55;
+        anglePos = 0.38;
+        wheeelSpeed = 0.53;
         changed6 = true;
       } else if (!gamepad1.y) {
         changed6 = false;
@@ -373,36 +399,62 @@ Y -> slower drive
         changed3 = false;
       }
 
-      /* INCOMPLETE */
+      /* !!MACHINE GUN MODE!! */
       if (gamepad1.right_bumper) {
-        if (last < 0) {
-          last = runtime.now(TimeUnit.SECONDS);
-          intake.setPower(0);
-          helper.setPower(0.001);
-          pew.setPosition(1);
-        }
-        now = runtime.now(TimeUnit.SECONDS) - last;
-        if (0.2 > now && now > 0.1) {
-          pew.setPosition(0);
-        }
-        if (0.3 > now && now > 0.2) {
+        if (cycleStart < 0) {
+          cycleStart = runtime.now(TimeUnit.SECONDS);
+
+          pewForward = false;
+          pewBack = false;
+          intakeOn = false;
+
           intake.setPower(1);
           helper.setPower(1);
         }
-        if (now > 0.3) {
-          last = -1;
+
+        double t = runtime.now(TimeUnit.SECONDS) - cycleStart;
+
+        if (t >= PEW_FORWARD_TIME && !pewForward) {
+          pew.setPosition(1);
+          pewForward = true;
+        }
+
+        if (t >= PEW_BACK_TIME && !pewBack) {
+          pew.setPosition(0);
+          pewBack = true;
+        }
+
+        if (t >= INTAKE_TIME && !intakeOn) {
+          intake.setPower(1);
+          helper.setPower(1);
+          intakeOn = true;
+        }
+
+        if (t >= CYCLE_END) {
+          cycleStart = runtime.now(TimeUnit.SECONDS);
+
+          pewForward = false;
+          pewBack = false;
+          intakeOn = false;
+
         }
 
       } else {
-        last = -1;
+        if (cycleStart != -1) {
+          helper.setPower(0.001);
+          intake.setPower(0);
+        }
+        cycleStart = -1;
 
         pewForward = false;
         pewBack = false;
         intakeOn = false;
       }
 
+
+
       if (gamepad1.left_bumper) {
-        intakeSpeed = -1;
+        intake.setPower(0);
         helper.setPower(-1);
       }
 
@@ -429,7 +481,6 @@ Y -> slower drive
       //wheeel.setPower(wheeelSpeed);
       wheeel.setVelocity(wheeelSpeed*2800);
 
-      intake.setPower(intakeSpeed);
 
       angle.setPosition(anglePos);
 
