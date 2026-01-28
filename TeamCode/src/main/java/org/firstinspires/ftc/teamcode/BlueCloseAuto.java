@@ -23,7 +23,7 @@ public final class BlueCloseAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(0)); //Change to better
+        Pose2d beginPose = new Pose2d(-63, -39, Math.toRadians(270));
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
@@ -66,8 +66,8 @@ public final class BlueCloseAuto extends LinearOpMode {
         Actions.runBlocking(
                 new ParallelAction(
                         camq.update(),
-                        shooter.full(),
-                        intake.on(),
+                        shooter.low(),
+                        intake.off(),
                         pew.set(),
                         helper.forward(),
                         angle.far()
@@ -78,50 +78,54 @@ public final class BlueCloseAuto extends LinearOpMode {
         telemetry.update();
 
 
-        Actions.runBlocking(
+        Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeTo(new Vector2d(48, 0)) // Point to goal
-                        .build()
-        );
+                        .strafeToSplineHeading(new Vector2d(-36,-16.5), Math.toRadians(240)) // Point to goal
+                        .build(),
+                intake.on(),
+                new SleepAction(0.5)
+        ));
 
-        /*for (int i=0; i<3; i++){ //Shoot held balls
+        for (int i=0; i<3; i++){// Fire the (3) pre-loaded balls
             Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
+                    helper.off(),
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     pew.set(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(2)
+                    new SleepAction(0.75)
             ));
         }
 
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(12,12,Math.toRadians(270)))
-                        .strafeTo(new Vector2d(12,52),new TranslationalVelConstraint(5.0))
-                        .strafeTo(new Vector2d(12, 12))
-                        .turnTo(Math.toRadians(135))
+                drive.actionBuilder(new Pose2d(-36,-16.5,Math.toRadians(240)))
+                        .strafeToSplineHeading(new Vector2d(-10, -25), Math.toRadians(270))
                         .build(),
-                new SleepAction(2)
+                intake.on(),
+                drive.actionBuilder(new Pose2d(-12, -25, Math.toRadians(270)))
+                        .strafeTo(new Vector2d(-12, -48), new TranslationalVelConstraint(12.5))
+                        .strafeToSplineHeading(new Vector2d(-36, -17), Math.toRadians(240))
+                        .build()
         ));
 
-        for (int i=0; i<3; i++){ //Shoot held balls
+        for (int i=0; i<3; i++){// Fire the (3) pre-loaded balls
             Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
+                    helper.off(),
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     pew.set(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(2)
+                    new SleepAction(0.75)
             ));
-        }*/
+        }
 
     }
 
