@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -22,7 +23,7 @@ public final class RedCloseAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(58, -49, Math.toRadians(225)); //Change to better
+        Pose2d beginPose = new Pose2d(-63, 39, Math.toRadians(90));
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
@@ -65,7 +66,7 @@ public final class RedCloseAuto extends LinearOpMode {
         Actions.runBlocking(
                 new ParallelAction(
                         camq.update(),
-                        shooter.full(),
+                        shooter.low(),
                         intake.on(),
                         pew.set(),
                         helper.forward(),
@@ -79,66 +80,87 @@ public final class RedCloseAuto extends LinearOpMode {
         //tagid == 21: GPP
         //tagid == 22: PGP
         //tagid == 23: PPG
-        /*
-        while (camq.getTagid() != 0) {
-            Actions.runBlocking(camq.update());
-        }
-        if (camq.getTagid() == 21) {        // GPP
 
-        } else if (camq.getTagid() == 22) { // PGP
 
-        } else if (camq.getTagid() == 23) { // PPG
 
-        }*/
+
+        telemetry.update();
+
+
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeTo(new Vector2d(36, -24))
-                        .turnTo(Math.toRadians(315))
+                        .strafeToSplineHeading(new Vector2d(-33,19), Math.toRadians(128)) // Point to goal
+                        .strafeTo(new Vector2d(-33,19))
                         .build(),
-                camq.update(),
-                drive.actionBuilder(new Pose2d(36, -24, Math.toRadians(315)))
-                        .turnTo(Math.toRadians(35))
-                        .build()
+                intake.on(),
+                new SleepAction(0.5)
         ));
 
-        for (int i=0; i<3; i++){ //Shoot all 3 balls
+        for (int i=0; i<3; i++){// Fire the (3) artifacts
             Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
+                    helper.off(),
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     pew.set(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(2)
+                    new SleepAction(0.75)
             ));
         }
 
         Actions.runBlocking(new SequentialAction(
-            drive.actionBuilder(new Pose2d(36, -24, Math.toRadians(35)))
-                        .turnTo(Math.toRadians(90))
-                        .strafeTo(new Vector2d(12, -24))
-                        .strafeTo(new Vector2d(12, -60))
-                        .strafeTo(new Vector2d(12, -24))
-                        .turnTo(Math.toRadians(30))
+                drive.actionBuilder(new Pose2d(-33,16.5,Math.toRadians(128)))
+                        .strafeToSplineHeading(new Vector2d(-14, 25), Math.toRadians(90))
                         .build(),
-                new SleepAction(2)
+                intake.on(),
+                drive.actionBuilder(new Pose2d(-14, 25, Math.toRadians(90)))
+                        .strafeTo(new Vector2d(-14, 52), new TranslationalVelConstraint(12.5))
+                        .strafeToSplineHeading(new Vector2d(-33, 19), Math.toRadians(128))
+                        .strafeTo(new Vector2d(-33,19))
+                        .build(),
+                new SleepAction(0.5)
         ));
 
-        for (int i=0; i<3; i++){ //Shoot all 3 balls
+        for (int i=0; i<3; i++){// Fire the (3) artifacts
             Actions.runBlocking(new SequentialAction(
-                    helper.backward(),
+                    helper.off(),
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     pew.set(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.1),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(2)
+                    new SleepAction(0.75)
+            ));
+        }
+
+
+        Actions.runBlocking(new SequentialAction(
+                drive.actionBuilder(new Pose2d(-33,17, Math.toRadians(128)))
+                        .strafeToSplineHeading(new Vector2d(10, 25), Math.toRadians(90))
+                        .strafeTo(new Vector2d(10,52), new TranslationalVelConstraint(12.5))
+                        .strafeToSplineHeading(new Vector2d(-33,19), Math.toRadians(128))
+                        .strafeTo(new Vector2d(-33,19))
+                        .build()
+        ));
+
+        for (int i=0; i<3; i++){// Fire the (3) artifacts
+            Actions.runBlocking(new SequentialAction(
+                    helper.off(),
+                    intake.off(),
+                    new SleepAction(0.1),
+                    pew.launch(),
+                    new SleepAction(0.1),
+                    pew.set(),
+                    new SleepAction(0.1),
+                    helper.forward(),
+                    intake.on(),
+                    new SleepAction(0.75)
             ));
         }
 

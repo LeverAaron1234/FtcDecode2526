@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.appendeges.Intake;
 import org.firstinspires.ftc.teamcode.appendeges.LimelightCam;
 import org.firstinspires.ftc.teamcode.appendeges.Pew;
 import org.firstinspires.ftc.teamcode.appendeges.Shooter;
+import org.firstinspires.ftc.teamcode.tuning.SquareTest;
 
 
 @Autonomous
@@ -80,13 +81,14 @@ public final class BlueCloseAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToSplineHeading(new Vector2d(-36,-16.5), Math.toRadians(240)) // Point to goal
+                        .strafeToSplineHeading(new Vector2d(-33,-19), Math.toRadians(233)) // Point to goal
+                        .strafeTo(new Vector2d(-33,-19))
                         .build(),
                 intake.on(),
                 new SleepAction(0.5)
         ));
 
-        for (int i=0; i<3; i++){// Fire the (3) pre-loaded balls
+        for (int i=0; i<3; i++){// Fire the (3) artifacts
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
@@ -102,17 +104,19 @@ public final class BlueCloseAuto extends LinearOpMode {
         }
 
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-36,-16.5,Math.toRadians(240)))
+                drive.actionBuilder(new Pose2d(-33,-16.5,Math.toRadians(233)))
                         .strafeToSplineHeading(new Vector2d(-10, -25), Math.toRadians(270))
                         .build(),
                 intake.on(),
-                drive.actionBuilder(new Pose2d(-12, -25, Math.toRadians(270)))
-                        .strafeTo(new Vector2d(-12, -48), new TranslationalVelConstraint(12.5))
-                        .strafeToSplineHeading(new Vector2d(-36, -17), Math.toRadians(240))
-                        .build()
+                drive.actionBuilder(new Pose2d(-14, -25, Math.toRadians(270)))
+                        .strafeTo(new Vector2d(-14, -52), new TranslationalVelConstraint(12.5))
+                        .strafeToSplineHeading(new Vector2d(-33, -19), Math.toRadians(233))
+                        .strafeTo(new Vector2d(-33,-19))
+                        .build(),
+                new SleepAction(0.5)
         ));
 
-        for (int i=0; i<3; i++){// Fire the (3) pre-loaded balls
+        for (int i=0; i<3; i++){// Fire the (3) artifacts
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
@@ -127,6 +131,31 @@ public final class BlueCloseAuto extends LinearOpMode {
             ));
         }
 
-    }
 
-}
+        Actions.runBlocking(new SequentialAction(
+                drive.actionBuilder(new Pose2d(-33,-17, Math.toRadians(233)))
+                        .strafeToSplineHeading(new Vector2d(10, -25), Math.toRadians(270))
+                        .strafeTo(new Vector2d(10,-52), new TranslationalVelConstraint(12.5))
+                        .strafeToSplineHeading(new Vector2d(-33,-19), Math.toRadians(233))
+                        .strafeTo(new Vector2d(-33,-19))
+                        .build()
+        ));
+
+        for (int i=0; i<3; i++){// Fire the (3) artifacts
+            Actions.runBlocking(new SequentialAction(
+                    helper.off(),
+                    intake.off(),
+                    new SleepAction(0.1),
+                    pew.launch(),
+                    new SleepAction(0.1),
+                    pew.set(),
+                    new SleepAction(0.1),
+                    helper.forward(),
+                    intake.on(),
+                    new SleepAction(0.75)
+            ));
+        }
+
+
+
+}}

@@ -20,7 +20,7 @@ class Shooter(hardwareMap: HardwareMap) {
         full(0.75),
         fullred(0.76),
         medium(0.60),
-        low(0.56),
+        low(0.58),
         off(0.0)
 
     }
