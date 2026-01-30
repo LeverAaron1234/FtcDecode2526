@@ -142,7 +142,7 @@ Y -> slower drive
 //        inOutRight.setDirection(DcMotorSimple.Direction.FORWARD);
     wheeel.setDirection(DcMotorEx.Direction.FORWARD);
     intake.setDirection(DcMotorEx.Direction.FORWARD);
-    pew.setPosition(0);
+    pew.setPosition(0.5);
     helper.setPower(0);
     angle.setPosition(0);
 
@@ -343,8 +343,8 @@ Y -> slower drive
 
       // Far
       if (gamepad1.a && !changed4) {
-        anglePos = 0.85;
-        wheeelSpeed = 0.75;
+        anglePos = 0.80;
+        wheeelSpeed = 0.70;
         changed4 = true;
       } else if (!gamepad1.a) {
         changed4 = false;
@@ -352,8 +352,8 @@ Y -> slower drive
 
       // Medium
       if (gamepad1.b && !changed5) {
-        anglePos = 0.79;
-        wheeelSpeed = 0.58;
+        anglePos = 0.58;
+        wheeelSpeed = 0.54;
         changed5 = true;
       } else if (!gamepad1.b) {
         changed5 = false;
@@ -389,7 +389,7 @@ Y -> slower drive
       if (gamepad1.right_trigger >= 0.2 && !changed3) {
         helper.setPower(0.001);
         if (pew.getPosition() == 1) {
-          pew.setPosition(0);
+          pew.setPosition(0.5);
         } else {
           pew.setPosition(0.99);
         }
@@ -420,7 +420,7 @@ Y -> slower drive
         }
 
         if (t >= PEW_BACK_TIME && !pewBack) {
-          pew.setPosition(0);
+          pew.setPosition(0.5);
           pewBack = true;
         }
 
