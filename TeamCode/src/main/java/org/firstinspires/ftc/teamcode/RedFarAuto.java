@@ -103,61 +103,76 @@ public final class RedFarAuto extends LinearOpMode {
         } else if (camq.getTagid() == 23) { // PPG
 
         }*/
-        Actions.runBlocking(new SequentialAction(// Move to, and sense the oblisk to get the pattern
-                /*drive.actionBuilder(beginPose)
-                        .strafeTo(new Vector2d(-87, -24))
-                        .turnTo(Math.toRadians(343))
-                        .build(),
-                camq.update(),*/
-                drive.actionBuilder(beginPose)
-                        .splineToLinearHeading(new Pose2d(-57, -20,Math.toRadians(-23)),0)
-                        .build(),
-                new SleepAction(2)
-        ));
-
-        for (int i=0; i<3; i++){// Fire the (3) pre-loaded balls
-            Actions.runBlocking(new SequentialAction(
-                    helper.off(),
-                    intake.off(),
-                    new SleepAction(0.1),
-                    pew.launch(),
-                    new SleepAction(0.1),
-                    pew.set(),
-                    new SleepAction(0.1),
-                    helper.forward(),
-                    intake.on(),
-                    new SleepAction(0.75)
-            ));
-        }
         Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-57,-20,Math.toRadians(-23)))
-                        .splineTo(new Vector2d(-24,-39),Math.toRadians(-90))
-                        .strafeTo(new Vector2d(-24,-64), new TranslationalVelConstraint(15.0))
-                        .strafeToSplineHeading(new Vector2d(-52, -18), Math.toRadians(-24))
+                drive.actionBuilder(beginPose)
+                        .strafeToLinearHeading(new Vector2d(-57, -20),Math.toRadians(-23))
                         .build(),
-                new SleepAction(0.1),
-                intake.off()
+                new SleepAction(1.5)
         ));
 
         for (int i=0; i<3; i++){
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.5),
+                    helper.backward(),
                     pew.launch(),
-                    new SleepAction(0.15),
+                    new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.on(),
-                    new SleepAction(0.75)
+                    new SleepAction(0.6)
             ));
         }
-        Actions.runBlocking(
+        Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(new Pose2d(-57,-20,Math.toRadians(-23)))
-                        .strafeTo(new Vector2d(-40,-20))
+                        .strafeToLinearHeading(new Vector2d(-24,-39),Math.toRadians(-90))
+                        .strafeTo(new Vector2d(-24,-64), new TranslationalVelConstraint(15.0))
+                        .strafeToLinearHeading(new Vector2d(-52, -18), Math.toRadians(-24))
+                        .build()
+        ));
+
+        for (int i=0; i<3; i++){
+            Actions.runBlocking(new SequentialAction(
+                    helper.off(),
+                    intake.off(),
+                    new SleepAction(0.5),
+                    helper.backward(),
+                    pew.launch(),
+                    new SleepAction(0.2),
+                    pew.set(),
+                    new SleepAction(0.1),
+                    helper.forward(),
+                    intake.on(),
+                    new SleepAction(0.6)
+            ));
+        }
+
+        Actions.runBlocking(
+                drive.actionBuilder(new Pose2d(-52,-18,Math.toRadians(-24)))
+                        .strafeToLinearHeading(new Vector2d(0,-40), Math.toRadians(-90))
+                        .strafeTo(new Vector2d(0, -64), new TranslationalVelConstraint(12.5))
+                        .strafeToLinearHeading(new Vector2d(-52,-18), Math.toRadians(-24))
                         .build()
         );
+
+        for (int i=0; i<3; i++){
+            Actions.runBlocking(new SequentialAction(
+                    helper.off(),
+                    intake.off(),
+                    new SleepAction(0.5),
+                    helper.backward(),
+                    pew.launch(),
+                    new SleepAction(0.2),
+                    pew.set(),
+                    new SleepAction(0.1),
+                    helper.forward(),
+                    intake.on(),
+                    new SleepAction(0.6)
+            ));
+        }
+
 
 
     }

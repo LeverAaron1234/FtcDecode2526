@@ -17,8 +17,8 @@ class Shooter(hardwareMap: HardwareMap) {
      */
 
     enum class Shooter(val pwr: Double) {
-        full(0.75),
-        fullred(0.76),
+        full(0.70),
+        fullred(0.73),
         medium(0.60),
         low(0.58),
         off(0.0)
