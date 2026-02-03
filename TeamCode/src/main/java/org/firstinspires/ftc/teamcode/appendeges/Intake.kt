@@ -15,7 +15,8 @@ class Intake(hardwareMap: HardwareMap) {
      */
 
     enum class Intake(val pwr: Double) {
-        on(1.0),
+        on(0.8),
+        fire(0.5),
         Neutral(0.0)
 
     }
@@ -78,6 +79,7 @@ class Intake(hardwareMap: HardwareMap) {
      */
 
     fun on(): Action = SetState(Intake.on)
+    fun firein(): Action = SetState(Intake.fire)
     fun off(): Action = SetState(Intake.Neutral)
 
 }

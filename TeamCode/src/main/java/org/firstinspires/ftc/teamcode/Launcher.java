@@ -228,17 +228,9 @@ Y -> slower drive
     double wheeelSpeed;
     double anglePos;
     double wheeelOffset;
+    double dt = 0.0;
 
     long cycleStart = -1;
-
-    boolean pewForward = false;
-    boolean pewBack = false;
-    boolean intakeOn = false;
-
-    final double PEW_FORWARD_TIME = 0.0;
-    final double PEW_BACK_TIME = 0.5;
-    final double INTAKE_TIME = 1.0;
-    final double CYCLE_END = 1.5;
 
 
     double p = DriveConstants.p;
@@ -257,6 +249,7 @@ Y -> slower drive
 
 
     while (opModeIsActive()) {
+      dt=runtime.now(TimeUnit.MILLISECONDS);
 
       p = DriveConstants.p;
       i = DriveConstants.i;
@@ -401,54 +394,32 @@ Y -> slower drive
 
       /* !!MACHINE GUN MODE!! */
       if (gamepad1.right_bumper) {
-        if (cycleStart < 0) {
+        if (cycleStart == -1) {
           cycleStart = runtime.now(TimeUnit.SECONDS);
-
-          pewForward = false;
-          pewBack = false;
-          intakeOn = false;
-
-          intake.setPower(1);
-          helper.setPower(1);
         }
-
         double t = runtime.now(TimeUnit.SECONDS) - cycleStart;
 
-        if (t >= PEW_FORWARD_TIME && !pewForward) {
+        if (t <= 0.3) {
           pew.setPosition(1);
-          pewForward = true;
-        }
-
-        if (t >= PEW_BACK_TIME && !pewBack) {
+        } else if (t <= 0.8) {
           pew.setPosition(0);
-          pewBack = true;
-        }
-
-        if (t >= INTAKE_TIME && !intakeOn) {
+        } else if (t <= 1.8) {
           intake.setPower(1);
           helper.setPower(1);
-          intakeOn = true;
-        }
-
-        if (t >= CYCLE_END) {
-          cycleStart = runtime.now(TimeUnit.SECONDS);
-
-          pewForward = false;
-          pewBack = false;
-          intakeOn = false;
-
+        } else {
+          intake.setPower(0);
+          helper.setPower(0.001);
+          pew.setPosition(0);
+          cycleStart = -1;
         }
 
       } else {
         if (cycleStart != -1) {
           helper.setPower(0.001);
           intake.setPower(0);
+          pew.setPosition(0);
         }
         cycleStart = -1;
-
-        pewForward = false;
-        pewBack = false;
-        intakeOn = false;
       }
 
 
@@ -485,7 +456,7 @@ Y -> slower drive
       angle.setPosition(anglePos);
 
 
-
+      dt = runtime.now(TimeUnit.MILLISECONDS) - dt;
 
       // TELEMETRY
       telemetry.addData("Status", "Run Time: " + runtime);
@@ -495,6 +466,11 @@ Y -> slower drive
       telemetry.addData("BL Encoder", backLeftDrive.getCurrentPosition());
       telemetry.addData("BR Encoder", backRightDrive.getCurrentPosition());
       telemetry.addData("Angle Position", angle.getPosition());
+      telemetry.addData("deltaTime", dt);
+      //telemetry.addData("PewForward", pewForward);
+      //telemetry.addData("PewBack", pewBack);
+      //telemetry.addData("IntakeOn", intakeOn);
+      //telemetry.addData("PewPos", pew.getPosition());
 
       //telemetry.addData("Tag in view?", (blocks.length > 0));
 

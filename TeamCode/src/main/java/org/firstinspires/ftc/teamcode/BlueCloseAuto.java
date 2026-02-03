@@ -98,12 +98,13 @@ public final class BlueCloseAuto extends LinearOpMode {
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
-                    intake.on(),
+                    intake.firein(),
                     new SleepAction(0.75)
             ));
         }
 
         Actions.runBlocking(new SequentialAction(
+                intake.on(),
                 drive.actionBuilder(new Pose2d(-33,-16.5,Math.toRadians(233)))
                         .strafeToSplineHeading(new Vector2d(-10, -25), Math.toRadians(270))
                         .build(),
@@ -126,13 +127,14 @@ public final class BlueCloseAuto extends LinearOpMode {
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
-                    intake.on(),
+                    intake.firein(),
                     new SleepAction(0.75)
             ));
         }
 
 
         Actions.runBlocking(new SequentialAction(
+                intake.on(),
                 drive.actionBuilder(new Pose2d(-33,-17, Math.toRadians(233)))
                         .strafeToSplineHeading(new Vector2d(10, -25), Math.toRadians(270))
                         .strafeTo(new Vector2d(10,-52), new TranslationalVelConstraint(12.5))
@@ -151,7 +153,7 @@ public final class BlueCloseAuto extends LinearOpMode {
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
-                    intake.on(),
+                    intake.firein(),
                     new SleepAction(0.75)
             ));
         }

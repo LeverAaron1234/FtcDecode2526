@@ -114,18 +114,19 @@ public final class RedFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.2),
                     helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
-                    intake.on(),
+                    intake.firein(),
                     new SleepAction(0.6)
             ));
         }
         Actions.runBlocking(new SequentialAction(
+                intake.on(),
                 drive.actionBuilder(new Pose2d(-57,-20,Math.toRadians(-23)))
                         .strafeToLinearHeading(new Vector2d(-24,-39),Math.toRadians(-90))
                         .strafeTo(new Vector2d(-24,-64), new TranslationalVelConstraint(15.0))
@@ -137,38 +138,39 @@ public final class RedFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.2),
                     helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
-                    intake.on(),
+                    intake.firein(),
                     new SleepAction(0.6)
             ));
         }
 
-        Actions.runBlocking(
+        Actions.runBlocking(new SequentialAction(
+                intake.on(),
                 drive.actionBuilder(new Pose2d(-52,-18,Math.toRadians(-24)))
-                        .strafeToLinearHeading(new Vector2d(0,-40), Math.toRadians(-90))
-                        .strafeTo(new Vector2d(0, -64), new TranslationalVelConstraint(12.5))
+                        .strafeToLinearHeading(new Vector2d(0,-40), Math.toRadians(-93))
+                        .strafeTo(new Vector2d(0, -64), new TranslationalVelConstraint(15.0))
                         .strafeToLinearHeading(new Vector2d(-52,-18), Math.toRadians(-24))
                         .build()
-        );
+        ));
 
         for (int i=0; i<3; i++){
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.2),
                     helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
-                    intake.on(),
+                    intake.firein(),
                     new SleepAction(0.6)
             ));
         }
