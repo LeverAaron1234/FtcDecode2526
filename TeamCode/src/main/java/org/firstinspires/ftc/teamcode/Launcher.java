@@ -159,35 +159,7 @@ Y -> slower drive
 
 
 
-    /*
-     * This sample rate limits the reads solely to allow a user time to observe
-     * what is happening on the Driver Station telemetry.  Typical applications
-     * would not likely rate limit.
-     */
-
-    Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
-
-    /*
-     * Immediately expire so that the first time through we'll do the read.
-     */
-    rateLimit.expire();
-
-    /*
-     * Basic check to see if the device is alive and communicating.  This is not
-     * technically necessary here as the HuskyLens class does this in its
-     * doInitialization() method which is called when the device is pulled out of
-     * the hardware map.  However, sometimes it's unclear why a device reports as
-     * failing on initialization.  In the case of this device, it's because the
-     * call to knock() failed.
-     */
-    /*if (!camq.knock()) {
-      telemetry.addData(">>", "Problem communicating with " + camq.getDeviceName());
-    } else {
-      telemetry.addData(">>", "Press start to continue");
-    }
-
-    camq.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
-    */
+    
 
     waitForStart();
     runtime.reset();
@@ -395,15 +367,15 @@ Y -> slower drive
       /* !!MACHINE GUN MODE!! */
       if (gamepad1.right_bumper) {
         if (cycleStart == -1) {
-          cycleStart = runtime.now(TimeUnit.SECONDS);
+          cycleStart = runtime.now(TimeUnit.MILLISECONDS);
         }
-        double t = runtime.now(TimeUnit.SECONDS) - cycleStart;
+        double t = runtime.now(TimeUnit.MILLISECONDS) - cycleStart;
 
-        if (t <= 0.3) {
+        if (t <= 200) {
           pew.setPosition(1);
-        } else if (t <= 0.8) {
+        } else if (t <= 400) {
           pew.setPosition(0);
-        } else if (t <= 1.8) {
+        } else if (t <= 800) {
           intake.setPower(1);
           helper.setPower(1);
         } else {
@@ -466,7 +438,7 @@ Y -> slower drive
       telemetry.addData("BL Encoder", backLeftDrive.getCurrentPosition());
       telemetry.addData("BR Encoder", backRightDrive.getCurrentPosition());
       telemetry.addData("Angle Position", angle.getPosition());
-      telemetry.addData("deltaTime", dt);
+      telemetry.addData("deltaTime", dt/1000);
       //telemetry.addData("PewForward", pewForward);
       //telemetry.addData("PewBack", pewBack);
       //telemetry.addData("IntakeOn", intakeOn);
