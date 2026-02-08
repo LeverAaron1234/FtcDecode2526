@@ -230,38 +230,6 @@ Y -> slower drive
 
       wheeel.setVelocityPIDFCoefficients(p,i,d,f);
 
-      result = camq.getLatestResult();
-
-      if (result.isValid()) {
-        tagx = result.getTx();
-        tagy = result.getTy();
-        tagArea = result.getTa();
-        tagid = result.getFiducialResults().get(0).getFiducialId();
-      } else {
-        tagx = 0.0;
-        tagy = 0.0;
-        tagArea = -1.0;
-        tagid = -1;
-      }
-
-      /*HuskyLens.Block[] blocks = camq.blocks();
-      telemetry.addData("Block count", blocks.length);
-      if (blocks.length > 0) {
-        for (int x = 0; x < blocks.length; x++) {
-          telemetry.addData("Block", blocks[x].toString());
-        }
-        tagx = blocks[0].x;
-        tagy = blocks[0].y;
-        tagw = blocks[0].width;
-        tagh = blocks[0].height;
-        tagid = blocks[0].id;
-      } else {
-        tagx = -1;
-        tagy = -1;
-        tagw = -1;
-        tagh = -1;
-        tagid = -1;
-      }*/
 
 
 
