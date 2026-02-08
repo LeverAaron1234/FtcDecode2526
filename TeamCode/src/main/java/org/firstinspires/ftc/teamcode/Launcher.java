@@ -375,7 +375,7 @@ Y -> slower drive
           pew.setPosition(1);
         } else if (t <= 400) {
           pew.setPosition(0);
-        } else if (t <= 800) {
+        } else if (t <= 1100) {
           intake.setPower(1);
           helper.setPower(1);
         } else {

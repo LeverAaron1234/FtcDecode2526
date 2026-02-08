@@ -122,7 +122,7 @@ public final class RedFarAuto extends LinearOpMode {
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.6)
+                    new SleepAction(0.9)
             ));
         }
         Actions.runBlocking(new SequentialAction(
@@ -146,7 +146,7 @@ public final class RedFarAuto extends LinearOpMode {
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.6)
+                    new SleepAction(0.9)
             ));
         }
 
@@ -171,7 +171,7 @@ public final class RedFarAuto extends LinearOpMode {
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.6)
+                    new SleepAction(0.9)
             ));
         }
 
