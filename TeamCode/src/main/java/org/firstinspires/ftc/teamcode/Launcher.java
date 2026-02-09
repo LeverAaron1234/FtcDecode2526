@@ -147,7 +147,6 @@ Y -> slower drive
     angle.setPosition(0);
 
     // Camera Stuff
-
     camq.pipelineSwitch(1); // {0: "goal", 1: "obelisk"}
     camq.start();
     double tagx = 0.0;
@@ -180,7 +179,7 @@ Y -> slower drive
     // Run with encoder
 
 
-    // Declare random variables
+    // Declare variables
     boolean changed = false;
     boolean changed2 = false;
     boolean changed3 = false;
@@ -431,14 +430,13 @@ Y -> slower drive
       dt = runtime.now(TimeUnit.MILLISECONDS) - dt;
 
       // TELEMETRY
-      telemetry.addData("Status", "Run Time: " + runtime);
+      telemetry.addData("Status", "Run Time: " + runtime + "DT: " + dt/1000);
       telemetry.addData("Motors", "left (%.2f), right (%.2f)", frontLeftPower, frontRightPower, backLeftPower, backRightPower);
       telemetry.addData("FL Encoder", frontLeftDrive.getCurrentPosition());
       telemetry.addData("FR Encoder", frontRightDrive.getCurrentPosition());
       telemetry.addData("BL Encoder", backLeftDrive.getCurrentPosition());
       telemetry.addData("BR Encoder", backRightDrive.getCurrentPosition());
       telemetry.addData("Angle Position", angle.getPosition());
-      telemetry.addData("deltaTime", dt/1000);
       //telemetry.addData("PewForward", pewForward);
       //telemetry.addData("PewBack", pewBack);
       //telemetry.addData("IntakeOn", intakeOn);
