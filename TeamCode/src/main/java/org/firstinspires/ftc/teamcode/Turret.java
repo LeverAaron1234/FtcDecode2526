@@ -28,11 +28,12 @@ public class Turret extends LinearOpMode {
   private DcMotor backRightDrive = null;
 
   private DcMotorEx wheeel = null;
-  private DcMotorEx intake = null;
+  private DcMotor intake = null;
+  private DcMotor intake2 = null;
   private Limelight3A camq = null;
   private DcMotorEx pew = null;
   private Servo angle = null;
-  private Servo spin = null;
+  private CRServo spin = null;
 
 
   private TelemetryPacket packet = null;
@@ -47,13 +48,14 @@ public class Turret extends LinearOpMode {
     backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
 
     wheeel = hardwareMap.get(DcMotorEx.class, "launcher");
-    intake = hardwareMap.get(DcMotorEx.class, "intake");
+    intake = hardwareMap.get(DcMotor.class, "intake");
+    intake2 = hardwareMap.get(DcMotor.class, "intake2");
     pew = hardwareMap.get(DcMotorEx.class, "pew");
 
     camq = hardwareMap.get(Limelight3A.class, "limelight");
 
     angle = hardwareMap.get(Servo.class, "angle");
-    spin = hardwareMap.get(Servo.class, "spin");
+    spin = hardwareMap.get(CRServo.class, "spin");
 
 
     packet = new TelemetryPacket(true);
@@ -69,13 +71,15 @@ public class Turret extends LinearOpMode {
     backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-    pew.setDirection(DcMotorSimple.Direction.FORWARD);
-    wheeel.setDirection(DcMotorEx.Direction.FORWARD);
-    intake.setDirection(DcMotorEx.Direction.FORWARD);
+    pew.setDirection(DcMotorSimple.Direction.REVERSE);
+    wheeel.setDirection(DcMotorEx.Direction.REVERSE);
+    intake.setDirection(DcMotor.Direction.FORWARD);  // Main Intake
+    intake2.setDirection(DcMotor.Direction.FORWARD); // Helping Intake
 
 
     // Servo setup
-    spin.setPosition(0); // 0-720
+    spin.setPower(0);
+    spin.setDirection(CRServo.Direction.FORWARD);
     angle.setPosition(0);
 
     // Camera Stuff
@@ -107,6 +111,18 @@ public class Turret extends LinearOpMode {
 
     double wheeelSpeed;
     double anglePos;
+    double spinPwr;
+    wheeelSpeed = 0;
+    anglePos = 0.10;
+    spinPwr = 0.0;
+
+    boolean changed = false;
+    boolean changed2 = false;
+    boolean changed3 = false;
+    boolean changed4 = false;
+    boolean changed5 = false;
+    boolean changed6 = false;
+    boolean slow = false;
 
     double p = DriveConstants.p;
     double i = DriveConstants.i;
@@ -120,8 +136,6 @@ public class Turret extends LinearOpMode {
     // Far:    S: 0.70 A: 0.80
     // Medium: S: 0.54 A: 0.58
     // Close:  S: 0.53 A: 0.38
-    wheeelSpeed = 0;
-    anglePos = 0.10;
     angle.setPosition(anglePos);
 
     /*===================================WHILE OPMODE IS RUNNING==================================*/
@@ -156,8 +170,110 @@ public class Turret extends LinearOpMode {
 
 
 
+      // DPAD_DOWN button -> Fine tuning mode
+      if ((gamepad1.dpad_down || gamepad2.dpad_down) && !changed) {
+        slow = !slow;
+        changed = true;
+      } else if(!gamepad1.dpad_down) changed = false;
+
+      // During slow mode, everything is slowed
+      if (slow) {
+        drive = 0.0;
+        strafe = 0.0;
+        turn *= 0.0;
+      }
+
+      if (slow && (gamepad2.dpad_left || gamepad2.dpad_right)) {
+        spinPwr = (gamepad2.dpad_left) ? 1 : -1;
+        spin.setPower(spinPwr);
+      } else {
+        spin.setPower(0.01);
+        spinPwr = 0.0;
+      }
+      telemetry.addData("DPAD", ((gamepad2.dpad_left) ? 1 : -1));
+      telemetry.addData("SpinPwr", spinPwr);
+      telemetry.addData("Spin", spin.getPower());
+
+      // left trigger -> Run intake and the helper motor
+      // to get the ball into the launcher
+      if ((gamepad1.left_trigger >= 0.2) && !changed2) {
+        intake.setPower(1);
+        intake2.setPower(1);
+        changed2 = true;
+      } else if (!(gamepad1.left_trigger >= 0.2)) {
+        intake.setPower(0);
+        intake2.setPower(0);
+        changed2 = false;
+      }
+
+      // Stop the launcher and lower the hood
+      if (gamepad1.x) {
+        anglePos = 0.0;
+        wheeelSpeed = 0.0;
+      }
+
+      // Debug angle / wheel speed
+      if (gamepad1.dpad_left) {
+        if (slow) {
+          wheeelSpeed -= 0.01;
+        } else {
+          anglePos -= 0.01;
+        }
+      }
+
+      if (gamepad1.dpad_right) {
+        if (slow) {
+          wheeelSpeed += 0.01;
+        } else {
+          anglePos += 0.01;
+        }
+      }
+
+      // Angles and Speeds
+      // Far
+      if (gamepad1.a && !changed3) {
+        anglePos = 0.80;
+        wheeelSpeed = 0.70;
+        changed3 = true;
+      } else if (!gamepad1.a) {
+        changed3 = false;
+      }
+
+      // Medium
+      if (gamepad1.b && !changed4) {
+        anglePos = 0.58;
+        wheeelSpeed = 0.54;
+        changed4 = true;
+      } else if (!gamepad1.b) {
+        changed4 = false;
+      }
+
+      //Close
+      if (gamepad1.y && !changed5) {
+        anglePos = 0.38;
+        wheeelSpeed = 0.53;
+        changed5 = true;
+      } else if (!gamepad1.y) {
+        changed5 = false;
+      }
 
 
+      // Right trigger -> push ball into launcher
+      // stops the intake servo so balls don't get stuck under
+      if (gamepad1.right_trigger >= 0.2 && !changed6) {
+        pew.setPower(1);
+        changed6 = true;
+      } else if (!(gamepad1.right_trigger >= 0.2)) {
+        pew.setPower(0);
+        changed6 = false;
+      }
+
+      // Run artifacts backwards
+      if (gamepad1.left_bumper) {
+        pew.setPower(-1);
+        intake.setPower(-1);
+        intake2.setPower(-1);
+      }
 
 
 
@@ -187,6 +303,7 @@ public class Turret extends LinearOpMode {
       dt = runtime.now(TimeUnit.MILLISECONDS) - dt;
 
 
+      /*
       telemetry.addLine("==Status==");
       telemetry.addData("Runtime", runtime.seconds());
       telemetry.addData("DeltaTime", dt/1000);
@@ -204,6 +321,9 @@ public class Turret extends LinearOpMode {
       telemetry.addData("Pew Pwr", pew.getPower());
       telemetry.addData("Angle Pos", angle.getPosition());
 
+
+       */
+      telemetry.update();
     }
 
   }

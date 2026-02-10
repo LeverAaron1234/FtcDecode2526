@@ -93,14 +93,14 @@ public class Launcher extends LinearOpMode {
    \___/ [LS]  [RS] \___/
 
 LS:
-x -> Strafe
-y -> Drive Forward
+ x -> Strafe
+ y -> Drive Forward
 RS:
-x -> Turn
+ x -> Turn
 A -> FASTER WHEEEL
 B -> slower wheeel
 Y -> slower drive
-  */
+*/
   @Override
 
   public void runOpMode() {
