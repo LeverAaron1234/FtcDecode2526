@@ -120,7 +120,7 @@ public final class BlueFarAuto extends LinearOpMode {
             ));
         }
         Actions.runBlocking(new SequentialAction(// This is firing the last pre-loaded ball, but it needs slightly longer charge time to score properly
-                new SleepAction(0.04),
+                new SleepAction(0.02),
                 helper.off(),
                 intake.off(),
                 new SleepAction(0.5),
@@ -145,18 +145,33 @@ public final class BlueFarAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(new Pose2d(-49,45,Math.toRadians(90)))
                         //.strafeTo(new Vector2d(-49,20))
-                        .strafeToSplineHeading(new Vector2d(-66, 20),Math.toRadians(15))
+                        .strafeToSplineHeading(new Vector2d(-66, 20),Math.toRadians(17))
                         .build()
         ));
 
         Actions.runBlocking(new SequentialAction(
                 intake.off(),
                 helper.off(),
-                shooter.full()
+                shooter.bluefar()
         ));
 
-        for (int i=0; i<3; i++){
+        for (int i=0; i<2; i++){// This is firing the second set of balls (first 2)
             Actions.runBlocking(new SequentialAction(
+                    helper.off(),
+                    intake.off(),
+                    new SleepAction(0.5),
+                    pew.launch(),
+                    new SleepAction(0.2),
+                    pew.set(),
+                    new SleepAction(0.1),
+                    helper.forward(),
+                    intake.firein(),
+                    new SleepAction(0.6)
+            ));
+        }
+        for (int i=0; i<1; i++){// This is firing the second set of balls, but the 3rd ball
+            Actions.runBlocking(new SequentialAction(
+                    new SleepAction(0.02),
                     helper.off(),
                     intake.off(),
                     new SleepAction(0.5),
@@ -181,7 +196,7 @@ public final class BlueFarAuto extends LinearOpMode {
 
         ));
 
-        for (int i=0; i<3; i++){
+        for (int i=0; i<3; i++){// Firing the 3rd set of balls
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
