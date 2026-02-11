@@ -72,11 +72,11 @@ public final class BlueFarAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         camq.update(),
-                        shooter.full(),
+                        shooter.bluefar(),
                         intake.off(),
                         pew.set(),
                         helper.off(),
-                        angle.far()
+                        angle.bluefar()
                 )
         );
 
@@ -99,27 +99,38 @@ public final class BlueFarAuto extends LinearOpMode {
         }*/
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToSplineHeading(new Vector2d(-60, 20), Math.toRadians(17))
+                        .strafeToSplineHeading(new Vector2d(-60, 20), Math.toRadians(15))
                         .build(),
                 shooter.full(),
                 new SleepAction(1.5)
         ));
 
-        for (int i=0; i<3; i++){
+        for (int i=0; i<2; i++){//This is firing the pre-loaded balls
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
                     new SleepAction(0.5),
-                    helper.backward(),
                     pew.launch(),
-                    new SleepAction(0.2),
-                    pew.set(),
                     new SleepAction(0.1),
+                    pew.set(),
+                    new SleepAction(0.2),
                     helper.forward(),
                     intake.firein(),
                     new SleepAction(0.6)
             ));
         }
+        Actions.runBlocking(new SequentialAction(// This is firing the last pre-loaded ball, but it needs slightly longer charge time to score properly
+                new SleepAction(0.04),
+                helper.off(),
+                intake.off(),
+                new SleepAction(0.5),
+                pew.launch(),
+                new SleepAction(0.1),
+                pew.set(),
+                new SleepAction(0.2),
+                helper.forward(),
+                intake.firein()
+        ));
 
         Actions.runBlocking(new SequentialAction(
                 intake.on(),
@@ -133,8 +144,8 @@ public final class BlueFarAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(new Pose2d(-49,45,Math.toRadians(90)))
-                        .strafeTo(new Vector2d(-49,20))
-                        .strafeToSplineHeading(new Vector2d(-66, 20),Math.toRadians(17))
+                        //.strafeTo(new Vector2d(-49,20))
+                        .strafeToSplineHeading(new Vector2d(-66, 20),Math.toRadians(15))
                         .build()
         ));
 
@@ -149,7 +160,6 @@ public final class BlueFarAuto extends LinearOpMode {
                     helper.off(),
                     intake.off(),
                     new SleepAction(0.5),
-                    helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
@@ -176,7 +186,6 @@ public final class BlueFarAuto extends LinearOpMode {
                     helper.off(),
                     intake.off(),
                     new SleepAction(0.5),
-                    helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
