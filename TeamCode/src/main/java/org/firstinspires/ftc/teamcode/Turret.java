@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -171,7 +172,7 @@ public class Turret extends LinearOpMode {
 
 
       // DPAD_DOWN button -> Fine tuning mode
-      if ((gamepad1.dpad_down || gamepad2.dpad_down) && !changed) {
+      if ((gamepad1.dpad_down) && !changed) {
         slow = !slow;
         changed = true;
       } else if(!gamepad1.dpad_down) changed = false;
@@ -183,7 +184,11 @@ public class Turret extends LinearOpMode {
         turn *= 0.0;
       }
 
-      if (slow && (gamepad2.dpad_left || gamepad2.dpad_right)) {
+      // THREADING!!!
+      Thread turretThread = new Thread(() -> {});
+
+      /* // Spin testing
+      if (gamepad2.dpad_left || gamepad2.dpad_right) {
         spinPwr = (gamepad2.dpad_left) ? 1 : -1;
         spin.setPower(spinPwr);
       } else {
@@ -192,7 +197,7 @@ public class Turret extends LinearOpMode {
       }
       telemetry.addData("DPAD", ((gamepad2.dpad_left) ? 1 : -1));
       telemetry.addData("SpinPwr", spinPwr);
-      telemetry.addData("Spin", spin.getPower());
+      telemetry.addData("Spin", spin.getPower());*/
 
       // left trigger -> Run intake and the helper motor
       // to get the ball into the launcher
@@ -303,7 +308,7 @@ public class Turret extends LinearOpMode {
       dt = runtime.now(TimeUnit.MILLISECONDS) - dt;
 
 
-      /*
+
       telemetry.addLine("==Status==");
       telemetry.addData("Runtime", runtime.seconds());
       telemetry.addData("DeltaTime", dt/1000);
@@ -322,7 +327,21 @@ public class Turret extends LinearOpMode {
       telemetry.addData("Angle Pos", angle.getPosition());
 
 
-       */
+      packet.addTimestamp();
+      packet.put("Shooter Target Velocity", wheeelSpeed*6000);
+      packet.put("Shooter Actual Velocity", wheeel.getVelocity()*60/28);
+      packet.put("Camera result", (result.isValid()) ? "Has result" : "No result");
+      packet.put("TagX", tagx);
+      packet.put("TagY", tagy);
+      packet.put("TagArea", tagArea);
+      packet.put("TagID", tagid);
+
+
+      FtcDashboard dashboard = FtcDashboard.getInstance();
+      dashboard.sendTelemetryPacket(packet);
+
+
+
       telemetry.update();
     }
 
