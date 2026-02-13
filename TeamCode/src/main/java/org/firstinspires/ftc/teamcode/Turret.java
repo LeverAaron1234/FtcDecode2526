@@ -16,6 +16,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.appendeges.TurretSpinner;
+
 import java.util.concurrent.TimeUnit;
 
 @TeleOp(name="Turret", group="Linear Opmode")
@@ -34,7 +36,7 @@ public class Turret extends LinearOpMode {
   private Limelight3A camq = null;
   private DcMotorEx pew = null;
   private Servo angle = null;
-  private CRServo spin = null;
+  private TurretSpinner spin = new TurretSpinner();
 
 
   private TelemetryPacket packet = null;
@@ -56,7 +58,7 @@ public class Turret extends LinearOpMode {
     camq = hardwareMap.get(Limelight3A.class, "limelight");
 
     angle = hardwareMap.get(Servo.class, "angle");
-    spin = hardwareMap.get(CRServo.class, "spin");
+    spin.init(hardwareMap);
 
 
     packet = new TelemetryPacket(true);
@@ -79,12 +81,10 @@ public class Turret extends LinearOpMode {
 
 
     // Servo setup
-    spin.setPower(0);
-    spin.setDirection(CRServo.Direction.FORWARD);
     angle.setPosition(0);
 
     // Camera Stuff
-    camq.pipelineSwitch(1); // {0: "goal", 1: "obelisk"}
+    camq.pipelineSwitch(0); // {0: "goal", 1: "obelisk"}
     camq.start();
     double tagx = 0.0;
     double tagy = 0.0;
@@ -95,6 +95,7 @@ public class Turret extends LinearOpMode {
     /*=======================================WAIT FOR START=======================================*/
     waitForStart();
     runtime.reset();
+    spin.resetTimer();
 
 
     //  ----------Define Variables----------
@@ -184,20 +185,8 @@ public class Turret extends LinearOpMode {
         turn *= 0.0;
       }
 
-      // THREADING!!!
-      Thread turretThread = new Thread(() -> {});
 
-      /* // Spin testing
-      if (gamepad2.dpad_left || gamepad2.dpad_right) {
-        spinPwr = (gamepad2.dpad_left) ? 1 : -1;
-        spin.setPower(spinPwr);
-      } else {
-        spin.setPower(0.01);
-        spinPwr = 0.0;
-      }
-      telemetry.addData("DPAD", ((gamepad2.dpad_left) ? 1 : -1));
-      telemetry.addData("SpinPwr", spinPwr);
-      telemetry.addData("Spin", spin.getPower());*/
+
 
       // left trigger -> Run intake and the helper motor
       // to get the ball into the launcher
@@ -302,6 +291,7 @@ public class Turret extends LinearOpMode {
       // Set to tick ct by *2800
       // Set to RPM by *6000
 
+      packet.put("SpinPwr",spin.update(result));
       angle.setPosition(anglePos);
 
 
@@ -309,7 +299,7 @@ public class Turret extends LinearOpMode {
 
 
 
-      telemetry.addLine("==Status==");
+      /*telemetry.addLine("==Status==");
       telemetry.addData("Runtime", runtime.seconds());
       telemetry.addData("DeltaTime", dt/1000);
       telemetry.addLine("==Drive==");
@@ -324,7 +314,7 @@ public class Turret extends LinearOpMode {
       }
       telemetry.addLine("==Other==");
       telemetry.addData("Pew Pwr", pew.getPower());
-      telemetry.addData("Angle Pos", angle.getPosition());
+      telemetry.addData("Angle Pos", angle.getPosition());*/
 
 
       packet.addTimestamp();
