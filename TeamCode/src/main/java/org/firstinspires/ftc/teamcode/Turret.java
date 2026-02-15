@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -58,6 +56,7 @@ public class Turret extends LinearOpMode {
     camq = hardwareMap.get(Limelight3A.class, "limelight");
 
     angle = hardwareMap.get(Servo.class, "angle");
+
     spin.init(hardwareMap);
 
 
@@ -74,7 +73,7 @@ public class Turret extends LinearOpMode {
     backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-    pew.setDirection(DcMotorSimple.Direction.REVERSE);
+    pew.setDirection(DcMotorSimple.Direction.FORWARD);
     wheeel.setDirection(DcMotorEx.Direction.REVERSE);
     intake.setDirection(DcMotor.Direction.FORWARD);  // Main Intake
     intake2.setDirection(DcMotor.Direction.FORWARD); // Helping Intake
