@@ -179,9 +179,9 @@ public class Turret extends LinearOpMode {
 
       // During slow mode, everything is slowed
       if (slow) {
-        drive = 0.0;
-        strafe = 0.0;
-        turn *= 0.0;
+        drive *= 0.0;
+        strafe *= 0.0;
+        turn *= 0.2;
       }
 
 
@@ -324,6 +324,9 @@ public class Turret extends LinearOpMode {
       packet.put("TagY", tagy);
       packet.put("TagArea", tagArea);
       packet.put("TagID", tagid);
+      packet.put("Camera is connected", camq.isConnected());
+      packet.put("Camera is running", camq.isRunning());
+
 
 
       FtcDashboard dashboard = FtcDashboard.getInstance();

@@ -20,7 +20,7 @@ public class TurretSpinner {
   private double kD = DriveConstants.spinD;
   private double goalX = 0.0;
   private double lastError = 0.0;
-  private double angleTolerance = 2;
+  private double angleTolerance = 10;
   private final double MAX_POWER = 0.6;
   private double power = 0;
 
@@ -69,6 +69,7 @@ public class TurretSpinner {
     if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
       power = 0;
     }
+
     if (power == 0.0) {
       spin.setPower(0.001);
     } else {
