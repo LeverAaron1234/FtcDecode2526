@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -36,6 +38,8 @@ public class Turret extends LinearOpMode {
   private Servo angle = null;
   private TurretSpinner spin = new TurretSpinner();
 
+  public TouchSensor leftLimit = null;
+  public TouchSensor rightLimit = null;
 
   private TelemetryPacket packet = null;
 
@@ -59,6 +63,8 @@ public class Turret extends LinearOpMode {
 
     spin.init(hardwareMap);
 
+    leftLimit = hardwareMap.get(TouchSensor.class, "leftLimit");
+    rightLimit = hardwareMap.get(TouchSensor.class, "rightLimit");
 
     packet = new TelemetryPacket(true);
 
@@ -83,7 +89,7 @@ public class Turret extends LinearOpMode {
     angle.setPosition(0);
 
     // Camera Stuff
-    camq.pipelineSwitch(0); // {0: "goal", 1: "obelisk"}
+    camq.pipelineSwitch(1); // {0: "goal", 1: "obelisk"}
     camq.start();
     double tagx = 0.0;
     double tagy = 0.0;
@@ -290,9 +296,8 @@ public class Turret extends LinearOpMode {
       // Set to tick ct by *2800
       // Set to RPM by *6000
 
-      packet.put("SpinPwr",spin.update(result));
+      packet.put("SpinPwr",spin.update(result, leftLimit.isPressed(), rightLimit.isPressed()));
       angle.setPosition(anglePos);
-
 
       dt = runtime.now(TimeUnit.MILLISECONDS) - dt;
 

@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.DriveConstants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TurretSpinner {
   private CRServo spin;
 
@@ -28,27 +31,33 @@ public class TurretSpinner {
 
   public void init(HardwareMap hardwareMap) {
     spin = hardwareMap.get(CRServo.class, "spin");
-    spin.setDirection(CRServo.Direction.REVERSE);
+    spin.setDirection(CRServo.Direction.FORWARD);
   }
 
   public void resetTimer() {
     timer.reset();
   }
 
-  public double update(LLResult result, boolean leftPressed, boolean rightPressed) {
+  public List<Double> update(LLResult result, boolean leftPressed, boolean rightPressed) {
     kP = DriveConstants.spinP;
     kP = DriveConstants.spinI;
     kD = DriveConstants.spinD;
     double deltaTime = timer.seconds();
     timer.reset();
 
+    List<Double> returnList = new ArrayList<>();
+
     if (!result.isValid()) {
       spin.setPower(0);
       lastError = 0;
-      return 0;
+      returnList.add(0.0);
+      returnList.add(0.0);
+      returnList.add(0.0);
+      returnList.add(0.0);
+      return returnList;
     }
 
-    double error = goalX - result.getTy();
+    double error = goalX - result.getTx();
     double PTerm = error * kP;
 
     kIgain += error*deltaTime;
@@ -77,10 +86,15 @@ public class TurretSpinner {
     }
     lastError = error;
 
-    return power;
+    returnList.add(power);
+    returnList.add(kP);
+    returnList.add(kI);
+    returnList.add(kD);
+
+    return returnList;
   }
 
-  public double update(LLResult result) {
+  public List<Double> update(LLResult result) {
     return update(result, false, false);
   }
 }
