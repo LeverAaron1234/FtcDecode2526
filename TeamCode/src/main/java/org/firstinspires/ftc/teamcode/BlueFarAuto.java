@@ -99,82 +99,56 @@ public final class BlueFarAuto extends LinearOpMode {
         }*/
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToSplineHeading(new Vector2d(-60, 20), Math.toRadians(15))// This is the firing position for Blue Far
+                        .strafeToSplineHeading(new Vector2d(-60, 20), Math.toRadians(17))// This is the firing position for Blue Far
                         .build(),
                 shooter.bluefar(),
-                new SleepAction(1.5)
+                new SleepAction(1.65)
         ));
 
-        for (int i=0; i<2; i++){//This is firing the pre-loaded balls
+        for (int i=0; i<3; i++){//This is firing the pre-loaded/first set of balls
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.55),
                     pew.launch(),
                     new SleepAction(0.1),
                     pew.set(),
                     new SleepAction(0.2),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.6)
+                    new SleepAction((i<2)?0.6:0.5)
             ));
         }
-        Actions.runBlocking(new SequentialAction(// This is firing the last pre-loaded ball, but it needs slightly longer charge time to score properly
-                new SleepAction(0.02),
-                helper.off(),
-                intake.off(),
-                new SleepAction(0.5),
-                pew.launch(),
-                new SleepAction(0.1),
-                pew.set(),
-                new SleepAction(0.2),
-                helper.forward(),
-                intake.firein()
-        ));
 
         Actions.runBlocking(new SequentialAction(// This goes to and picks up the first row of balls
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(17)))
-                        .strafeToSplineHeading(new Vector2d(-54,20),Math.toRadians(90))
-                        .strafeTo(new Vector2d(-54,25), new TranslationalVelConstraint(12.5))
+                        .strafeToSplineHeading(new Vector2d(-53,20),Math.toRadians(90))
+                        .strafeTo(new Vector2d(-53,40), new TranslationalVelConstraint(14))
                         .build(),
-                new SleepAction(0.1),
+                new SleepAction(0.16),
                 intake.off()
         ));
 
         Actions.runBlocking(new SequentialAction(// Go back to the firing position and get ready to fire the 2nd set of balls
-                drive.actionBuilder(new Pose2d(-54,25,Math.toRadians(90)))
+                drive.actionBuilder(new Pose2d(-54,40,Math.toRadians(90)))
                         //.strafeTo(new Vector2d(-49,20))
-                        .strafeToSplineHeading(new Vector2d(-50, 6),Math.toRadians(18))
+                        .strafeToSplineHeading(new Vector2d(-60, 14),Math.toRadians(15.5))// Decemails defently won't break this. - The words spoken before it broke
                         .build()
         ));
 
         Actions.runBlocking(new SequentialAction(
                 intake.off(),
                 helper.off(),
-                shooter.bluefar()
+                shooter.bluefar(),
+                new SleepAction(1)
         ));
 
-        for (int i=0; i<2; i++){// This is firing the second set of balls (first 2)
+        for (int i=0; i<3; i++){// This is firing the second set of balls
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.5),
-                    pew.launch(),
-                    new SleepAction(0.2),
-                    pew.set(),
-                    new SleepAction(0.1),
-                    helper.forward(),
-                    intake.firein(),
-                    new SleepAction(0.6)
-            ));
-        }
-        for (int i=0; i<1; i++){// This is firing the second set of balls, but the 3rd ball
-            Actions.runBlocking(new SequentialAction(
-                    new SleepAction(0.02),
-                    helper.off(),
-                    intake.off(),
-                    new SleepAction(0.5),
+                    new SleepAction((i==1)?0.45:(i==2)?0.5:0.55),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
@@ -203,7 +177,7 @@ public final class BlueFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.55),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
