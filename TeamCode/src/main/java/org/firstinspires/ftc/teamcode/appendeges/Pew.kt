@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.appendeges
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
@@ -15,13 +16,13 @@ class Pew(hardwareMap: HardwareMap) {
      * know the position of the scoringArm
      */
     enum class PewPos(val position: Double) {
-        set(1.0),
-        launch(0.0)
+        set(0.0),
+        launch(1.0)
 
     }
 
 
-    private val pew = hardwareMap.get(Servo::class.java, "pew")
+    private val pew = hardwareMap.get(DcMotorEx::class.java, "pew")
 
 
 
@@ -42,11 +43,11 @@ class Pew(hardwareMap: HardwareMap) {
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
                 targetPosition = state.position.toDouble()
-                pew.position = targetPosition
+                pew.power = targetPosition
 
                 initialized = true
             }
-            pew.position
+            pew.power
 
 
             return false

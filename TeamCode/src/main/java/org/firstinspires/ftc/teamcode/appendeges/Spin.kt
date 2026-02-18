@@ -1,0 +1,154 @@
+package org.firstinspires.ftc.teamcode.appendeges
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket
+import com.acmerobotics.roadrunner.Action
+import com.qualcomm.hardware.limelightvision.LLResult
+import com.qualcomm.robotcore.hardware.CRServo
+import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.util.ElapsedTime
+import com.qualcomm.robotcore.util.Range
+import org.firstinspires.ftc.teamcode.DriveConstants
+import kotlin.math.abs
+
+
+class Spin(hardwareMap: HardwareMap) {
+
+    /**
+     * @param position the position of the scoringArm in that state, -1 means we don't currently
+     * know the position of the scoringArm
+     */
+    enum class SpinPos(val position: Double) {
+        locked(1.0),
+        unlocked(0.0)
+
+    }
+
+
+    private val spin = hardwareMap.get(CRServo::class.java, "spin")
+    private var kP = DriveConstants.spinP
+    private var kI = DriveConstants.spinI
+    private var kD = DriveConstants.spinD
+    private var kIgain = 0.0
+    private val goalX = 0.0
+    private var lastError = 0.0
+    private val angleTolerance = 10.0
+    private val MAX_POWER = 0.6
+    private var power = 0.0
+    private var move_left = true
+    var lock = false
+
+    private val timer = ElapsedTime()
+
+
+
+    /**
+     * Start: sets the arm state and position;
+     * IsFinished: the arm has reached the state's position
+     *
+     * @param state the state (and associated position) to set the arm to
+     */
+    inner class SetState(private val state: SpinPos) : Action {
+        private var initialized = false
+
+        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
+        override fun run(packet: TelemetryPacket): Boolean {
+            if (!initialized) {
+                packet.put("Power", power)
+                packet.put("Search Dir", move_left)
+
+                if (state == SpinPos.locked) {
+                    spin.power = 0.0
+                }
+                initialized = true
+            }
+
+
+
+            return false
+        }
+    }
+
+    /**
+     * manually changes the position of the scoringArm (typically with a joystick)
+     *
+     * @param input the percent speed (-1 to 1) normalized by delta time (the time between each loop)
+     */
+
+    /**
+     * Only use in the collect position; used to reset the positions of the arm; should be called
+     * alongside a collect action
+     */
+
+    fun resetTimer() {
+        timer.reset()
+    }
+
+
+    fun update(result: LLResult, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
+        kP = DriveConstants.spinP
+        kI = DriveConstants.spinI
+        kD = DriveConstants.spinD
+        val deltaTime = timer.seconds()
+        timer.reset()
+
+        val returnList: MutableList<Double?> = ArrayList<Double?>()
+
+        if (!result.isValid()) {
+            if (leftPressed) {
+                move_left = false
+            }
+            if (rightPressed) {
+                move_left = true
+            }
+
+            if (!lock) {
+                spin.setPower(0.3 * (if (move_left) -1 else 1))
+            } else {
+                spin.setPower(0.0)
+            }
+            lastError = 0.0
+            returnList.add(0.0)
+            returnList.add(DriveConstants.spinP)
+            returnList.add(DriveConstants.spinI)
+            returnList.add(DriveConstants.spinD)
+            return returnList
+        }
+
+        val error = goalX - result.getTx()
+        val PTerm = error * DriveConstants.spinP
+
+        kIgain += error * deltaTime
+        val Iterm = kIgain * DriveConstants.spinI
+
+        var Dterm = 0.0
+        if (deltaTime > 0) {
+            Dterm = ((error - lastError) / deltaTime) * DriveConstants.spinD
+        }
+
+        if (abs(error) < angleTolerance) {
+            power = 0.0
+            kIgain = 0.0
+        } else {
+            power = Range.clip(PTerm + Iterm + Dterm, -MAX_POWER, MAX_POWER)
+        }
+
+        if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+            power = 0.0
+        }
+
+        if (power == 0.0) {
+            spin.setPower(0.001)
+        } else {
+            spin.setPower(power)
+        }
+        lastError = error
+
+        returnList.add(power)
+        returnList.add(DriveConstants.spinP)
+        returnList.add(DriveConstants.spinI)
+        returnList.add(DriveConstants.spinD)
+
+        return returnList
+    }
+
+}

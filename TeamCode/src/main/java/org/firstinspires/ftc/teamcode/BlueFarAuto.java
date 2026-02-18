@@ -10,8 +10,10 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
@@ -21,6 +23,8 @@ import org.firstinspires.ftc.teamcode.appendeges.Intake;
 import org.firstinspires.ftc.teamcode.appendeges.LimelightCam;
 import org.firstinspires.ftc.teamcode.appendeges.Pew;
 import org.firstinspires.ftc.teamcode.appendeges.Shooter;
+import org.firstinspires.ftc.teamcode.appendeges.Spin;
+import org.firstinspires.ftc.teamcode.appendeges.TurretSpinner;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,22 +39,42 @@ public final class BlueFarAuto extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Pew pew = new Pew(hardwareMap);
         Angle angle = new Angle(hardwareMap);
-        Helper helper = new Helper(hardwareMap);
-        LimelightCam camq = new LimelightCam(hardwareMap);
+
+        Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
+        Spin spin = new Spin(hardwareMap);
+        spin.resetTimer();
+
+
+
+
+        TouchSensor leftLimit = hardwareMap.get(TouchSensor.class, "leftLimit");
+        TouchSensor rightLimit = hardwareMap.get(TouchSensor.class, "rightLimit");
+
         Actions.runBlocking(pew.set());
 
 
-        camq.setPipeline(LimelightCam.Camera.Obelisk);
-        camq.switchPipeline(1); //Obelisk
+        camq.pipelineSwitch(0);
+        camq.start(); //Obelisk
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
 
+        Thread thread = new Thread(() -> {
+            while(opModeIsActive())
+            {
+                if (Thread.currentThread().isInterrupted()) {
+                    spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), true);
+                    break;
+                }
 
-        Actions.runBlocking(new SequentialAction(
+                spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), false);
+            }
+        });
+
+        Actions.runBlocking(new ParallelAction(
                 shooter.stop(),
                 pew.set(),
-                helper.off(),
+
                 intake.off(),
                 angle.down()
         ));
@@ -59,9 +83,15 @@ public final class BlueFarAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
+        thread.start();
 
+        while (opModeIsActive()) {
+            Actions.runBlocking(new SleepAction(0.1));
+        }
 
+        /*
         Actions.runBlocking(camq.update());
+
         telemetry.addData("Tag Area", camq.getTagArea());
         telemetry.addData("Tagx", camq.getTagx());
         telemetry.addData("Tagy", camq.getTagy());
@@ -75,7 +105,6 @@ public final class BlueFarAuto extends LinearOpMode {
                         shooter.full(),
                         intake.off(),
                         pew.set(),
-                        helper.off(),
                         angle.far()
                 )
         );
@@ -96,7 +125,7 @@ public final class BlueFarAuto extends LinearOpMode {
 
         } else if (camq.getTagid() == 23) { // PPG
 
-        }*/
+        }
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
                         .strafeToSplineHeading(new Vector2d(-60, 20), Math.toRadians(17))
@@ -107,15 +136,12 @@ public final class BlueFarAuto extends LinearOpMode {
 
         for (int i=0; i<3; i++){
             Actions.runBlocking(new SequentialAction(
-                    helper.off(),
                     intake.off(),
                     new SleepAction(0.5),
-                    helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
-                    helper.forward(),
                     intake.firein(),
                     new SleepAction(0.6)
             ));
@@ -140,21 +166,17 @@ public final class BlueFarAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 intake.off(),
-                helper.off(),
                 shooter.full()
         ));
 
         for (int i=0; i<3; i++){
             Actions.runBlocking(new SequentialAction(
-                    helper.off(),
                     intake.off(),
                     new SleepAction(0.5),
-                    helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
-                    helper.forward(),
                     intake.firein(),
                     new SleepAction(0.6)
             ));
@@ -173,21 +195,18 @@ public final class BlueFarAuto extends LinearOpMode {
 
         for (int i=0; i<3; i++){
             Actions.runBlocking(new SequentialAction(
-                    helper.off(),
                     intake.off(),
                     new SleepAction(0.5),
-                    helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
-                    helper.forward(),
                     intake.firein(),
                     new SleepAction(0.6)
             ));
         }
-
-
+*/
+        thread.interrupt();
 
     }
 

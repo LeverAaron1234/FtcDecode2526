@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.appendeges;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,15 +18,17 @@ import java.util.List;
 public class TurretSpinner {
   private CRServo spin;
 
+
   private double kP = DriveConstants.spinP;
   private double kI = DriveConstants.spinI;
-  private double kIgain = 0.0;
   private double kD = DriveConstants.spinD;
+  private double kIgain = 0.0;
   private double goalX = 0.0;
   private double lastError = 0.0;
   private double angleTolerance = 10;
   private final double MAX_POWER = 0.6;
   private double power = 0;
+  private boolean move_left = true;
 
   private final ElapsedTime timer = new ElapsedTime();
 
@@ -38,9 +41,9 @@ public class TurretSpinner {
     timer.reset();
   }
 
-  public List<Double> update(LLResult result, boolean leftPressed, boolean rightPressed) {
+  public List<Double> update(LLResult result, boolean leftPressed, boolean rightPressed, boolean lock) {
     kP = DriveConstants.spinP;
-    kP = DriveConstants.spinI;
+    kI = DriveConstants.spinI;
     kD = DriveConstants.spinD;
     double deltaTime = timer.seconds();
     timer.reset();
@@ -48,24 +51,31 @@ public class TurretSpinner {
     List<Double> returnList = new ArrayList<>();
 
     if (!result.isValid()) {
-      spin.setPower(0);
+      if (leftPressed) {move_left = false;}
+      if (rightPressed) {move_left = true;}
+
+      if (!lock) {
+      spin.setPower(0.3 * ((move_left) ? -1 : 1));
+      } else {
+        spin.setPower(0.0);
+      }
       lastError = 0;
       returnList.add(0.0);
-      returnList.add(0.0);
-      returnList.add(0.0);
-      returnList.add(0.0);
+      returnList.add(DriveConstants.spinP);
+      returnList.add(DriveConstants.spinI);
+      returnList.add(DriveConstants.spinD);
       return returnList;
     }
 
     double error = goalX - result.getTx();
-    double PTerm = error * kP;
+    double PTerm = error * DriveConstants.spinP;
 
     kIgain += error*deltaTime;
-    double Iterm = kIgain*kI;
+    double Iterm = kIgain*DriveConstants.spinI;
 
     double Dterm = 0;
     if (deltaTime > 0) {
-      Dterm = ((error - lastError) / deltaTime) * kD;
+      Dterm = ((error - lastError) / deltaTime) * DriveConstants.spinD;
     }
 
     if (Math.abs(error) < angleTolerance) {
@@ -87,14 +97,14 @@ public class TurretSpinner {
     lastError = error;
 
     returnList.add(power);
-    returnList.add(kP);
-    returnList.add(kI);
-    returnList.add(kD);
+    returnList.add(DriveConstants.spinP);
+    returnList.add(DriveConstants.spinI);
+    returnList.add(DriveConstants.spinD);
 
     return returnList;
   }
 
   public List<Double> update(LLResult result) {
-    return update(result, false, false);
+    return update(result, false, false, false);
   }
 }

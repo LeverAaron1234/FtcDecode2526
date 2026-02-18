@@ -129,7 +129,10 @@ public class Turret extends LinearOpMode {
     boolean changed4 = false;
     boolean changed5 = false;
     boolean changed6 = false;
+    boolean changed7 = false;
+
     boolean slow = false;
+    boolean turretLock = false;
 
     double p = DriveConstants.p;
     double i = DriveConstants.i;
@@ -275,6 +278,12 @@ public class Turret extends LinearOpMode {
       }
 
 
+      if (gamepad1.dpad_up && ! changed7) {
+        turretLock = !turretLock;
+        changed7 = true;
+      } else if (!gamepad1.dpad_up) {
+        changed7 = false;
+      }
 
       // Drive equations
       frontLeftPower = Range.clip((drive + strafe - turn), -1, 1);
@@ -290,13 +299,13 @@ public class Turret extends LinearOpMode {
       backRightDrive.setPower(backRightPower);
 
       wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
-      anglePos = Range.clip(anglePos, 0.20,1);
+      anglePos = Range.clip(anglePos, 0,1);
 
       wheeel.setVelocity(wheeelSpeed*2800);
       // Set to tick ct by *2800
       // Set to RPM by *6000
 
-      packet.put("SpinPwr",spin.update(result, leftLimit.isPressed(), rightLimit.isPressed()));
+      packet.put("SpinPwr",spin.update(result, leftLimit.isPressed(), rightLimit.isPressed(), turretLock));
       angle.setPosition(anglePos);
 
       dt = runtime.now(TimeUnit.MILLISECONDS) - dt;

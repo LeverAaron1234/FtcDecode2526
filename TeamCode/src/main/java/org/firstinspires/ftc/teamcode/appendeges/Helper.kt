@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.Action
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.CRServo
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.HardwareMap
 
 
@@ -17,14 +18,14 @@ class Helper(hardwareMap: HardwareMap) {
 
     enum class Helper(val pwr: Double) {
         forward(1.0),
-        Neutral(0.001),
+        Neutral(0.0),
         backward(-1.0)
 
     }
 
     var HelperState = Helper.Neutral
 
-    private val helper = hardwareMap.get(CRServo::class.java, "helper")
+    private val helper = hardwareMap.get(DcMotorEx::class.java, "helper")
 
 
     private val power = 1.0

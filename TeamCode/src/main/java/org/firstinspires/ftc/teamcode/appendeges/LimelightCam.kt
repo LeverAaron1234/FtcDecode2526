@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.appendeges
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
+import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.hardware.HardwareMap
 
@@ -19,7 +20,7 @@ class LimelightCam(hardwareMap: HardwareMap) {
 
     }
 
-    var pipeline = Camera.Goal
+    var pipeline = Camera.Obelisk
 
     private val camq = hardwareMap.get(Limelight3A::class.java, "limelight")
     private var result = camq.latestResult
@@ -30,6 +31,8 @@ class LimelightCam(hardwareMap: HardwareMap) {
     private var tagy = 0.0
     private var tagArea = -1.0
     private var tagid = -1
+
+    private var thread_initilize = false;
 
 
     init {
@@ -86,6 +89,31 @@ class LimelightCam(hardwareMap: HardwareMap) {
 
 
     fun update(): Action = SetState(pipeline)
+
+    fun update_thread(): LLResult
+    {
+        if (!thread_initilize) {
+            camq.pipelineSwitch(pipeline.pipe)
+            thread_initilize = true
+        }
+        result = camq.latestResult
+        if (!(result.isValid && result != null)) {
+            tagx = 0.0
+            tagy = 0.0
+            tagid = 0
+            tagArea = -1.0
+        } else {
+            tagx = result.tx
+            tagy = result.ty
+            tagid = result.fiducialResults[0].fiducialId
+            tagArea = result.ta
+        }
+        return result
+    }
+
+    fun getResult(): LLResult {
+        return camq.latestResult
+    }
 
     fun switchPipeline(pipe: Int): Boolean {
         pipeline = Camera.entries[pipe]
