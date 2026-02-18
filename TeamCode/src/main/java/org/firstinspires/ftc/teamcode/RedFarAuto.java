@@ -47,7 +47,7 @@ public final class RedFarAuto extends LinearOpMode {
 
 
         camq.setPipeline(LimelightCam.Camera.Obelisk);
-        camq.switchPipeline(1); //Obelisk
+        camq.switchPipeline(1); //1 = Obelisk, 2 = Goals
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
@@ -78,7 +78,7 @@ public final class RedFarAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         camq.update(),
-                        shooter.fuller(),
+                        shooter.fullred(),
                         intake.on(),
                         pew.set(),
                         helper.forward(),
