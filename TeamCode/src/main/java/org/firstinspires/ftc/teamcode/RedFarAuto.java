@@ -154,7 +154,7 @@ public final class RedFarAuto extends LinearOpMode {
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-52,-18,Math.toRadians(-24)))
                         .strafeToLinearHeading(new Vector2d(0,-40), Math.toRadians(-93))
-                        .strafeTo(new Vector2d(0, -64), new TranslationalVelConstraint(15.0))
+                        .strafeTo(new Vector2d(0, -64), new TranslationalVelConstraint(15))
                         .strafeToLinearHeading(new Vector2d(-52,-18), Math.toRadians(-24))
                         .build()
         ));
