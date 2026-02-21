@@ -9,9 +9,9 @@ public class DriveConstants {
   public static double d = 1;
   public static double f = 0;
 
-  public static double spinP = 0.0100;
+  public static double spinP = 0.01;
   public static double spinI = 0.0001;
-  public static double spinD = 0.0000;
+  public static double spinD = 0.001;
 }
 
 // Small Sized Flywheel:  P: I: D: F:

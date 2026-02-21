@@ -25,7 +25,9 @@ public class TurretSpinner {
   private double kIgain = 0.0;
   private double goalX = 0.0;
   private double lastError = 0.0;
-  private double angleTolerance = 10;
+  private double angleTolerance = 0;
+  private double deAccellSpeed = 0.001;
+  private double lastTx = 0.0;
   private final double MAX_POWER = 0.6;
   private double power = 0;
   private boolean move_left = true;
@@ -48,7 +50,14 @@ public class TurretSpinner {
     double deltaTime = timer.seconds();
     timer.reset();
 
+    // TODO: delete to turn on spinning
+    lock = !lock;
+
     List<Double> returnList = new ArrayList<>();
+
+    if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+      power = 0;
+    }
 
     if (!result.isValid()) {
       if (leftPressed) {move_left = false;}
@@ -57,10 +66,18 @@ public class TurretSpinner {
       if (!lock) {
       spin.setPower(0.3 * ((move_left) ? -1 : 1));
       } else {
-        spin.setPower(0.0);
+        if (lastTx > 0) {
+          power += deAccellSpeed;
+          if (power > 0) {power = 0;}
+        }
+        if (lastTx < 0) {
+          power -= deAccellSpeed;
+          if (power < 0) {power = 0;}
+        }
+        spin.setPower(power);
       }
       lastError = 0;
-      returnList.add(0.0);
+      returnList.add(power);
       returnList.add(DriveConstants.spinP);
       returnList.add(DriveConstants.spinI);
       returnList.add(DriveConstants.spinD);
@@ -68,6 +85,7 @@ public class TurretSpinner {
     }
 
     double error = goalX - result.getTx();
+    lastTx = result.getTx();
     double PTerm = error * DriveConstants.spinP;
 
     kIgain += error*deltaTime;
@@ -83,10 +101,6 @@ public class TurretSpinner {
       kIgain = 0;
     } else {
       power = Range.clip(PTerm+Iterm+Dterm, -MAX_POWER, MAX_POWER);
-    }
-
-    if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
-      power = 0;
     }
 
     if (power == 0.0) {

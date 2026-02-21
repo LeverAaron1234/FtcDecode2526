@@ -59,7 +59,8 @@ public final class BlueFarAuto extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
 
-        Thread thread = new Thread(() -> {
+        // Autonomous threading so that the camera can control the turret in a loop
+        Thread thread = new Thread(() -> { // () -> {...} is a lambada expression
             while(opModeIsActive())
             {
                 if (Thread.currentThread().isInterrupted()) {
@@ -83,7 +84,7 @@ public final class BlueFarAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        thread.start();
+        thread.start(); // start the above defined thread
 
         while (opModeIsActive()) {
             Actions.runBlocking(new SleepAction(0.1));

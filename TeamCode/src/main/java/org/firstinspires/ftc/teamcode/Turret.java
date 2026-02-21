@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.appendeges.TurretSpinner;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp(name="Turret", group="Linear Opmode")
@@ -89,7 +91,7 @@ public class Turret extends LinearOpMode {
     angle.setPosition(0);
 
     // Camera Stuff
-    camq.pipelineSwitch(1); // {0: "goal", 1: "obelisk"}
+    camq.pipelineSwitch(1); // {0: "goal", 1: "obelisk"} // TODO: For comp, set to goal
     camq.start();
     double tagx = 0.0;
     double tagy = 0.0;
@@ -130,6 +132,7 @@ public class Turret extends LinearOpMode {
     boolean changed5 = false;
     boolean changed6 = false;
     boolean changed7 = false;
+    boolean changed8 = false;
 
     boolean slow = false;
     boolean turretLock = false;
@@ -201,8 +204,10 @@ public class Turret extends LinearOpMode {
       if ((gamepad1.left_trigger >= 0.2) && !changed2) {
         intake.setPower(1);
         intake2.setPower(1);
+        pew.setPower(-1);
         changed2 = true;
-      } else if (!(gamepad1.left_trigger >= 0.2)) {
+      } else if (!(gamepad1.left_trigger >= 0.2) && changed2) {
+        pew.setPower(0);
         intake.setPower(0);
         intake2.setPower(0);
         changed2 = false;
@@ -264,17 +269,27 @@ public class Turret extends LinearOpMode {
       // stops the intake servo so balls don't get stuck under
       if (gamepad1.right_trigger >= 0.2 && !changed6) {
         pew.setPower(1);
+        intake.setPower(1);
+        intake2.setPower(1);
         changed6 = true;
-      } else if (!(gamepad1.right_trigger >= 0.2)) {
+      } else if (!(gamepad1.right_trigger >= 0.2) && changed6) {
         pew.setPower(0);
+        intake.setPower(0);
+        intake2.setPower(0);
         changed6 = false;
       }
 
       // Run artifacts backwards
-      if (gamepad1.left_bumper) {
-        pew.setPower(-1);
-        intake.setPower(-1);
-        intake2.setPower(-1);
+      if (gamepad1.left_bumper && !changed8) {
+        pew.setPower(-0.4);
+        intake.setPower(-0.4);
+        intake2.setPower(-0.4);
+        changed8 = true;
+      } else if (!(gamepad1.left_bumper) && changed8) {
+        pew.setPower(0);
+        intake.setPower(0);
+        intake2.setPower(0);
+        changed8 = false;
       }
 
 

@@ -31,11 +31,12 @@ class Spin(hardwareMap: HardwareMap) {
     private var kIgain = 0.0
     private val goalX = 0.0
     private var lastError = 0.0
-    private val angleTolerance = 10.0
+    private val deAcellSpeed = 0.01;
+    private val angleTolerance = 5.0
     private val MAX_POWER = 0.6
     private var power = 0.0
     private var move_left = true
-    var lock = false
+    var lock = true // TODO: change to false to turn off lock
 
     private val timer = ElapsedTime()
 
@@ -93,6 +94,10 @@ class Spin(hardwareMap: HardwareMap) {
 
         val returnList: MutableList<Double?> = ArrayList<Double?>()
 
+        if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+            power = 0.0
+        }
+
         if (!result.isValid()) {
             if (leftPressed) {
                 move_left = false
@@ -104,10 +109,11 @@ class Spin(hardwareMap: HardwareMap) {
             if (!lock) {
                 spin.setPower(0.3 * (if (move_left) -1 else 1))
             } else {
-                spin.setPower(0.0)
+                power -= deAcellSpeed
+                spin.setPower(power)
             }
             lastError = 0.0
-            returnList.add(0.0)
+            returnList.add(power)
             returnList.add(DriveConstants.spinP)
             returnList.add(DriveConstants.spinI)
             returnList.add(DriveConstants.spinD)
@@ -132,9 +138,6 @@ class Spin(hardwareMap: HardwareMap) {
             power = Range.clip(PTerm + Iterm + Dterm, -MAX_POWER, MAX_POWER)
         }
 
-        if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
-            power = 0.0
-        }
 
         if (power == 0.0) {
             spin.setPower(0.001)
