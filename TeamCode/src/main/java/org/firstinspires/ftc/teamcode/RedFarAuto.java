@@ -1,9 +1,9 @@
 /*
-Red side Far Autonomous
+Red Far Auto
 FTC season DECODE
 Elijah R. & Dexter G. with source code from Levi R.
 7209 Tech Hogs Robotics
-1/6/2026
+started editing 1/6/2026
 
 */
 
@@ -78,11 +78,11 @@ public final class RedFarAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         camq.update(),
-                        shooter.fullred(),
+                        shooter.redfar(),
                         intake.on(),
                         pew.set(),
                         helper.forward(),
-                        angle.far()
+                        angle.redfar()
                 )
         );
 
@@ -105,78 +105,78 @@ public final class RedFarAuto extends LinearOpMode {
         }*/
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToLinearHeading(new Vector2d(-57, -20),Math.toRadians(-23))
+                        .strafeToLinearHeading(new Vector2d(-57, -20),Math.toRadians(-23))//Firing position
                         .build(),
-                new SleepAction(1.5)
+                new SleepAction(1.55)
         ));
 
-        for (int i=0; i<3; i++){
+        for (int i=0; i<3; i++){// Fires the pre-loaded balls
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
                     new SleepAction(0.2),
-                    helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.9)
+                    new SleepAction(0.65)
             ));
         }
-        Actions.runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(//goes to pickup the 2nd set of balls
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-57,-20,Math.toRadians(-23)))
-                        .strafeToLinearHeading(new Vector2d(-24,-39),Math.toRadians(-90))
-                        .strafeTo(new Vector2d(-24,-64), new TranslationalVelConstraint(15.0))
-                        .strafeToLinearHeading(new Vector2d(-52, -18), Math.toRadians(-24))
+                        .strafeToLinearHeading(new Vector2d(-26,-35),Math.toRadians(-90))
+                        .strafeTo(new Vector2d(-26,-60), new TranslationalVelConstraint(20))
+                        .strafeToLinearHeading(new Vector2d(-50, -15), Math.toRadians(-24))
                         .build()
         ));
 
-        for (int i=0; i<3; i++){
+        for (int i=0; i<3; i++){// Fires the 2nd set of balls
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
                     new SleepAction(0.2),
-                    helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.9)
+                    new SleepAction(0.65)
             ));
         }
-
-        Actions.runBlocking(new SequentialAction(
+        Actions.runBlocking(new SequentialAction(// Goes to pickup the 3rd set of balls
                 intake.on(),
-                drive.actionBuilder(new Pose2d(-52,-18,Math.toRadians(-24)))
-                        .strafeToLinearHeading(new Vector2d(0,-40), Math.toRadians(-93))
-                        .strafeTo(new Vector2d(0, -64), new TranslationalVelConstraint(15))
-                        .strafeToLinearHeading(new Vector2d(-52,-18), Math.toRadians(-24))
+                drive.actionBuilder(new Pose2d(-52, -18, Math.toRadians(-25)))
+                        .strafeToLinearHeading(new Vector2d(4,-35), Math.toRadians(-93))
+                        .strafeTo(new Vector2d(4, -60), new TranslationalVelConstraint(20))
+                        .strafeToLinearHeading(new Vector2d(-52, -18), Math.toRadians(-23))
                         .build()
         ));
 
-        for (int i=0; i<3; i++){
+        for (int i=0; i<3; i++){// Fires the last set of balls (3rd)
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
                     new SleepAction(0.2),
-                    helper.backward(),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.9)
+                    new SleepAction(0.65)
             ));
         }
+        drive.actionBuilder(new Pose2d(-52, -18, Math.toRadians(-23)))
+                .strafeToLinearHeading(new Vector2d(-48, -18), Math.toRadians(-23))
+                .build();
 
 
 
     }
 
 }
+
