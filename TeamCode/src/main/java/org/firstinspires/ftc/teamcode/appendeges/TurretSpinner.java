@@ -13,7 +13,9 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.DriveConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TurretSpinner {
   private CRServo spin;
@@ -26,7 +28,7 @@ public class TurretSpinner {
   private double goalX = 0.0;
   private double lastError = 0.0;
   private double angleTolerance = 0;
-  private double deAccellSpeed = 0.001;
+  private double deAccellSpeed = 0.95;
   private double lastTx = 0.0;
   private final double MAX_POWER = 0.6;
   private double power = 0;
@@ -43,17 +45,17 @@ public class TurretSpinner {
     timer.reset();
   }
 
-  public List<Double> update(LLResult result, boolean leftPressed, boolean rightPressed, boolean lock) {
+  public Map<String, Object> update(LLResult result, boolean leftPressed, boolean rightPressed, boolean lock) {
     kP = DriveConstants.spinP;
     kI = DriveConstants.spinI;
     kD = DriveConstants.spinD;
     double deltaTime = timer.seconds();
     timer.reset();
 
-    // TODO: delete to turn on spinning
+    // TODO: delete to make the turret spin around when it can't find the target
     lock = !lock;
 
-    List<Double> returnList = new ArrayList<>();
+    Map<String, Object> returnList = new HashMap<>();
 
     if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
       power = 0;
@@ -66,21 +68,15 @@ public class TurretSpinner {
       if (!lock) {
       spin.setPower(0.3 * ((move_left) ? -1 : 1));
       } else {
-        if (lastTx > 0) {
-          power += deAccellSpeed;
-          if (power > 0) {power = 0;}
-        }
-        if (lastTx < 0) {
-          power -= deAccellSpeed;
-          if (power < 0) {power = 0;}
-        }
+        power = power * deAccellSpeed;
+        if (Math.abs(power) < 0.003) {power = 0.0;}
         spin.setPower(power);
       }
       lastError = 0;
-      returnList.add(power);
-      returnList.add(DriveConstants.spinP);
-      returnList.add(DriveConstants.spinI);
-      returnList.add(DriveConstants.spinD);
+      returnList.put("Spin Power",power);
+      returnList.put("spin P",DriveConstants.spinP);
+      returnList.put("spin I",DriveConstants.spinI);
+      returnList.put("spin D",DriveConstants.spinD);
       return returnList;
     }
 
@@ -103,22 +99,20 @@ public class TurretSpinner {
       power = Range.clip(PTerm+Iterm+Dterm, -MAX_POWER, MAX_POWER);
     }
 
-    if (power == 0.0) {
-      spin.setPower(0.001);
-    } else {
-      spin.setPower(power);
-    }
+
+    spin.setPower(power);
+
     lastError = error;
 
-    returnList.add(power);
-    returnList.add(DriveConstants.spinP);
-    returnList.add(DriveConstants.spinI);
-    returnList.add(DriveConstants.spinD);
+    returnList.put("Spin Power",power);
+    returnList.put("spin P",DriveConstants.spinP);
+    returnList.put("spin I",DriveConstants.spinI);
+    returnList.put("spin D",DriveConstants.spinD);
 
     return returnList;
   }
 
-  public List<Double> update(LLResult result) {
+  public Map<String, Object> update(LLResult result) {
     return update(result, false, false, false);
   }
 }

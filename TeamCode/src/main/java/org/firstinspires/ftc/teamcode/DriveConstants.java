@@ -4,9 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class DriveConstants {
-  public static double p = 15;
-  public static double i = 0.8;
-  public static double d = 1;
+  public static double p = 19;
+  public static double i = 1.6;
+  public static double d = 4;
   public static double f = 0;
 
   public static double spinP = 0.01;

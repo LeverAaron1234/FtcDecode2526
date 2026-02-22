@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.appendeges.TurretSpinner;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @TeleOp(name="Turret", group="Linear Opmode")
 public class Turret extends LinearOpMode {
@@ -91,7 +92,8 @@ public class Turret extends LinearOpMode {
     angle.setPosition(0);
 
     // Camera Stuff
-    camq.pipelineSwitch(1); // {0: "goal", 1: "obelisk"} // TODO: For comp, set to goal
+    int pipe = 2;
+    camq.pipelineSwitch(pipe); // {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"} // TODO: For comp, set to goal
     camq.start();
     double tagx = 0.0;
     double tagy = 0.0;
@@ -122,7 +124,7 @@ public class Turret extends LinearOpMode {
     double anglePos;
     double spinPwr;
     wheeelSpeed = 0;
-    anglePos = 0.10;
+    anglePos = 0.0;
     spinPwr = 0.0;
 
     boolean changed = false;
@@ -133,6 +135,7 @@ public class Turret extends LinearOpMode {
     boolean changed6 = false;
     boolean changed7 = false;
     boolean changed8 = false;
+    boolean changed9 = false;
 
     boolean slow = false;
     boolean turretLock = false;
@@ -161,6 +164,18 @@ public class Turret extends LinearOpMode {
       f = DriveConstants.f;
 
       wheeel.setVelocityPIDFCoefficients(p,i,d,f);
+
+      if (gamepad1.back && !changed9) { // on click
+        if (pipe == 2) {
+          pipe = 3;
+        } else {
+          pipe = 2;
+        }
+        changed9 = true;
+      } else if (!gamepad1.back && changed9) { // on release
+        camq.pipelineSwitch(pipe);
+        changed9 = false;
+      }
 
       result = camq.getLatestResult();
 
@@ -202,9 +217,9 @@ public class Turret extends LinearOpMode {
       // left trigger -> Run intake and the helper motor
       // to get the ball into the launcher
       if ((gamepad1.left_trigger >= 0.2) && !changed2) {
-        intake.setPower(1);
+        intake.setPower(0.6);
         intake2.setPower(1);
-        pew.setPower(-1);
+        pew.setPower(0);
         changed2 = true;
       } else if (!(gamepad1.left_trigger >= 0.2) && changed2) {
         pew.setPower(0);
@@ -269,7 +284,7 @@ public class Turret extends LinearOpMode {
       // stops the intake servo so balls don't get stuck under
       if (gamepad1.right_trigger >= 0.2 && !changed6) {
         pew.setPower(1);
-        intake.setPower(1);
+        intake.setPower(0.6);
         intake2.setPower(1);
         changed6 = true;
       } else if (!(gamepad1.right_trigger >= 0.2) && changed6) {
@@ -314,35 +329,40 @@ public class Turret extends LinearOpMode {
       backRightDrive.setPower(backRightPower);
 
       wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
-      anglePos = Range.clip(anglePos, 0,1);
+      anglePos = Range.clip(anglePos, 0,0.9);
 
       wheeel.setVelocity(wheeelSpeed*2800);
-      // Set to tick ct by *2800
-      // Set to RPM by *6000
+      // wheel speed is in percent of 1
+      // Get tick ct by *2800
+      // Get RPM by *6000
+      // Convert tick ct to rpm by * 60/28
 
-      packet.put("SpinPwr",spin.update(result, leftLimit.isPressed(), rightLimit.isPressed(), turretLock));
+      packet.putAll(spin.update(result, leftLimit.isPressed(), rightLimit.isPressed(), turretLock));
       angle.setPosition(anglePos);
 
       dt = runtime.now(TimeUnit.MILLISECONDS) - dt;
 
 
 
-      /*telemetry.addLine("==Status==");
+      telemetry.addLine("==Status==");
       telemetry.addData("Runtime", runtime.seconds());
       telemetry.addData("DeltaTime", dt/1000);
+
       telemetry.addLine("==Drive==");
-      telemetry.addData("Target", "left (%.2f), right (%.2f)", frontLeftPower, frontRightPower, backLeftPower, backRightPower);
-      telemetry.addData("Actual", "left (%.2f), right (%.2f)", frontLeftDrive.getCurrentPosition(), frontRightDrive.getCurrentPosition(), backLeftDrive.getCurrentPosition(), backLeftDrive.getCurrentPosition());
+      telemetry.addData("Target", "left (%.2f) (%.2f), right (%.2f) (%.2f)", frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+      telemetry.addData("Actual", "left (%d) (%d), right (%d) (%d)", frontLeftDrive.getCurrentPosition(), frontRightDrive.getCurrentPosition(), backLeftDrive.getCurrentPosition(), backLeftDrive.getCurrentPosition());
+
       telemetry.addLine("==Launcher==");
       telemetry.addData("Speed", "target (%.2f), actual (%.2f)", wheeelSpeed*6000, wheeel.getVelocity()*60/28);
       telemetry.addLine((result.isValid()) ? "Tag Detected" : "No Tag Detected");
       if (result.isValid()) {
         telemetry.addData("Tag Pos","tagx: (%.2f), tagy: (%.2f)", tagx, tagy);
-        telemetry.addData("Tag Info", "tagArea (%.2f), tagID (%.2f)", tagArea, tagid);
+        telemetry.addData("Tag Info", "tagArea (%.2f), tagID (%d)", tagArea, tagid);
       }
+
       telemetry.addLine("==Other==");
       telemetry.addData("Pew Pwr", pew.getPower());
-      telemetry.addData("Angle Pos", angle.getPosition());*/
+      telemetry.addData("Angle Pos", angle.getPosition());
 
 
       packet.addTimestamp();
@@ -365,6 +385,8 @@ public class Turret extends LinearOpMode {
 
       telemetry.update();
     }
+
+    camq.close();
 
   }
 
