@@ -6,11 +6,9 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -18,13 +16,10 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.appendeges.TurretSpinner;
 
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-@TeleOp(name="Turret", group="Linear Opmode")
-public class Turret extends LinearOpMode {
+@TeleOp(name="BlueTurret", group="Linear Opmode")
+public class BlueTurret extends LinearOpMode {
 
   private final ElapsedTime runtime = new ElapsedTime();
 
@@ -92,7 +87,7 @@ public class Turret extends LinearOpMode {
     angle.setPosition(0);
 
     // Camera Stuff
-    int pipe = 2;
+    int pipe = 3;
     camq.pipelineSwitch(pipe); // {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"} // TODO: For comp, set to goal
     camq.start();
     double tagx = 0.0;
@@ -135,7 +130,6 @@ public class Turret extends LinearOpMode {
     boolean changed6 = false;
     boolean changed7 = false;
     boolean changed8 = false;
-    boolean changed9 = false;
 
     boolean slow = false;
     boolean turretLock = false;
@@ -165,17 +159,6 @@ public class Turret extends LinearOpMode {
 
       wheeel.setVelocityPIDFCoefficients(p,i,d,f);
 
-      if (gamepad1.back && !changed9) { // on click
-        if (pipe == 2) {
-          pipe = 3;
-        } else {
-          pipe = 2;
-        }
-        changed9 = true;
-      } else if (!gamepad1.back && changed9) { // on release
-        camq.pipelineSwitch(pipe);
-        changed9 = false;
-      }
 
       result = camq.getLatestResult();
 
