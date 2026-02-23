@@ -115,7 +115,6 @@ public final class BlueFarAuto extends LinearOpMode {
         if (!camq.getLatestResult().isValid()) {
             turretLock.set(true);
         }
-
         Actions.runBlocking(new SequentialAction(
                 intake.on(),
                 intake2.on(),
