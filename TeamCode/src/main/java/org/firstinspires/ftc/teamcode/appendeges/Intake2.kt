@@ -7,23 +7,23 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 
 
-class Intake(hardwareMap: HardwareMap) {
+class Intake2(hardwareMap: HardwareMap) {
 
     /**
      * @param position the position of the scoringArm in that state, -1 means we don't currently
      * know the position of the scoringArm
      */
 
-    enum class Intake(val pwr: Double) {
+    enum class Intake2(val pwr: Double) {
         on(1.0),
         fire(0.0),
         Neutral(0.0)
 
     }
 
-    var IntakeState = Intake.Neutral
+    var IntakeState = Intake2.Neutral
 
-    private val intake = hardwareMap.get(DcMotor::class.java, "intake")
+    private val intake = hardwareMap.get(DcMotor::class.java, "intake2")
 
 
     private val power = 1.0
@@ -46,7 +46,7 @@ class Intake(hardwareMap: HardwareMap) {
      *
      * @param state the state (and associated position) to set the arm to
      */
-    inner class SetState(private val state: Intake) : Action {
+    inner class SetState(private val state: Intake2) : Action {
         private var initialized = false
 
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
@@ -75,8 +75,8 @@ class Intake(hardwareMap: HardwareMap) {
      * alongside a collect action
      */
 
-    fun on(): Action = SetState(Intake.on)
-    fun firein(): Action = SetState(Intake.fire)
-    fun off(): Action = SetState(Intake.Neutral)
+    fun on(): Action = SetState(Intake2.on)
+    fun firein(): Action = SetState(Intake2.fire)
+    fun off(): Action = SetState(Intake2.Neutral)
 
 }

@@ -217,7 +217,7 @@ public class Turret extends LinearOpMode {
       // left trigger -> Run intake and the helper motor
       // to get the ball into the launcher
       if ((gamepad1.left_trigger >= 0.2) && !changed2) {
-        intake.setPower(0.6);
+        intake.setPower(1);
         intake2.setPower(1);
         pew.setPower(0);
         changed2 = true;
@@ -254,8 +254,8 @@ public class Turret extends LinearOpMode {
       // Angles and Speeds
       // Far
       if (gamepad1.a && !changed3) {
-        anglePos = 0.80;
-        wheeelSpeed = 0.70;
+        anglePos = 0.63;
+        wheeelSpeed = 0.71;
         changed3 = true;
       } else if (!gamepad1.a) {
         changed3 = false;
@@ -263,8 +263,8 @@ public class Turret extends LinearOpMode {
 
       // Medium
       if (gamepad1.b && !changed4) {
-        anglePos = 0.58;
-        wheeelSpeed = 0.54;
+        anglePos = 0.0;
+        wheeelSpeed = 0.52;
         changed4 = true;
       } else if (!gamepad1.b) {
         changed4 = false;
@@ -272,8 +272,8 @@ public class Turret extends LinearOpMode {
 
       //Close
       if (gamepad1.y && !changed5) {
-        anglePos = 0.38;
-        wheeelSpeed = 0.53;
+        anglePos = 0.0;
+        wheeelSpeed = 0.46;
         changed5 = true;
       } else if (!gamepad1.y) {
         changed5 = false;
@@ -284,7 +284,7 @@ public class Turret extends LinearOpMode {
       // stops the intake servo so balls don't get stuck under
       if (gamepad1.right_trigger >= 0.2 && !changed6) {
         pew.setPower(1);
-        intake.setPower(0.6);
+        intake.setPower(1);
         intake2.setPower(1);
         changed6 = true;
       } else if (!(gamepad1.right_trigger >= 0.2) && changed6) {

@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.appendeges.Angle;
 import org.firstinspires.ftc.teamcode.appendeges.Helper;
 import org.firstinspires.ftc.teamcode.appendeges.Intake;
+import org.firstinspires.ftc.teamcode.appendeges.Intake2;
 import org.firstinspires.ftc.teamcode.appendeges.LimelightCam;
 import org.firstinspires.ftc.teamcode.appendeges.Pew;
 import org.firstinspires.ftc.teamcode.appendeges.Shooter;
@@ -27,16 +28,18 @@ import org.firstinspires.ftc.teamcode.appendeges.Spin;
 import org.firstinspires.ftc.teamcode.appendeges.TurretSpinner;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Autonomous
 public final class BlueFarAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(-63, 24, Math.toRadians(0));
+        Pose2d beginPose = new Pose2d(64, -29, Math.toRadians(-90));
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
+        Intake2 intake2 = new Intake2(hardwareMap);
         Pew pew = new Pew(hardwareMap);
         Angle angle = new Angle(hardwareMap);
 
@@ -53,30 +56,31 @@ public final class BlueFarAuto extends LinearOpMode {
         Actions.runBlocking(pew.set());
 
 
-        camq.pipelineSwitch(0);
-        camq.start(); //Obelisk
+        camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
+        camq.start();
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
+        AtomicBoolean turretLock = new AtomicBoolean(false);
 
-        // Autonomous threading so that the camera can control the turret in a loop
-        Thread thread = new Thread(() -> { // () -> {...} is a lambada expression
+            // Autonomous threading so that the camera can control the turret in a loop
+        Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
             while(opModeIsActive())
             {
                 if (Thread.currentThread().isInterrupted()) {
-                    spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), true);
+                    spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
                     break;
                 }
 
-                spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), false);
+                spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
             }
         });
 
         Actions.runBlocking(new ParallelAction(
                 shooter.stop(),
                 pew.set(),
-
                 intake.off(),
+                intake2.off(),
                 angle.down()
         ));
 
@@ -86,26 +90,13 @@ public final class BlueFarAuto extends LinearOpMode {
 
         thread.start(); // start the above defined thread
 
-        while (opModeIsActive()) {
-            Actions.runBlocking(new SleepAction(0.1));
-        }
 
-        /*
-        Actions.runBlocking(camq.update());
-
-        telemetry.addData("Tag Area", camq.getTagArea());
-        telemetry.addData("Tagx", camq.getTagx());
-        telemetry.addData("Tagy", camq.getTagy());
-        telemetry.addData("TagID", camq.getTagid());
         telemetry.update();
 
 
         Actions.runBlocking(
                 new SequentialAction(
-                        camq.update(),
                         shooter.full(),
-                        intake.off(),
-                        pew.set(),
                         angle.far()
                 )
         );
@@ -113,100 +104,26 @@ public final class BlueFarAuto extends LinearOpMode {
 
         telemetry.update();
 
-        //tagid == 21: GPP
-        //tagid == 22: PGP
-        //tagid == 23: PPG
-        /*
-        while (camq.getTagid() != 0) {
-            Actions.runBlocking(camq.update());
-        }
-        if (camq.getTagid() == 21) {        // GPP
-
-        } else if (camq.getTagid() == 22) { // PGP
-
-        } else if (camq.getTagid() == 23) { // PPG
-
-        }
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToSplineHeading(new Vector2d(-60, 20), Math.toRadians(17))
+                        .strafeToSplineHeading(new Vector2d(60,- 20), Math.toRadians(-80))
                         .build(),
                 shooter.full(),
                 new SleepAction(1.5)
         ));
 
-        for (int i=0; i<3; i++){
-            Actions.runBlocking(new SequentialAction(
-                    intake.off(),
-                    new SleepAction(0.5),
-                    pew.launch(),
-                    new SleepAction(0.2),
-                    pew.set(),
-                    new SleepAction(0.1),
-                    intake.firein(),
-                    new SleepAction(0.6)
-            ));
+        if (!camq.getLatestResult().isValid()) {
+            turretLock.set(true);
         }
 
         Actions.runBlocking(new SequentialAction(
                 intake.on(),
-                drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(17)))
-                        .strafeToSplineHeading(new Vector2d(-49,20),Math.toRadians(90))
-                        .strafeTo(new Vector2d(-49,45), new TranslationalVelConstraint(12.5))
-                        .build(),
-                new SleepAction(0.1),
-                intake.off()
+                intake2.on(),
+                pew.launch(),
+                new SleepAction(2.0)
         ));
 
-        Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(new Pose2d(-49,45,Math.toRadians(90)))
-                        .strafeTo(new Vector2d(-49,20))
-                        .strafeToSplineHeading(new Vector2d(-66, 20),Math.toRadians(17))
-                        .build()
-        ));
 
-        Actions.runBlocking(new SequentialAction(
-                intake.off(),
-                shooter.full()
-        ));
-
-        for (int i=0; i<3; i++){
-            Actions.runBlocking(new SequentialAction(
-                    intake.off(),
-                    new SleepAction(0.5),
-                    pew.launch(),
-                    new SleepAction(0.2),
-                    pew.set(),
-                    new SleepAction(0.1),
-                    intake.firein(),
-                    new SleepAction(0.6)
-            ));
-        }
-
-
-        Actions.runBlocking(new SequentialAction(
-                intake.on(),
-                drive.actionBuilder(new Pose2d(-66,18,Math.toRadians(20)))
-                        .strafeToSplineHeading(new Vector2d(-26,18), Math.toRadians(90))
-                        .strafeTo(new Vector2d(-26, 40), new TranslationalVelConstraint(12.5))
-                        .strafeToSplineHeading(new Vector2d(-64,20), Math.toRadians(17))
-                        .build()
-
-        ));
-
-        for (int i=0; i<3; i++){
-            Actions.runBlocking(new SequentialAction(
-                    intake.off(),
-                    new SleepAction(0.5),
-                    pew.launch(),
-                    new SleepAction(0.2),
-                    pew.set(),
-                    new SleepAction(0.1),
-                    intake.firein(),
-                    new SleepAction(0.6)
-            ));
-        }
-*/
         thread.interrupt();
 
     }

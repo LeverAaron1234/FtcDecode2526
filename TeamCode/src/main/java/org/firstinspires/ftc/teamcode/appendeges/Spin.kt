@@ -98,7 +98,7 @@ class Spin(hardwareMap: HardwareMap) {
             power = 0.0
         }
 
-        if (!result.isValid()) {
+        if (!result.isValid) {
             if (leftPressed) {
                 move_left = false
             }
@@ -107,10 +107,10 @@ class Spin(hardwareMap: HardwareMap) {
             }
 
             if (!lock) {
-                spin.setPower(0.3 * (if (move_left) -1 else 1))
+                spin.power = (0.3 * (if (move_left) -1 else 1))
             } else {
                 power -= deAcellSpeed
-                spin.setPower(power)
+                spin.power = (power)
             }
             lastError = 0.0
             returnList.add(power)
@@ -120,29 +120,29 @@ class Spin(hardwareMap: HardwareMap) {
             return returnList
         }
 
-        val error = goalX - result.getTx()
-        val PTerm = error * DriveConstants.spinP
+        val error = goalX - result.tx
+        val pTerm = error * DriveConstants.spinP
 
         kIgain += error * deltaTime
-        val Iterm = kIgain * DriveConstants.spinI
+        val iterm = kIgain * DriveConstants.spinI
 
-        var Dterm = 0.0
+        var dterm = 0.0
         if (deltaTime > 0) {
-            Dterm = ((error - lastError) / deltaTime) * DriveConstants.spinD
+            dterm = ((error - lastError) / deltaTime) * DriveConstants.spinD
         }
 
         if (abs(error) < angleTolerance) {
             power = 0.0
             kIgain = 0.0
         } else {
-            power = Range.clip(PTerm + Iterm + Dterm, -MAX_POWER, MAX_POWER)
+            power = Range.clip(pTerm + iterm + dterm, -MAX_POWER, MAX_POWER)
         }
 
 
         if (power == 0.0) {
-            spin.setPower(0.001)
+            spin.power = (0.001)
         } else {
-            spin.setPower(power)
+            spin.power = (power)
         }
         lastError = error
 
