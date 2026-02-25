@@ -105,7 +105,7 @@ nonononononononononononononononononononononononononononono
         }*/
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToLinearHeading(new Vector2d(-56, -20),Math.toRadians(-24))//Firing position
+                        .strafeToLinearHeading(new Vector2d(-54, -20),Math.toRadians(-24))//Firing position
                         .build(),
                 new SleepAction(1.6)
         ));
@@ -149,15 +149,15 @@ nonononononononononononononononononononononononononononono
             ));
         }
         Actions.runBlocking(new SequentialAction(// Goes to pickup the 3rd set of balls
-                intake.on(),
+                intake.redfaron(),
                 drive.actionBuilder(new Pose2d(-52, -18, Math.toRadians(-25)))
-                        .strafeToLinearHeading(new Vector2d(-3,-40), Math.toRadians(-93))
-                        .strafeTo(new Vector2d(-3, -70), new TranslationalVelConstraint(30))
-                        .strafeToLinearHeading(new Vector2d(-54, -5), Math.toRadians(-24), new TranslationalVelConstraint(25))
+                        .strafeToLinearHeading(new Vector2d(-1,-40), Math.toRadians(-93))
+                        .strafeTo(new Vector2d(-1, -70), new TranslationalVelConstraint(30))
+                        .strafeToLinearHeading(new Vector2d(-54, -20), Math.toRadians(-24), new TranslationalVelConstraint(15))
                         .build()
         ));
 
-        for (int i=0; i<3; i++){// Fires the last set of balls (3rd)
+        for (int i=0; i<2; i++){// Fires the last set of balls (3rd)
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),

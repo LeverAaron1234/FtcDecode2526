@@ -173,7 +173,7 @@ public final class BlueFarAuto extends LinearOpMode {
 
         ));
 
-        for (int i=0; i<3; i++){// Firing the 3rd set of balls
+        for (int i=0; i<2; i++){// Firing the 3rd set of balls
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
@@ -187,6 +187,9 @@ public final class BlueFarAuto extends LinearOpMode {
                     new SleepAction(0.6)
             ));
         }
+        drive.actionBuilder(new Pose2d(-65, 20, Math.toRadians(16.5)))
+                .strafeToLinearHeading(new Vector2d(-48, 18), Math.toRadians(23))
+                .build();
 
 
 

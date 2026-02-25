@@ -15,8 +15,8 @@ class Angle(hardwareMap: HardwareMap) {
      */
     enum class AnglePos(val position: Double) {
         Far(0.90),
-        bluefar(0.79),
-        redfar(0.75),
+        bluefar(0.82),
+        redfar(0.80),
         Middle(0.60),
         Close(0.60)
 
