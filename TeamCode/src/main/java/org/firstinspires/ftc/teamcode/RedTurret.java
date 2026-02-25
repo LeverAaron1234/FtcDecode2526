@@ -30,10 +30,10 @@ public class RedTurret extends LinearOpMode {
 
   private DcMotorEx wheeel = null;
   private DcMotor intake = null;
-  private DcMotor intake2 = null;
   private Limelight3A camq = null;
   private DcMotorEx pew = null;
   private Servo angle = null;
+  private Servo stopper = null;
   private TurretSpinner spin = new TurretSpinner();
 
   public TouchSensor leftLimit = null;
@@ -52,12 +52,12 @@ public class RedTurret extends LinearOpMode {
 
     wheeel = hardwareMap.get(DcMotorEx.class, "launcher");
     intake = hardwareMap.get(DcMotor.class, "intake");
-    intake2 = hardwareMap.get(DcMotor.class, "intake2");
     pew = hardwareMap.get(DcMotorEx.class, "pew");
 
     camq = hardwareMap.get(Limelight3A.class, "limelight");
 
     angle = hardwareMap.get(Servo.class, "angle");
+    stopper = hardwareMap.get(Servo.class, "stopper");
 
     spin.init(hardwareMap);
 
@@ -80,11 +80,11 @@ public class RedTurret extends LinearOpMode {
     pew.setDirection(DcMotorSimple.Direction.FORWARD);
     wheeel.setDirection(DcMotorEx.Direction.REVERSE);
     intake.setDirection(DcMotor.Direction.FORWARD);  // Main Intake
-    intake2.setDirection(DcMotor.Direction.FORWARD); // Helping Intake
 
 
     // Servo setup
     angle.setPosition(0);
+    stopper.setPosition(0); // equivalent to pew
 
     // Camera Stuff
     int pipe = 2;
@@ -201,13 +201,11 @@ public class RedTurret extends LinearOpMode {
       // to get the ball into the launcher
       if ((gamepad1.left_trigger >= 0.2) && !changed2) {
         intake.setPower(1);
-        intake2.setPower(1);
-        pew.setPower(0);
+        pew.setPower(1);
         changed2 = true;
       } else if (!(gamepad1.left_trigger >= 0.2) && changed2) {
         pew.setPower(0);
         intake.setPower(0);
-        intake2.setPower(0);
         changed2 = false;
       }
 
@@ -268,12 +266,12 @@ public class RedTurret extends LinearOpMode {
       if (gamepad1.right_trigger >= 0.2 && !changed6) {
         pew.setPower(1);
         intake.setPower(1);
-        intake2.setPower(1);
+        stopper.setPosition(0.5);
         changed6 = true;
       } else if (!(gamepad1.right_trigger >= 0.2) && changed6) {
         pew.setPower(0);
         intake.setPower(0);
-        intake2.setPower(0);
+        stopper.setPosition(0);
         changed6 = false;
       }
 
@@ -281,12 +279,10 @@ public class RedTurret extends LinearOpMode {
       if (gamepad1.left_bumper && !changed8) {
         pew.setPower(-0.4);
         intake.setPower(-0.4);
-        intake2.setPower(-0.4);
         changed8 = true;
       } else if (!(gamepad1.left_bumper) && changed8) {
         pew.setPower(0);
         intake.setPower(0);
-        intake2.setPower(0);
         changed8 = false;
       }
 
@@ -311,7 +307,7 @@ public class RedTurret extends LinearOpMode {
       frontRightDrive.setPower(frontRightPower);
       backRightDrive.setPower(backRightPower);
 
-      wheeelSpeed = Range.clip(wheeelSpeed,-1,1);
+      wheeelSpeed = Range.clip(wheeelSpeed,0,1);
       anglePos = Range.clip(anglePos, 0,0.9);
 
       wheeel.setVelocity(wheeelSpeed*2800);
@@ -346,6 +342,7 @@ public class RedTurret extends LinearOpMode {
       telemetry.addLine("==Other==");
       telemetry.addData("Pew Pwr", pew.getPower());
       telemetry.addData("Angle Pos", angle.getPosition());
+      telemetry.addData("Stopper Pos", stopper.getPosition());
 
 
       packet.addTimestamp();
