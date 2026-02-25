@@ -99,32 +99,32 @@ public final class BlueFarAuto extends LinearOpMode {
         }*/
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToSplineHeading(new Vector2d(-60, 20), Math.toRadians(15))// This is the firing position for Blue Far
+                        .strafeToSplineHeading(new Vector2d(-60, 20), Math.toRadians(15.75))// This is the firing position for Blue Far
                         .build(),
                 shooter.bluefar(),
-                new SleepAction(1.6)
+                new SleepAction(2.0)
         ));
 
         for (int i=0; i<3; i++){//This is firing the pre-loaded/first set of balls
             Actions.runBlocking(new SequentialAction(
-                    helper.off(),
-                    intake.off(),
-                    new SleepAction(0.5),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.55)
+                    new SleepAction(0.6),
+                    helper.off(),
+                    intake.off()
             ));
         }
 
-        Actions.runBlocking(new SequentialAction(// This goes to and picks up the first row of balls
+        Actions.runBlocking(new SequentialAction(// This goes to and picks up the 2nd set of balls
                 intake.on(),
+                helper.forward(),
                 drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(17)))
                         .strafeToSplineHeading(new Vector2d(-50,20),Math.toRadians(90))
-                        .strafeTo(new Vector2d(-50,40), new TranslationalVelConstraint(13.5))
+                        .strafeTo(new Vector2d(-50,46), new TranslationalVelConstraint(13.5))
                         .build(),
                 new SleepAction(0.16),
                 intake.off()
@@ -132,7 +132,7 @@ public final class BlueFarAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(// Go back to the firing position and get ready to fire the 2nd set of balls
                 drive.actionBuilder(new Pose2d(-54,40,Math.toRadians(90)))
-                        .strafeToSplineHeading(new Vector2d(-65, 20),Math.toRadians(17))
+                        .strafeToSplineHeading(new Vector2d(-65, 20), Math.toRadians(15.75))
                         .build()
         ));
 
@@ -145,51 +145,53 @@ public final class BlueFarAuto extends LinearOpMode {
                 new SleepAction(0.35)
         ));
 
+
         for (int i=0; i<3; i++){// This is firing the second set of balls
             Actions.runBlocking(new SequentialAction(
-                    helper.off(),
-                    intake.off(),
-                    new SleepAction(0.45),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.6)
+                    new SleepAction(0.6),
+                    helper.off(),
+                    intake.off()
             ));
         }
 
         Actions.runBlocking(new SequentialAction(// This is moving to pick up the 2nd set of balls
                 intake.on(),
+                helper.forward(),
                 drive.actionBuilder(new Pose2d(-65,20,Math.toRadians(17)))
-                        .strafeToSplineHeading(new Vector2d(-28, 15), Math.toRadians(90))
-                        .strafeTo(new Vector2d(-28, 20))
-                        .strafeTo(new Vector2d(-28, 47), new TranslationalVelConstraint(15))
-                        .strafeToSplineHeading(new Vector2d(-65, 20),Math.toRadians(16.5))//This is going back to the firing position
+                        .strafeToSplineHeading(new Vector2d(-26, 15), Math.toRadians(90))
+                        .strafeTo(new Vector2d(-26, 20))
+                        .strafeTo(new Vector2d(-26, 48), new TranslationalVelConstraint(15))
+                        .strafeToSplineHeading(new Vector2d(-65, 20), Math.toRadians(15.95))//This is going back to the firing position
                         .build(),
                 new SleepAction(0.1),
                 intake.off()
 
         ));
 
-        for (int i=0; i<2; i++){// Firing the 3rd set of balls
+        for (int i=0; i<3; i++){// Firing the 3rd set of balls
             Actions.runBlocking(new SequentialAction(
-                    helper.off(),
-                    intake.off(),
-                    new SleepAction(0.55),
                     pew.launch(),
                     new SleepAction(0.2),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.6)
+                    new SleepAction(0.6),
+                    helper.off(),
+                    intake.off()
             ));
         }
-        drive.actionBuilder(new Pose2d(-65, 20, Math.toRadians(16.5)))
-                .strafeToLinearHeading(new Vector2d(-48, 18), Math.toRadians(23))
-                .build();
+        Actions.runBlocking(
+                drive.actionBuilder(new Pose2d(-65, 20, Math.toRadians(16.5)))
+                        .strafeToLinearHeading(new Vector2d(-45, 27), Math.toRadians(0))
+                        .build()
+        );
 
 
 
