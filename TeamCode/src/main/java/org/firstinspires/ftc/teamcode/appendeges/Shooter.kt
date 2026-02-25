@@ -19,7 +19,7 @@ class Shooter(hardwareMap: HardwareMap) {
     enum class Shooter(val pwr: Double) {
         full(0.74),
         bluefar(0.84),
-        redfar(0.85),
+        redfar(0.87),
         medium(0.60),
         low(0.55),
         off(0.0)
