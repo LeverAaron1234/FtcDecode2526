@@ -169,7 +169,7 @@ public final class RedFarAuto extends LinearOpMode {
                     helper.forward(),
                     intake.firein(),
                     new SleepAction(0.65)
-            ));
+               ));
         }
         drive.actionBuilder(new Pose2d(-55, -20, Math.toRadians(-24)))
                 .strafeToLinearHeading(new Vector2d(-48, -18), Math.toRadians(-23))
