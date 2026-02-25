@@ -52,7 +52,7 @@ public class TurretSpinner {
     double deltaTime = timer.seconds();
     timer.reset();
 
-    // TODO: delete to make the turret spin around when it can't find the target
+    // TODO: delete to make the turret spin around when it can't find the target (or click the up arrow on the gamepad)
     lock = !lock;
 
     Map<String, Object> returnList = new HashMap<>();
