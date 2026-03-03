@@ -72,11 +72,11 @@ public final class BlueFarAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         camq.update(),
-                        shooter.full(),
+                        shooter.fullblue(),
                         intake.off(),
                         pew.set(),
                         helper.off(),
-                        angle.far()
+                        angle.farblue()
                 )
         );
 
@@ -102,17 +102,17 @@ public final class BlueFarAuto extends LinearOpMode {
                         .strafeToSplineHeading(new Vector2d(-60, 20), Math.toRadians(17))
                         .build(),
                 shooter.full(),
-                new SleepAction(1.5)
+                new SleepAction(3)
         ));
 
         for (int i=0; i<3; i++){
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.10),
                     helper.backward(),
                     pew.launch(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
@@ -134,7 +134,7 @@ public final class BlueFarAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(new Pose2d(-49,45,Math.toRadians(90)))
                         .strafeTo(new Vector2d(-49,20))
-                        .strafeToSplineHeading(new Vector2d(-66, 20),Math.toRadians(17))
+                        .strafeToSplineHeading(new Vector2d(-66, 20),Math.toRadians(15))
                         .build()
         ));
 
@@ -148,10 +148,10 @@ public final class BlueFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.10),
                     helper.backward(),
                     pew.launch(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
@@ -166,7 +166,7 @@ public final class BlueFarAuto extends LinearOpMode {
                 drive.actionBuilder(new Pose2d(-66,18,Math.toRadians(20)))
                         .strafeToSplineHeading(new Vector2d(-26,18), Math.toRadians(90))
                         .strafeTo(new Vector2d(-26, 40), new TranslationalVelConstraint(12.5))
-                        .strafeToSplineHeading(new Vector2d(-64,20), Math.toRadians(17))
+                        .strafeToSplineHeading(new Vector2d(-64,20), Math.toRadians(15))
                         .build()
 
         ));
@@ -175,10 +175,10 @@ public final class BlueFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.10),
                     helper.backward(),
                     pew.launch(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
@@ -187,6 +187,14 @@ public final class BlueFarAuto extends LinearOpMode {
             ));
         }
 
+        Actions.runBlocking(new SequentialAction(
+                intake.on(),
+                drive.actionBuilder(new Pose2d(-60,20,Math.toRadians(0)))
+                        .strafeTo(new Vector2d(-44,20), new TranslationalVelConstraint(12.5))
+                        .build(),
+                new SleepAction(0.1),
+                intake.off()
+        ));
 
 
     }

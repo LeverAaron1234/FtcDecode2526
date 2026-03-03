@@ -15,6 +15,8 @@ class Angle(hardwareMap: HardwareMap) {
      */
     enum class AnglePos(val position: Double) {
         Far(0.90),
+        FarBlue(0.90),
+        FarRed(0.95),
         Middle(0.60),
         Close(0.60)
 
@@ -62,6 +64,8 @@ class Angle(hardwareMap: HardwareMap) {
      */
 
     fun far(): Action = SetState(AnglePos.Far)
+    fun farblue(): Action = SetState(AnglePos.FarBlue)
+    fun farred(): Action = SetState(AnglePos.FarRed)
     fun mid(): Action = SetState(AnglePos.Middle)
     fun middle(): Action = SetState(AnglePos.Middle)
     fun down(): Action = SetState(AnglePos.Close)

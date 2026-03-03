@@ -66,7 +66,7 @@ public final class RedCloseAuto extends LinearOpMode {
         Actions.runBlocking(
                 new ParallelAction(
                         camq.update(),
-                        shooter.low(),
+                        shooter.lowred(),
                         intake.on(),
                         pew.set(),
                         helper.forward(),
@@ -102,12 +102,12 @@ public final class RedCloseAuto extends LinearOpMode {
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.75)
+                    new SleepAction(0.6)
             ));
         }
 
@@ -131,12 +131,12 @@ public final class RedCloseAuto extends LinearOpMode {
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.75)
+                    new SleepAction(0.6)
             ));
         }
 
@@ -157,14 +157,20 @@ public final class RedCloseAuto extends LinearOpMode {
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.75)
+                    new SleepAction(0.6)
             ));
         }
+        Actions.runBlocking(new SequentialAction(
+                intake.on(),
+                drive.actionBuilder(new Pose2d(-33,19, Math.toRadians(180)))
+                        .strafeTo(new Vector2d(-29,43), new TranslationalVelConstraint(50))
+                        .build()
+        ));
 
     }
 

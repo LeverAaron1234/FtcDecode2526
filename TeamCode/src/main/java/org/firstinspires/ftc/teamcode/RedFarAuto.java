@@ -114,15 +114,15 @@ public final class RedFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.1),
                     helper.backward(),
                     pew.launch(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.9)
+                    new SleepAction(0.6)
             ));
         }
         Actions.runBlocking(new SequentialAction(
@@ -138,15 +138,15 @@ public final class RedFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.1),
                     helper.backward(),
                     pew.launch(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.9)
+                    new SleepAction(0.6)
             ));
         }
 
@@ -163,18 +163,25 @@ public final class RedFarAuto extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.1),
                     helper.backward(),
                     pew.launch(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.9)
+                    new SleepAction(0.6)
             ));
         }
-
+        Actions.runBlocking(new SequentialAction(
+                intake.on(),
+                drive.actionBuilder(new Pose2d(-60,-18,Math.toRadians(0)))
+                        .strafeTo(new Vector2d(-44,-18), new TranslationalVelConstraint(50))
+                        .build(),
+                new SleepAction(0.1),
+                intake.off()
+        ));
 
 
     }

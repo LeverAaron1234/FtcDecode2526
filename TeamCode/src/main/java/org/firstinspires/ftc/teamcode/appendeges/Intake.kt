@@ -15,7 +15,7 @@ class Intake(hardwareMap: HardwareMap) {
      */
 
     enum class Intake(val pwr: Double) {
-        on(0.8),
+        on(1.0),
         fire(0.5),
         Neutral(0.0)
 
