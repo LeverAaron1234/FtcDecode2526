@@ -81,8 +81,8 @@ public final class BlueCloseAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToSplineHeading(new Vector2d(-33,-19), Math.toRadians(233)) // Point to goal
-                        .strafeTo(new Vector2d(-33,-19))
+                        .strafeToSplineHeading(new Vector2d(-33,-21), Math.toRadians(233)) // Point to goal
+                        .strafeTo(new Vector2d(-33,-21))
                         .build(),
                 intake.on(),
                 new SleepAction(0.5)
@@ -94,25 +94,25 @@ public final class BlueCloseAuto extends LinearOpMode {
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.75)
+                    new SleepAction(0.6)
             ));
         }
 
         Actions.runBlocking(new SequentialAction(
                 intake.on(),
-                drive.actionBuilder(new Pose2d(-33,-16.5,Math.toRadians(233)))
+                drive.actionBuilder(new Pose2d(-33,-21,Math.toRadians(233)))
                         .strafeToSplineHeading(new Vector2d(-10, -25), Math.toRadians(270))
                         .build(),
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-14, -25, Math.toRadians(270)))
                         .strafeTo(new Vector2d(-14, -52), new TranslationalVelConstraint(12.5))
-                        .strafeToSplineHeading(new Vector2d(-33, -19), Math.toRadians(233))
-                        .strafeTo(new Vector2d(-33,-19))
+                        .strafeToSplineHeading(new Vector2d(-33, -21), Math.toRadians(233))
+                        .strafeTo(new Vector2d(-33,-21))
                         .build(),
                 new SleepAction(0.5)
         ));
@@ -123,23 +123,23 @@ public final class BlueCloseAuto extends LinearOpMode {
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.75)
+                    new SleepAction(0.6)
             ));
         }
 
 
         Actions.runBlocking(new SequentialAction(
                 intake.on(),
-                drive.actionBuilder(new Pose2d(-33,-17, Math.toRadians(233)))
+                drive.actionBuilder(new Pose2d(-33,-21, Math.toRadians(233)))
                         .strafeToSplineHeading(new Vector2d(10, -25), Math.toRadians(270))
                         .strafeTo(new Vector2d(10,-52), new TranslationalVelConstraint(12.5))
-                        .strafeToSplineHeading(new Vector2d(-33,-19), Math.toRadians(233))
-                        .strafeTo(new Vector2d(-33,-19))
+                        .strafeToSplineHeading(new Vector2d(-33,-21), Math.toRadians(233))
+                        .strafeTo(new Vector2d(-33,-21))
                         .build()
         ));
 
@@ -149,15 +149,21 @@ public final class BlueCloseAuto extends LinearOpMode {
                     intake.off(),
                     new SleepAction(0.1),
                     pew.launch(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.15),
                     pew.set(),
                     new SleepAction(0.1),
                     helper.forward(),
                     intake.firein(),
-                    new SleepAction(0.75)
+                    new SleepAction(0.6)
             ));
         }
-
+        Actions.runBlocking(new SequentialAction(
+                intake.on(),
+                drive.actionBuilder(new Pose2d(-33,-14, Math.toRadians(180)))
+                        .strafeTo(new Vector2d(-40,-60
+                        ), new TranslationalVelConstraint(50))
+                        .build()
+        ));
 
 
 }}

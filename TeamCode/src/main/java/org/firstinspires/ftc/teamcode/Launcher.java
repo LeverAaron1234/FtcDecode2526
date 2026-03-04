@@ -277,7 +277,7 @@ Y -> slower drive
       // Far
       if (gamepad1.a && !changed4) {
         anglePos = 0.80;
-        wheeelSpeed = 0.70;
+        wheeelSpeed = 0.758;
         changed4 = true;
       } else if (!gamepad1.a) {
         changed4 = false;
