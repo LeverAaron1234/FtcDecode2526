@@ -11,11 +11,8 @@ import com.qualcomm.robotcore.hardware.Servo
 
 class Pew(hardwareMap: HardwareMap) {
 
-    /**
-     * @param position the position of the scoringArm in that state, -1 means we don't currently
-     * know the position of the scoringArm
-     */
     enum class PewPos(val position: Double) {
+        invert(-0.4),
         set(0.0),
         launch(1.0)
 
@@ -30,12 +27,7 @@ class Pew(hardwareMap: HardwareMap) {
     var targetPosition = 0.0
 
 
-    /**
-     * Start: sets the arm state and position;
-     * IsFinished: the arm has reached the state's position
-     *
-     * @param state the state (and associated position) to set the arm to
-     */
+
     inner class SetState(private val state: PewPos) : Action {
         private var initialized = false
 
@@ -65,6 +57,7 @@ class Pew(hardwareMap: HardwareMap) {
      * alongside a collect action
      */
 
+    fun back(): Action = SetState(PewPos.invert)
     fun set(): Action = SetState(PewPos.set)
     fun launch(): Action = SetState(PewPos.launch)
 
