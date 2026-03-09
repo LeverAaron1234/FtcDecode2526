@@ -70,7 +70,7 @@ public final class RedCloseAuto extends LinearOpMode {
                         intake.on(),
                         pew.set(),
                         helper.forward(),
-                        angle.middle()
+                        angle.redclose()
                 )
         );
 
@@ -89,8 +89,7 @@ public final class RedCloseAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToSplineHeading(new Vector2d(-33,19), Math.toRadians(128)) // Point to goal
-                        .strafeTo(new Vector2d(-33,19))
+                        .strafeToSplineHeading(new Vector2d(-36.5,14), Math.toRadians(126)) // Point to goal
                         .build(),
                 intake.on(),
                 new SleepAction(0.5)
@@ -113,14 +112,13 @@ public final class RedCloseAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 intake.on(),
-                drive.actionBuilder(new Pose2d(-33,16.5,Math.toRadians(128)))
+                drive.actionBuilder(new Pose2d(-36.5,14,Math.toRadians(126)))
                         .strafeToSplineHeading(new Vector2d(-14, 25), Math.toRadians(90))
                         .build(),
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-14, 25, Math.toRadians(90)))
                         .strafeTo(new Vector2d(-14, 52), new TranslationalVelConstraint(12.5))
-                        .strafeToSplineHeading(new Vector2d(-33, 19), Math.toRadians(128))
-                        .strafeTo(new Vector2d(-33,19))
+                        .strafeToSplineHeading(new Vector2d(-36.5, 14), Math.toRadians(126))
                         .build(),
                 new SleepAction(0.5)
         ));
@@ -143,11 +141,10 @@ public final class RedCloseAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 intake.on(),
-                drive.actionBuilder(new Pose2d(-33,17, Math.toRadians(128)))
+                drive.actionBuilder(new Pose2d(-36.5,14, Math.toRadians(126)))
                         .strafeToSplineHeading(new Vector2d(10, 25), Math.toRadians(90))
                         .strafeTo(new Vector2d(10,52), new TranslationalVelConstraint(12.5))
-                        .strafeToSplineHeading(new Vector2d(-33,19), Math.toRadians(128))
-                        .strafeTo(new Vector2d(-33,19))
+                        .strafeToSplineHeading(new Vector2d(-36.5,14), Math.toRadians(126))
                         .build()
         ));
 

@@ -17,6 +17,7 @@ class Angle(hardwareMap: HardwareMap) {
         Far(0.90),
         bluefar(0.87),
         redfar(0.80),
+        redclose(0.67),
         Middle(0.60),
         Close(0.60)
 
@@ -66,6 +67,7 @@ class Angle(hardwareMap: HardwareMap) {
     fun far(): Action = SetState(AnglePos.Far)
     fun bluefar(): Action = SetState(AnglePos.bluefar)
     fun redfar(): Action = SetState(AnglePos.redfar)
+    fun redclose(): Action = SetState(AnglePos.redclose)
     fun middle(): Action = SetState(AnglePos.Middle)
     fun down(): Action = SetState(AnglePos.Close)
 

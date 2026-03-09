@@ -6,11 +6,7 @@ Elijah R. & Dexter G. with source code from Levi R.
 started editing 1/6/2026
 
 */
-
-
-
 package org.firstinspires.ftc.teamcode;
-
 import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
