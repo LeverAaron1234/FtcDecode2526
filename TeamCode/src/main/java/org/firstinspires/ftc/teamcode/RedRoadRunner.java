@@ -6,7 +6,10 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -124,11 +127,27 @@ public class RedRoadRunner extends LinearOpMode {
     boolean changed8 = false;
 
 
+    PoseVelocity2d movement = new PoseVelocity2d(new Vector2d(0,0),0);
+
     /*===================================WHILE OPMODE IS RUNNING==================================*/
     while (opModeIsActive()) {
 
 
       TelemetryPacket packet = new TelemetryPacket();
+
+      //drive = -gamepad1.left_stick_x;
+      //strafe = gamepad1.left_stick_y;
+      //turn = gamepad1.right_stick_x;
+
+      movement = new PoseVelocity2d(
+              new Vector2d(
+                  -gamepad1.left_stick_y,
+                  -gamepad1.left_stick_x
+              ),
+              -gamepad1.right_stick_x
+      );
+
+
 
       // updated based on gamepads
       // Run artifacts backwards
@@ -146,6 +165,18 @@ public class RedRoadRunner extends LinearOpMode {
         changed8 = false;
       }
 
+      if (gamepad1.dpad_up && !changed7) {
+        turretLock.getAndSet(!turretLock.get());
+        changed7 = true;
+      } else if (!gamepad1.dpad_up) {
+        changed7 = false;
+      }
+
+
+
+      drive.setDrivePowers(movement);
+      drive.updatePoseEstimate();
+
       // update running actions
       List<Action> newActions = new ArrayList<>();
       for (Action action : runningActions) {
@@ -159,7 +190,7 @@ public class RedRoadRunner extends LinearOpMode {
           dash.sendTelemetryPacket(packet);
     }
 
-
+    drive.localizer.update();
 
 
       telemetry.update();

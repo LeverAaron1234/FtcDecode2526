@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode.appendeges
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
+import com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.DriveConstants
+import org.firstinspires.ftc.teamcode.MecanumDrive
 import kotlin.math.abs
 
 
@@ -84,6 +86,9 @@ class Spin(hardwareMap: HardwareMap) {
         timer.reset()
     }
 
+    fun odomUpdate(drive: MecanumDrive) {
+        //TODO: FINISH THIS, this will be same as update() but use odom + RR instead.
+    }
 
     fun update(result: LLResult, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         kP = DriveConstants.spinP
@@ -154,4 +159,6 @@ class Spin(hardwareMap: HardwareMap) {
         return returnList
     }
 
+    fun lock(): Action = SetState(SpinPos.locked)
+    fun unlock(): Action = SetState(SpinPos.unlocked)
 }
