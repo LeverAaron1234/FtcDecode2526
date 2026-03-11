@@ -16,16 +16,6 @@ class Shooter(hardwareMap: HardwareMap) {
      * know the position of the scoringArm
      */
 
-    enum class Shooter(val pwr: Double) {
-        full(0.74),
-        fullred(0.75),
-        medium(0.60),
-        low(0.55),
-        off(0.0)
-
-    }
-
-    var shooterState = Shooter.off
 
     private val shooter = hardwareMap.get(DcMotorEx::class.java, "launcher")
 
@@ -57,16 +47,15 @@ class Shooter(hardwareMap: HardwareMap) {
      *
      * @param state the state (and associated position) to set the arm to
      */
-    inner class SetState(private val state: Shooter) : Action {
+    inner class SetState(private val state: Double) : Action {
         private var initialized = false
 
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
-                targetPower = state.pwr
+                targetPower = state
 
                 shooter.velocity = targetPower*2800
-                shooterState = state
 
                 initialized = true
             }
@@ -90,10 +79,11 @@ class Shooter(hardwareMap: HardwareMap) {
      * alongside a collect action
      */
 
-    fun full(): Action = SetState(Shooter.full)
-    fun fuller(): Action = SetState(Shooter.fullred)
-    fun medium(): Action = SetState(Shooter.medium)
-    fun low(): Action = SetState(Shooter.low)
-    fun stop(): Action = SetState(Shooter.off)
+    fun full(): Action = SetState(0.74)
+    fun fuller(): Action = SetState(0.75)
+    fun medium(): Action = SetState(0.60)
+    fun low(): Action = SetState(0.55)
+    fun stop(): Action = SetState(0.0)
+    fun varshooter(spd: Double): Action = SetState(spd)
 
 }

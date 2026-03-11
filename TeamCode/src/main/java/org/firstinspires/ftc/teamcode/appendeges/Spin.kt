@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.DriveConstants
 import org.firstinspires.ftc.teamcode.MecanumDrive
 import kotlin.math.abs
+import kotlin.math.atan2
 
 
 class Spin(hardwareMap: HardwareMap) {
@@ -41,7 +42,6 @@ class Spin(hardwareMap: HardwareMap) {
     var lock = true // TODO: change to false to turn off lock
 
     private val timer = ElapsedTime()
-
 
 
     /**
@@ -86,8 +86,27 @@ class Spin(hardwareMap: HardwareMap) {
         timer.reset()
     }
 
-    fun odomUpdate(drive: MecanumDrive) {
-        //TODO: FINISH THIS, this will be same as update() but use odom + RR instead.
+    fun odomUpdate(drive: MecanumDrive, redGoal: Boolean): MutableList<Double?> {
+        val targetX = -72
+        val targetY = if (redGoal) 72 else -72
+
+        val posX = drive.localizer.pose.position.x
+        val posY = drive.localizer.pose.position.y
+
+        val targetAngle = atan2(targetY - posY, targetX - posX)
+
+        val returnList: MutableList<Double?> = ArrayList<Double?>()
+
+        //TODO: Change spin to a position
+        //spin.setPose(targetAngle/Math.PI)
+
+        returnList.add(posX)
+        returnList.add(posY)
+        returnList.add(targetAngle)
+        returnList.add(spin.power)
+
+        return returnList
+
     }
 
     fun update(result: LLResult, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {

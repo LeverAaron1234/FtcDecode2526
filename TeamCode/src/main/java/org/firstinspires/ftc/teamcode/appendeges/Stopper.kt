@@ -7,18 +7,23 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
 
-class Angle(hardwareMap: HardwareMap) {
+class Stopper(hardwareMap: HardwareMap) {
 
     /**
      * @param position the position of the scoringArm in that state, -1 means we don't currently
      * know the position of the scoringArm
      */
+    enum class StopperPos(val position: Double) {
+        In(0.5),
+        Out(0.0)
+
+    }
 
 
-    private val angle = hardwareMap.get(Servo::class.java, "angle")
+    private val stopper = hardwareMap.get(Servo::class.java, "stopper")
 
 
-    var targetPosition = 0.28
+    var targetPosition = 0.0
 
 
     /**
@@ -27,18 +32,18 @@ class Angle(hardwareMap: HardwareMap) {
      *
      * @param state the state (and associated position) to set the arm to
      */
-    inner class SetState(private val state: Double) : Action {
+    inner class SetState(private val state: StopperPos) : Action {
         private var initialized = false
 
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
-                targetPosition = state
-                angle.position = clamp(targetPosition, 0.1,1.0)
+                targetPosition = state.position.toDouble()
+                stopper.position = clamp(targetPosition, 0.1,1.0)
 
                 initialized = true
             }
-            packet.put("Angle Positon",angle.position)
+            packet.put("Stopper Positon",stopper.position)
 
             return false
         }
@@ -55,10 +60,7 @@ class Angle(hardwareMap: HardwareMap) {
      * alongside a collect action
      */
 
-    fun far(): Action = SetState(0.9)
-    fun mid(): Action = SetState(0.6)
-    fun middle(): Action = SetState(0.6)
-    fun down(): Action = SetState(0.6)
-    fun varangle(ang:Double): Action = SetState(ang)
+    fun In(): Action = SetState(StopperPos.In)
+    fun Out(): Action = SetState(StopperPos.Out)
 
 }

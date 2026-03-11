@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp(group="Linear Opmode")
-public class RedRoadRunner extends LinearOpMode {
+public class BlueRoadRunner extends LinearOpMode {
 
   private final ElapsedTime runtime = new ElapsedTime();
 
@@ -74,7 +74,7 @@ public class RedRoadRunner extends LinearOpMode {
     Actions.runBlocking(pew.set());
 
 
-    camq.pipelineSwitch(2);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
+    camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
     camq.start();
 
     MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
