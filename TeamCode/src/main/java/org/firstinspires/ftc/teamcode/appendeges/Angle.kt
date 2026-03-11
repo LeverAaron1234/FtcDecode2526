@@ -17,7 +17,7 @@ class Angle(hardwareMap: HardwareMap) {
         Far(0.90),
         bluefar(0.87),
         redfar(0.80),
-        redclose(0.67),
+        redclose(0.55),
         Middle(0.60),
         Close(0.60)
 

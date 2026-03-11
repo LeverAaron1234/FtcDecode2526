@@ -20,6 +20,7 @@ class Shooter(hardwareMap: HardwareMap) {
         full(0.74),
         bluefar(0.78),
         redfar(0.85),
+        redclose(0.53),
         medium(0.60),
         low(0.55),
         off(0.0)
@@ -94,6 +95,7 @@ class Shooter(hardwareMap: HardwareMap) {
     fun full(): Action = SetState(Shooter.full)
     fun bluefar(): Action = SetState(Shooter.bluefar)
     fun redfar(): Action = SetState(Shooter.redfar)
+    fun redclose(): Action = SetState(Shooter.redclose)
     fun medium(): Action = SetState(Shooter.medium)
     fun low(): Action = SetState(Shooter.low)
     fun stop(): Action = SetState(Shooter.off)

@@ -69,9 +69,7 @@ public final class RedFarAuto extends LinearOpMode {
         telemetry.update();
 
 // I just wanted to do this.
-/*
-nonononononononononononononononononononononononononononono
-*/        Actions.runBlocking(
+        Actions.runBlocking(
                 new SequentialAction(
                         camq.update(),
                         shooter.redfar(),
