@@ -285,6 +285,8 @@ public class RedRoadRunner extends LinearOpMode {
       drive.setDrivePowers(movement);
       drive.updatePoseEstimate();
 
+      packet.put("Pose",drive.localizer.getPose());
+
       // update running actions
       List<Action> newActions = new ArrayList<>();
       for (Action action : runningActions) {
