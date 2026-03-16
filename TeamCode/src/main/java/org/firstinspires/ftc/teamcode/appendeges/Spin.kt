@@ -87,15 +87,20 @@ class Spin(hardwareMap: HardwareMap) {
     }
 
     fun odomUpdate(drive: MecanumDrive, redGoal: Boolean): MutableList<Double?> {
+        val ticksPerDegree = 68.1+(1/6)
         val targetX = -72
         val targetY = if (redGoal) 72 else -72
 
         val posX = drive.localizer.pose.position.x
         val posY = drive.localizer.pose.position.y
 
-        val targetAngle = atan2(targetY - posY, targetX - posX)
+        val targetAngle = (atan2(targetY - posY, targetX - posX)*Math.PI/180) * ticksPerDegree
+
+
 
         val returnList: MutableList<Double?> = ArrayList<Double?>()
+
+
 
         //TODO: Change spin to a position
         //spin.setPose(targetAngle/Math.PI)

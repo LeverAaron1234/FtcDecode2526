@@ -140,7 +140,7 @@ public class RedRoadRunner extends LinearOpMode {
 
     boolean slow = false;
 
-    PoseVelocity2d movement = new PoseVelocity2d(new Vector2d(0,0),0);
+    PoseVelocity2d movement = null;
 
     /*===================================WHILE OPMODE IS RUNNING==================================*/
     while (opModeIsActive()) {

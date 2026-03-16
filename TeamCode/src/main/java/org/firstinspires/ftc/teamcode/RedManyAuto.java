@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -23,12 +24,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import kotlin.time.Instant;
 
-@Autonomous(name="RedTest",preselectTeleOp="RedRoadRunner")
+@Autonomous(preselectTeleOp="RedRoadRunner")
 public final class RedManyAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(-37.7, -47.85, Math.toRadians(-90));
+        Pose2d beginPose = new Pose2d(-38.1, 47.9, Math.toRadians(-56.6));
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
@@ -95,21 +96,29 @@ public final class RedManyAuto extends LinearOpMode {
 
         telemetry.update();
 
-        Actions.runBlocking(new SequentialAction(
+        Actions.runBlocking(new ParallelAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToSplineHeading(new Vector2d(60,-20), Math.toRadians(-80))
+                        .strafeToSplineHeading(new Vector2d(-10,10), Math.toRadians(-90))
                         .build(),
-                shooter.full(),
-                new SleepAction(1.5)
+                intake.on(),
+                pew.launch()
         ));
 
         if (!camq.getLatestResult().isValid()) {
             turretLock.set(true);
         }
+        Actions.runBlocking(
+            new SleepAction(2.0)
+        );
+
         Actions.runBlocking(new SequentialAction(
-                intake.on(),
-                pew.launch(),
-                new SleepAction(2.0)
+               drive.actionBuilder(new Pose2d(-20,20, Math.toRadians(-90)))
+                       .strafeToSplineHeading(new Vector2d(-20, 21),Math.toRadians(90))
+                       .build(),
+               intake.on(),
+               drive.actionBuilder(new Pose2d(-20,20,Math.toRadians(90)))
+                       .strafeTo(new Vector2d(-20, 40), new TranslationalVelConstraint(15))
+                       .build()
         ));
 
 
