@@ -67,7 +67,7 @@ public final class BlueCloseAuto extends LinearOpMode {
         Actions.runBlocking(
                 new ParallelAction(
                         camq.update(),
-                        shooter.low(),
+                        shooter.blueclose(),
                         intake.off(),
                         pew.set(),
                         helper.forward(),
@@ -106,13 +106,12 @@ public final class BlueCloseAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-33,-16.5,Math.toRadians(233)))
-                        .strafeToSplineHeading(new Vector2d(-10, -25), Math.toRadians(270))
+                        .strafeToSplineHeading(new Vector2d(-14, -25), Math.toRadians(270))
                         .build(),
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-14, -25, Math.toRadians(270)))
-                        .strafeTo(new Vector2d(-14, -52), new TranslationalVelConstraint(12.5))
+                        .strafeTo(new Vector2d(-14, -53), new TranslationalVelConstraint(25))
                         .strafeToSplineHeading(new Vector2d(-33, -19), Math.toRadians(233))
-                        .strafeTo(new Vector2d(-33,-19))
                         .build(),
                 new SleepAction(0.5)
         ));
@@ -137,9 +136,8 @@ public final class BlueCloseAuto extends LinearOpMode {
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-33,-17, Math.toRadians(233)))
                         .strafeToSplineHeading(new Vector2d(10, -25), Math.toRadians(270))
-                        .strafeTo(new Vector2d(10,-52), new TranslationalVelConstraint(12.5))
+                        .strafeTo(new Vector2d(10,-52), new TranslationalVelConstraint(25))
                         .strafeToSplineHeading(new Vector2d(-33,-19), Math.toRadians(233))
-                        .strafeTo(new Vector2d(-33,-19))
                         .build()
         ));
 

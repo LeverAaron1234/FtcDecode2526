@@ -23,6 +23,7 @@ class Shooter(hardwareMap: HardwareMap) {
         redclose(0.53),
         medium(0.60),
         low(0.55),
+        blueclose(0.56),
         off(0.0)
 
     }
@@ -98,6 +99,7 @@ class Shooter(hardwareMap: HardwareMap) {
     fun redclose(): Action = SetState(Shooter.redclose)
     fun medium(): Action = SetState(Shooter.medium)
     fun low(): Action = SetState(Shooter.low)
+    fun blueclose(): Action = SetState(Shooter.blueclose)
     fun stop(): Action = SetState(Shooter.off)
 
 }
