@@ -80,5 +80,8 @@ class Intake(hardwareMap: HardwareMap) {
     fun firein(): Action = SetState(Intake.fire)
     fun off(): Action = SetState(Intake.Neutral)
     fun back(): Action = SetState(Intake.invert)
+    fun getPos(): Int {
+        return intake.currentPosition
+    }
 
 }

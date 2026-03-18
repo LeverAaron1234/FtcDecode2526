@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -18,6 +19,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -64,9 +66,6 @@ public class RedRoadRunner extends LinearOpMode {
     Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
     Spin spin = new Spin(hardwareMap);
     spin.resetTimer();
-
-
-
 
     TouchSensor leftLimit = hardwareMap.get(TouchSensor.class, "leftLimit");
     TouchSensor rightLimit = hardwareMap.get(TouchSensor.class, "rightLimit");

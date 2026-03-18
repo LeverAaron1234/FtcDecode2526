@@ -2,15 +2,17 @@ package org.firstinspires.ftc.teamcode.appendeges
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
-import com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory
+import com.acmerobotics.roadrunner.ftc.Encoder
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.hardware.CRServo
+import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.DriveConstants
 import org.firstinspires.ftc.teamcode.MecanumDrive
 import kotlin.math.abs
+import kotlin.math.atan
 import kotlin.math.atan2
 
 
@@ -86,16 +88,40 @@ class Spin(hardwareMap: HardwareMap) {
         timer.reset()
     }
 
-    fun odomUpdate(drive: MecanumDrive, redGoal: Boolean): MutableList<Double?> {
+    fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean): MutableList<Double?> {
         val ticksPerDegree = 68.1+(1/6)
         val targetX = -72
-        val targetY = if (redGoal) 72 else -72
+        val targetY = if (isRedGoal) 72 else -72
 
         val posX = drive.localizer.pose.position.x
         val posY = drive.localizer.pose.position.y
 
+        val realAng = drive.localizer.pose.heading.real
+        val imagAng = drive.localizer.pose.heading.imag
+
+        val currentAngle = (atan(imagAng/realAng)*Math.PI/180) + if(realAng>0) 0 else 180
+
         val targetAngle = (atan2(targetY - posY, targetX - posX)*Math.PI/180) * ticksPerDegree
 
+        kP = DriveConstants.spinP
+        kI = DriveConstants.spinI
+        kD = DriveConstants.spinD
+
+        var deltaTime = timer.seconds()
+        timer.reset()
+        var error = targetAngle - currentAngle
+
+        val Pterm = error * kP
+
+        kIgain += error * deltaTime
+        val Iterm = kIgain * kI
+
+        var Dterm = 0.0
+        if (deltaTime > 0) {
+            Dterm = ((error - lastError) / deltaTime) * kD
+        }
+
+        power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER,MAX_POWER)
 
 
         val returnList: MutableList<Double?> = ArrayList<Double?>()
