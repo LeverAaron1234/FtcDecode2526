@@ -163,6 +163,11 @@ public final class RedCloseAuto extends LinearOpMode {
                     new SleepAction(0.75)
             ));
         }
+        Actions.runBlocking(
+                drive.actionBuilder(new Pose2d(-36.5, 14, Math.toRadians(127)))
+                        .strafeToLinearHeading(new Vector2d(-20, 20), Math.toRadians(127))
+                        .build()
+        );
 
     }
 

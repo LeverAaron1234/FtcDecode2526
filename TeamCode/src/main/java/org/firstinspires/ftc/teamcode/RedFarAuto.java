@@ -127,7 +127,7 @@ public final class RedFarAuto extends LinearOpMode {
         ));
 
 
-        for (int i=0; i<3; i++){// Fires the 2nd set of balls
+        for (int i=0; i<3; i++){// Fires the second set of balls (2nd)
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
@@ -166,9 +166,14 @@ public final class RedFarAuto extends LinearOpMode {
         }
         Actions.runBlocking(
                 drive.actionBuilder(new Pose2d(-53, -20, Math.toRadians(-23)))
-                        .strafeToLinearHeading(new Vector2d(-48, -1999999999), Math.toRadians(-24.5))
+                        .strafeToLinearHeading(new Vector2d(-48, -23), Math.toRadians(-24.5))
                         .build()
         );
 
     }
 }
+/*
+Fun fact! the minium number you can put in the .strafeToLinearHeading(new Vector2d(), Math.toRadians())
+is (In the y cord) -2147483648, followed by a very large number of nines (I stop after holding the button
+for ~50 seconds.
+*/
