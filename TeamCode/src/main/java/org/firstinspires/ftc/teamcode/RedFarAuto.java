@@ -39,7 +39,6 @@ public final class RedFarAuto extends LinearOpMode {
         LimelightCam camq = new LimelightCam(hardwareMap);
         Actions.runBlocking(pew.set());
 
-
         camq.setPipeline(LimelightCam.Camera.Obelisk);
         camq.switchPipeline(1); //1 = Obelisk, 2 = Goals
 
@@ -99,12 +98,12 @@ public final class RedFarAuto extends LinearOpMode {
         }*/
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToLinearHeading(new Vector2d(-54, -20),Math.toRadians(-24))//Firing position
+                        .strafeToLinearHeading(new Vector2d(-53, -20),Math.toRadians(-23))//Firing position
                         .build(),
                 new SleepAction(1.6)
         ));
 
-        for (int i=0; i<3; i++){// Fires the pre-loaded balls
+        for (int i=0; i<3; i++){// Fires the preloaded balls
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
@@ -118,12 +117,12 @@ public final class RedFarAuto extends LinearOpMode {
                     new SleepAction(0.65)
             ));
         }
-        Actions.runBlocking(new SequentialAction(//goes to pickup the 2nd set of balls
+        Actions.runBlocking(new SequentialAction(//goes to pick up the 2nd set of balls
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-57,-20,Math.toRadians(-23)))
                         .strafeToLinearHeading(new Vector2d(-25,-30),Math.toRadians(-90))
-                        .strafeTo(new Vector2d(-25,-65), new TranslationalVelConstraint(25))
-                        .strafeToLinearHeading(new Vector2d(-54, -20), Math.toRadians(-24))// Goes back to the firing position
+                        .strafeTo(new Vector2d(-25,-70), new TranslationalVelConstraint(30))
+                        .strafeToLinearHeading(new Vector2d(-53, -20), Math.toRadians(-23))// Goes back to the firing position
                         .build()
         ));
 
@@ -142,16 +141,16 @@ public final class RedFarAuto extends LinearOpMode {
                     new SleepAction(0.65)
             ));
         }
-        Actions.runBlocking(new SequentialAction(// Goes to pickup the 3rd set of balls
-                intake.redfaron(),
+        Actions.runBlocking(new SequentialAction(// Goes to pick up the 3rd set of balls
+                intake.on(),
                 drive.actionBuilder(new Pose2d(-52, -18, Math.toRadians(-25)))
                         .strafeToLinearHeading(new Vector2d(-1,-40), Math.toRadians(-93))
-                        .strafeTo(new Vector2d(-1, -70), new TranslationalVelConstraint(30))
-                        .strafeToLinearHeading(new Vector2d(-54, -20), Math.toRadians(-24), new TranslationalVelConstraint(15))
+                        .strafeTo(new Vector2d(-1, -75), new TranslationalVelConstraint(30))
+                        .strafeToLinearHeading(new Vector2d(-53, -20), Math.toRadians(-23))
                         .build()
         ));
 
-        for (int i=0; i<2; i++){// Fires the last set of balls (3rd)
+        for (int i=0; i<3; i++){// Fires the last set of balls (3rd)
             Actions.runBlocking(new SequentialAction(
                     helper.off(),
                     intake.off(),
@@ -165,8 +164,11 @@ public final class RedFarAuto extends LinearOpMode {
                     new SleepAction(0.65)
                ));
         }
-        drive.actionBuilder(new Pose2d(-55, -20, Math.toRadians(-24)))
-                .strafeToLinearHeading(new Vector2d(-48, -18), Math.toRadians(-23))
-                .build();
-}
+        Actions.runBlocking(
+                drive.actionBuilder(new Pose2d(-53, -20, Math.toRadians(-23)))
+                        .strafeToLinearHeading(new Vector2d(-48, -1999999999), Math.toRadians(-24.5))
+                        .build()
+        );
+
     }
+}

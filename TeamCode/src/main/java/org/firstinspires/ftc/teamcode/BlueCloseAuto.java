@@ -18,6 +18,21 @@ import org.firstinspires.ftc.teamcode.appendeges.Pew;
 import org.firstinspires.ftc.teamcode.appendeges.Shooter;
 import org.firstinspires.ftc.teamcode.tuning.SquareTest;
 
+// Compleatly unneseasary puns
+/*
+What did the sushi say to the bee? Wasabee!
+Why did the can crusher quit her job? It was soda-pressing.
+How do you make a good egg roll? You push it down a hill.
+Why couldn't the pasta unlock the door? Gnocchi.
+What did the hamburger name its baby? Patty.
+Why are bakers so successful? They know how to make a lot of dough.
+What did one dessert say to the other? "I'm your biggest flan."
+More Animal & Professional Puns
+Why are cats good at gaming? They have nine lives.
+Why did the scarecrow win an award? He was outstanding in his field.
+What do you call a fly without wings? A walk.
+Why did the banker quit? He lost interest.
+*/
 
 @Autonomous
 public final class BlueCloseAuto extends LinearOpMode {
@@ -135,8 +150,8 @@ public final class BlueCloseAuto extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 intake.on(),
                 drive.actionBuilder(new Pose2d(-33,-17, Math.toRadians(233)))
-                        .strafeToSplineHeading(new Vector2d(10, -25), Math.toRadians(270))
-                        .strafeTo(new Vector2d(10,-52), new TranslationalVelConstraint(25))
+                        .strafeToSplineHeading(new Vector2d(11, -25), Math.toRadians(270))
+                        .strafeTo(new Vector2d(11,-52), new TranslationalVelConstraint(22))
                         .strafeToSplineHeading(new Vector2d(-33,-19), Math.toRadians(233))
                         .build()
         ));
