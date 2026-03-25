@@ -3,27 +3,16 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Rotation2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.acmerobotics.roadrunner.ftc.Encoder;
-import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.appendeges.Angle;
 import org.firstinspires.ftc.teamcode.appendeges.Intake;
@@ -31,12 +20,12 @@ import org.firstinspires.ftc.teamcode.appendeges.Pew;
 import org.firstinspires.ftc.teamcode.appendeges.Shooter;
 import org.firstinspires.ftc.teamcode.appendeges.Spin;
 import org.firstinspires.ftc.teamcode.appendeges.Stopper;
-import org.firstinspires.ftc.teamcode.appendeges.TurretSpinner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import kotlin.jvm.internal.markers.KMutableList;
 
 @TeleOp(group="Linear Opmode")
 public class RedRoadRunner extends LinearOpMode {
@@ -88,11 +77,23 @@ public class RedRoadRunner extends LinearOpMode {
       while(opModeIsActive())
       {
         if (Thread.currentThread().isInterrupted()) {
-          spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          // Update using odometry then add return data to telemetry
+          List vals = spin.odomUpdate(drive,false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          telemetry.addData("Turret data",
+                  "\nposX (%.2f)\nposY (%.2f)\nCurrent angle (%.2f)\nTarget angle (%.2f)",
+                  vals.toArray()[0],vals.toArray()[1],vals.toArray()[2],vals.toArray()[3],vals.toArray()[4]
+          );
           break;
         }
 
-        spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+        // Update using odometry then add return data to telemetry
+        List vals = spin.odomUpdate(drive,false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+        telemetry.addData("Turret data",
+                "\nposX (%.2f)\nposY (%.2f)\nCurrent angle (%.2f)\nTarget angle (%.2f)",
+                vals.toArray()[0],vals.toArray()[1],vals.toArray()[2],vals.toArray()[3],vals.toArray()[4]
+
+        );
+        telemetry.update();
       }
     });
 

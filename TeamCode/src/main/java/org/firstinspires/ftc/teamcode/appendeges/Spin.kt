@@ -2,10 +2,9 @@ package org.firstinspires.ftc.teamcode.appendeges
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
-import com.acmerobotics.roadrunner.ftc.Encoder
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.hardware.CRServo
-import com.qualcomm.robotcore.hardware.DigitalChannel
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
@@ -14,6 +13,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.atan2
+import kotlin.math.sign
 
 
 class Spin(hardwareMap: HardwareMap) {
@@ -30,6 +30,8 @@ class Spin(hardwareMap: HardwareMap) {
 
 
     private val spin = hardwareMap.get(CRServo::class.java, "spin")
+    private val encoder = hardwareMap.get(DcMotor::class.java, "intake")
+    private val RADIANS_TO_DEGREES = 180/Math.PI
     private var kP = DriveConstants.spinP
     private var kI = DriveConstants.spinI
     private var kD = DriveConstants.spinD
@@ -41,6 +43,7 @@ class Spin(hardwareMap: HardwareMap) {
     private val MAX_POWER = 0.6
     private var power = 0.0
     private var move_left = true
+    private var encoderoffset = 0
     var lock = true // TODO: change to false to turn off lock
 
     private val timer = ElapsedTime()
@@ -88,28 +91,35 @@ class Spin(hardwareMap: HardwareMap) {
         timer.reset()
     }
 
-    fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean): MutableList<Double?> {
+    fun resetEncoder() {
+        encoderoffset = encoder.currentPosition
+    }
+    fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         val ticksPerDegree = 68.1+(1/6)
-        val targetX = -72
-        val targetY = if (isRedGoal) 72 else -72
+        val targetX = -72.0
+        val targetY = if (isRedGoal) 72.0 else -72.0
 
         val posX = drive.localizer.pose.position.x
         val posY = drive.localizer.pose.position.y
 
-        val realAng = drive.localizer.pose.heading.real
-        val imagAng = drive.localizer.pose.heading.imag
+//        Field pos as a complex number
+//        val realAng = drive.localizer.pose.heading.real
+//        val imagAng = drive.localizer.pose.heading.imag
 
-        val currentAngle = (atan(imagAng/realAng)*Math.PI/180) + if(realAng>0) 0 else 180
+        val currentAngle = (encoder.currentPosition-encoderoffset) / ticksPerDegree
+        var targetAngle = (atan2(targetY - posY, targetX - posX)*RADIANS_TO_DEGREES)
 
-        val targetAngle = (atan2(targetY - posY, targetX - posX)*Math.PI/180) * ticksPerDegree
+        if (lock) {
+            targetAngle = currentAngle
+        }
 
         kP = DriveConstants.spinP
         kI = DriveConstants.spinI
         kD = DriveConstants.spinD
 
-        var deltaTime = timer.seconds()
+        val deltaTime = timer.seconds()
         timer.reset()
-        var error = targetAngle - currentAngle
+        val error = targetAngle - currentAngle
 
         val Pterm = error * kP
 
@@ -124,15 +134,21 @@ class Spin(hardwareMap: HardwareMap) {
         power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER,MAX_POWER)
 
 
-        val returnList: MutableList<Double?> = ArrayList<Double?>()
+        val returnList: MutableList<Double?> = ArrayList()
 
 
+        if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+            power = 0.0
+        }
+        if (leftPressed) {
+            resetEncoder()
+        }
 
-        //TODO: Change spin to a position
-        //spin.setPose(targetAngle/Math.PI)
+        spin.power = power
 
         returnList.add(posX)
         returnList.add(posY)
+        returnList.add(currentAngle)
         returnList.add(targetAngle)
         returnList.add(spin.power)
 
@@ -140,7 +156,7 @@ class Spin(hardwareMap: HardwareMap) {
 
     }
 
-    fun update(result: LLResult, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
+    fun camUpdate(result: LLResult, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         kP = DriveConstants.spinP
         kI = DriveConstants.spinI
         kD = DriveConstants.spinD
@@ -164,7 +180,7 @@ class Spin(hardwareMap: HardwareMap) {
             if (!lock) {
                 spin.power = (0.3 * (if (move_left) -1 else 1))
             } else {
-                power -= deAcellSpeed
+                power -= deAcellSpeed * sign(power)
                 spin.power = (power)
             }
             lastError = 0.0
@@ -194,11 +210,11 @@ class Spin(hardwareMap: HardwareMap) {
         }
 
 
-        if (power == 0.0) {
-            spin.power = (0.001)
-        } else {
-            spin.power = (power)
-        }
+//        if (power == 0.0) {
+//            spin.power = (0.001)
+//        } else {
+//            spin.power = (power)
+//        }
         lastError = error
 
         returnList.add(power)

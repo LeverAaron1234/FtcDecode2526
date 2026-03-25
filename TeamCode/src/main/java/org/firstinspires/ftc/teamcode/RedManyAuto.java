@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -15,14 +14,11 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.appendeges.Angle;
 import org.firstinspires.ftc.teamcode.appendeges.Intake;
-import org.firstinspires.ftc.teamcode.appendeges.Intake2;
 import org.firstinspires.ftc.teamcode.appendeges.Pew;
 import org.firstinspires.ftc.teamcode.appendeges.Shooter;
 import org.firstinspires.ftc.teamcode.appendeges.Spin;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import kotlin.time.Instant;
 
 @Autonomous(preselectTeleOp="RedRoadRunner")
 public final class RedManyAuto extends LinearOpMode {
@@ -61,11 +57,11 @@ public final class RedManyAuto extends LinearOpMode {
             while(opModeIsActive())
             {
                 if (Thread.currentThread().isInterrupted()) {
-                    spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                    spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
                     break;
                 }
 
-                spin.update(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
             }
         });
 
