@@ -87,10 +87,17 @@ public class RedRoadRunner extends LinearOpMode {
         }
 
         // Update using odometry then add return data to telemetry
-        List vals = spin.odomUpdate(drive,false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+        List vals = (spin.odomUpdate(drive,false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get()));
         telemetry.addData("Turret data",
-                "\nposX (%.2f)\nposY (%.2f)\nCurrent angle (%.2f)\nTarget angle (%.2f)",
-                vals.toArray()[0],vals.toArray()[1],vals.toArray()[2],vals.toArray()[3],vals.toArray()[4]
+                "\nposX (%.2f)" +
+                        "\nposY (%.2f)" +
+                        "\ntargetX (%.2f)" +
+                        "\ntargetY (%.2f)" +
+                        "\nencoder pos (%.2f)" +
+                        "\nCurrent angle (%.2f)" +
+                        "\nTarget angle (%.2f)" +
+                        "\nspin power (%.2f)",
+                vals.toArray()
 
         );
         telemetry.update();

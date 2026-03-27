@@ -5,7 +5,9 @@ import com.acmerobotics.roadrunner.Action
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.DriveConstants
@@ -31,6 +33,7 @@ class Spin(hardwareMap: HardwareMap) {
 
     private val spin = hardwareMap.get(CRServo::class.java, "spin")
     private val encoder = hardwareMap.get(DcMotor::class.java, "intake")
+    private val encoderOffset = 45
     private val RADIANS_TO_DEGREES = 180/Math.PI
     private var kP = DriveConstants.spinP
     private var kI = DriveConstants.spinI
@@ -43,7 +46,6 @@ class Spin(hardwareMap: HardwareMap) {
     private val MAX_POWER = 0.6
     private var power = 0.0
     private var move_left = true
-    private var encoderoffset = 0
     var lock = true // TODO: change to false to turn off lock
 
     private val timer = ElapsedTime()
@@ -92,25 +94,50 @@ class Spin(hardwareMap: HardwareMap) {
     }
 
     fun resetEncoder() {
-        encoderoffset = encoder.currentPosition
+        encoder.mode = DcMotor.RunMode.RESET_ENCODERS
+        encoder.direction = DcMotorSimple.Direction.REVERSE
     }
+
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         val ticksPerDegree = 68.1+(1/6)
         val targetX = -72.0
         val targetY = if (isRedGoal) 72.0 else -72.0
 
+        val returnList: MutableList<Double?> = ArrayList()
+
+//      Field position in x,y
         val posX = drive.localizer.pose.position.x
         val posY = drive.localizer.pose.position.y
 
-//        Field pos as a complex number
-//        val realAng = drive.localizer.pose.heading.real
-//        val imagAng = drive.localizer.pose.heading.imag
+//      Field heading as a complex number
+        val realAng = drive.localizer.pose.heading.real
+        val imagAng = drive.localizer.pose.heading.imag
+        val currentHeading = atan2(imagAng,realAng)
 
-        val currentAngle = (encoder.currentPosition-encoderoffset) / ticksPerDegree
-        var targetAngle = (atan2(targetY - posY, targetX - posX)*RADIANS_TO_DEGREES)
+//      encoder pos in degrees + current heading
+        val currentAngle = (((encoder.currentPosition / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES)))
+
+//      Angle of current position (robot) to target (goal)
+        val targetYdiff = (targetY - posY)
+        val targetXdiff = (targetX - posX)
+        val targetHeading = atan2(targetYdiff,targetXdiff)
+        val targetAngle = abs((targetHeading)*RADIANS_TO_DEGREES)
+
+        if (leftPressed) {
+            resetEncoder()
+        }
 
         if (lock) {
-            targetAngle = currentAngle
+            spin.power = 0.0
+            returnList.add(posX)
+            returnList.add(posY)
+            returnList.add(targetX)
+            returnList.add(targetY)
+            returnList.add(encoder.currentPosition/ticksPerDegree)
+            returnList.add(currentAngle)
+            returnList.add(targetAngle)
+            returnList.add(spin.power)
+            return returnList
         }
 
         kP = DriveConstants.spinP
@@ -134,20 +161,19 @@ class Spin(hardwareMap: HardwareMap) {
         power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER,MAX_POWER)
 
 
-        val returnList: MutableList<Double?> = ArrayList()
 
 
         if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
             power = 0.0
-        }
-        if (leftPressed) {
-            resetEncoder()
         }
 
         spin.power = power
 
         returnList.add(posX)
         returnList.add(posY)
+        returnList.add(targetX)
+        returnList.add(targetY)
+        returnList.add(encoder.currentPosition/ticksPerDegree)
         returnList.add(currentAngle)
         returnList.add(targetAngle)
         returnList.add(spin.power)
