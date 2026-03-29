@@ -20,7 +20,7 @@ class Pew(hardwareMap: HardwareMap) {
 
     }
 
-
+    //ROCKS AND STICKS, I CAST FIX!!
     private val pew = hardwareMap.get(Servo::class.java, "pew")
 
 

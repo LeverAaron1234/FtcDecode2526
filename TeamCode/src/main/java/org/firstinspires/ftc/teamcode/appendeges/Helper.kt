@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.HardwareMap
 
-
+//ROCKS AND STICKS, I CAST FIX!!
 class Helper(hardwareMap: HardwareMap) {
 
     /**

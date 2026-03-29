@@ -18,7 +18,7 @@ class LimelightCam(hardwareMap: HardwareMap) {
         Obelisk(1)
 
     }
-
+    //ROCKS AND STICKS, I CAST FIX!!
     var pipeline = Camera.Goal
 
     private val camq = hardwareMap.get(Limelight3A::class.java, "limelight")

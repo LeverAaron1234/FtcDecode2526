@@ -23,7 +23,7 @@ class Angle(hardwareMap: HardwareMap) {
 
     }
 
-//no
+//ROCKS AND STICKS, I CAST FIX!!
     private val angle = hardwareMap.get(Servo::class.java, "angle")
 
 

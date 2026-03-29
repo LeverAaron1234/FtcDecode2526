@@ -81,7 +81,7 @@ class Shooter(hardwareMap: HardwareMap) {
             return false
         }
     }
-
+//ROCKS AND STICKS, I CAST FIX!!
     /**
      * manually changes the position of the scoringArm (typically with a joystick)
      *

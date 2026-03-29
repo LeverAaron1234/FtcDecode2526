@@ -21,7 +21,7 @@ class Intake(hardwareMap: HardwareMap) {
         backwards(-0.2)
 
     }
-
+    //ROCKS AND STICKS, I CAST FIX!!
     var IntakeState = Intake.Neutral
 
     private val intake = hardwareMap.get(DcMotor::class.java, "intake")
