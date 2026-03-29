@@ -23,7 +23,7 @@ class Angle(hardwareMap: HardwareMap) {
 
     }
 
-
+//no
     private val angle = hardwareMap.get(Servo::class.java, "angle")
 
 
