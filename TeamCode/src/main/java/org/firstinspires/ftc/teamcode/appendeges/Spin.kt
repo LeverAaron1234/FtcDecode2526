@@ -24,7 +24,8 @@ class Spin(hardwareMap: HardwareMap) {
      * @param position the position of the scoringArm in that state, -1 means we don't currently
      * know the position of the scoringArm
      */
-    enum class SpinPos(val position: Double) {
+    enum class SpinPos(val pwr: Double) {
+        Init(-1.0),
         locked(1.0),
         unlocked(0.0)
 
@@ -43,9 +44,10 @@ class Spin(hardwareMap: HardwareMap) {
     private var lastError = 0.0
     private val deAcellSpeed = 0.01;
     private val angleTolerance = 5.0
-    private val MAX_POWER = 0.6
+    private val MAX_POWER = 1.0
     private var power = 0.0
     private var move_left = true
+    private var initialized = false
     var lock = true // TODO: change to false to turn off lock
 
     private val timer = ElapsedTime()
@@ -66,9 +68,7 @@ class Spin(hardwareMap: HardwareMap) {
                 packet.put("Power", power)
                 packet.put("Search Dir", move_left)
 
-                if (state == SpinPos.locked) {
-                    spin.power = 0.0
-                }
+                spin.power = state.pwr
                 initialized = true
             }
 
@@ -78,16 +78,6 @@ class Spin(hardwareMap: HardwareMap) {
         }
     }
 
-    /**
-     * manually changes the position of the scoringArm (typically with a joystick)
-     *
-     * @param input the percent speed (-1 to 1) normalized by delta time (the time between each loop)
-     */
-
-    /**
-     * Only use in the collect position; used to reset the positions of the arm; should be called
-     * alongside a collect action
-     */
 
     fun resetTimer() {
         timer.reset()
@@ -99,9 +89,9 @@ class Spin(hardwareMap: HardwareMap) {
     }
 
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
-        val ticksPerDegree = 68.1+(1/6)
-        val targetX = -72.0
-        val targetY = if (isRedGoal) 72.0 else -72.0
+        val ticksPerDegree = 68.26666666666667
+        val targetX = if (isRedGoal) 70.0 else -70.0
+        val targetY = 70.0
 
         val returnList: MutableList<Double?> = ArrayList()
 
@@ -124,17 +114,26 @@ class Spin(hardwareMap: HardwareMap) {
         val targetAngle = abs((targetHeading)*RADIANS_TO_DEGREES)
 
         if (leftPressed) {
+            initialized = true
             resetEncoder()
         }
 
-        if (lock) {
-            spin.power = 0.0
+        if (lock || !initialized) {
+            if (!initialized) {
+                spin.power = -1.0
+            } else {
+                spin.power = 0.0
+            }
+            if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+                power = 0.0
+            }
             returnList.add(posX)
             returnList.add(posY)
             returnList.add(targetX)
             returnList.add(targetY)
             returnList.add(encoder.currentPosition/ticksPerDegree)
             returnList.add(currentAngle)
+            returnList.add(currentHeading*RADIANS_TO_DEGREES)
             returnList.add(targetAngle)
             returnList.add(spin.power)
             return returnList
@@ -157,6 +156,7 @@ class Spin(hardwareMap: HardwareMap) {
         if (deltaTime > 0) {
             Dterm = ((error - lastError) / deltaTime) * kD
         }
+        lastError = error
 
         power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER,MAX_POWER)
 
@@ -175,6 +175,7 @@ class Spin(hardwareMap: HardwareMap) {
         returnList.add(targetY)
         returnList.add(encoder.currentPosition/ticksPerDegree)
         returnList.add(currentAngle)
+        returnList.add(currentHeading*RADIANS_TO_DEGREES)
         returnList.add(targetAngle)
         returnList.add(spin.power)
 
@@ -253,4 +254,5 @@ class Spin(hardwareMap: HardwareMap) {
 
     fun lock(): Action = SetState(SpinPos.locked)
     fun unlock(): Action = SetState(SpinPos.unlocked)
+    fun Init(): Action = SetState(SpinPos.Init)
 }
