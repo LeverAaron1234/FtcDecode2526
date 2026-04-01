@@ -34,7 +34,7 @@ class Spin(hardwareMap: HardwareMap) {
 
     private val spin = hardwareMap.get(CRServo::class.java, "spin")
     private val encoder = hardwareMap.get(DcMotor::class.java, "intake")
-    private val encoderOffset = 45
+    private val encoderOffset = 125
     private val RADIANS_TO_DEGREES = 180/Math.PI
     private var kP = DriveConstants.spinP
     private var kI = DriveConstants.spinI
@@ -90,7 +90,7 @@ class Spin(hardwareMap: HardwareMap) {
 
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         val ticksPerDegree = 68.26666666666667
-        val targetX = if (isRedGoal) 70.0 else -70.0
+        val targetX = if (isRedGoal) -70.0 else 70.0
         val targetY = 70.0
 
         val returnList: MutableList<Double?> = ArrayList()
@@ -108,10 +108,10 @@ class Spin(hardwareMap: HardwareMap) {
         val currentAngle = (((encoder.currentPosition / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES)))
 
 //      Angle of current position (robot) to target (goal)
-        val targetYdiff = (targetY - posY)
         val targetXdiff = (targetX - posX)
-        val targetHeading = atan2(targetYdiff,targetXdiff)
-        val targetAngle = abs((targetHeading)*RADIANS_TO_DEGREES)
+        val targetYdiff = (targetY - posY)
+        val targetHeading = atan2(-targetYdiff,-targetXdiff)
+        val targetAngle = (targetHeading)*RADIANS_TO_DEGREES
 
         if (leftPressed) {
             initialized = true

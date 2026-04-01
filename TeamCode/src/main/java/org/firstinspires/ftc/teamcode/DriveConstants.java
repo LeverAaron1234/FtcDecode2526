@@ -11,7 +11,7 @@ public class DriveConstants {
   public static double f = 0;
 
   // PID constants for the turret
-  public static double spinP = 0.02;
+  public static double spinP = 0.015;
   public static double spinI = 0.0001;
-  public static double spinD = 0.003;
+  public static double spinD = 0.002;
 }

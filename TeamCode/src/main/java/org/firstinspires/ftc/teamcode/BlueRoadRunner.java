@@ -78,20 +78,41 @@ public class BlueRoadRunner extends LinearOpMode {
       while(opModeIsActive())
       {
         if (Thread.currentThread().isInterrupted()) {
-          spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          // Update using odometry then add return data to telemetry
+          List vals = spin.odomUpdate(drive,false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          telemetry.addData("Turret data",
+                  "\nposX (%.2f)" +
+                          "\nposY (%.2f)" +
+                          "\ntargetX (%.2f)" +
+                          "\ntargetY (%.2f)" +
+                          "\nencoder pos (%.2f)" +
+                          "\nCurrent angle (%.2f)" +
+                          "\nRobot Heading (%.2f)" +
+                          "\nTarget angle (%.2f)" +
+                          "\nspin power (%.2f)",
+                  vals.toArray()
+          );
           break;
         }
 
-        spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+        // Update using odometry then add return data to telemetry
+        List vals = (spin.odomUpdate(drive,false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get()));
+        telemetry.addData("Turret data",
+                "\nposX (%.2f)" +
+                        "\nposY (%.2f)" +
+                        "\ntargetX (%.2f)" +
+                        "\ntargetY (%.2f)" +
+                        "\nencoder pos (%.2f)" +
+                        "\nCurrent angle (%.2f)" +
+                        "\nRobot Heading (%.2f)" +
+                        "\nTarget angle (%.2f)" +
+                        "\nspin power (%.2f)",
+                vals.toArray()
+
+        );
+        telemetry.update();
       }
     });
-
-    Actions.runBlocking(new ParallelAction(
-            shooter.stop(),
-            pew.set(),
-            intake.off(),
-            angle.down()
-    ));
 
 
     telemetry.update();
