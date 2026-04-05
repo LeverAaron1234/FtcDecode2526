@@ -295,8 +295,8 @@ public class RedRoadRunner extends LinearOpMode {
               turn
       );
 
-      angle.varangle(anglePos);
-      shooter.varshooter(wheeelSpeed);
+      runningActions.add(angle.varangle(anglePos));
+      runningActions.add(shooter.varshooter(wheeelSpeed));
 
       drive.setDrivePowers(movement);
       drive.updatePoseEstimate();

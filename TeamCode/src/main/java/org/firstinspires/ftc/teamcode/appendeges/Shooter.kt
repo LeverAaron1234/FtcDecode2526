@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import org.firstinspires.ftc.teamcode.DriveConstants
+import kotlin.math.sqrt
 
 
 class Shooter(hardwareMap: HardwareMap) {
@@ -17,7 +19,8 @@ class Shooter(hardwareMap: HardwareMap) {
      */
 
 
-    private val shooter = hardwareMap.get(DcMotorEx::class.java, "launcher")
+    private val shooter1 = hardwareMap.get(DcMotorEx::class.java, "launcher")
+    private val shooter2 = hardwareMap.get(DcMotorEx::class.java, "launcher2")
 
 
     private val power = 1.0
@@ -26,19 +29,31 @@ class Shooter(hardwareMap: HardwareMap) {
     var targetPower = 0.0
 
     init {
-        shooter.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        shooter.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        shooter.direction = DcMotorSimple.Direction.FORWARD
-        shooter.targetPosition = 0
+        shooter1.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        shooter1.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        shooter1.direction = DcMotorSimple.Direction.FORWARD
+        shooter1.targetPosition = 0
+        shooter2.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        shooter2.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        shooter2.direction = DcMotorSimple.Direction.REVERSE
+        shooter2.targetPosition = 0
 
 
-        shooter.setVelocityPIDFCoefficients(
+
+        shooter1.setVelocityPIDFCoefficients(
             DriveConstants.p,
             DriveConstants.i,
             DriveConstants.d,
             DriveConstants.f
         )
-        shooter.velocity = power
+        shooter2.setVelocityPIDFCoefficients(
+            DriveConstants.p,
+            DriveConstants.i,
+            DriveConstants.d,
+            DriveConstants.f
+        )
+        shooter1.velocity = power
+        shooter2.velocity = power
     }
 
     /**
@@ -55,14 +70,17 @@ class Shooter(hardwareMap: HardwareMap) {
             if (!initialized) {
                 targetPower = state
 
-                shooter.velocity = targetPower*2800
+                shooter1.velocity = (targetPower*2800)/2
+                shooter2.velocity = (targetPower*2800)/2
 
                 initialized = true
             }
-            packet.put("SHOOTER Speed", shooter.velocity*60/28)
-            packet.put("SHOOTER Current Position",shooter.currentPosition)
+            packet.put("SHOOTER1 Speed", shooter1.velocity*60/28)
+            packet.put("SHOOTER2 Speed", shooter2.velocity*60/28)
+            //packet.put("SHOOTER Current Position",shooter.currentPosition)
             packet.put("SHOOTER Target Power", targetPower*2800)
-            packet.put("SHOOTER Current Power", shooter.power)
+            packet.put("SHOOTER1 Current Power", shooter1.power)
+            packet.put("SHOOTER2 Current Power", shooter2.power)
 
             return false
         }
@@ -85,5 +103,13 @@ class Shooter(hardwareMap: HardwareMap) {
     fun low(): Action = SetState(0.55)
     fun stop(): Action = SetState(0.0)
     fun varshooter(spd: Double): Action = SetState(spd)
+    // Reset PID so that I can tune.
+    fun resetPID(p:Double,i:Double,d:Double) {
+        shooter1.setVelocityPIDFCoefficients(p,i,d,0.0)
+        shooter2.setVelocityPIDFCoefficients(p,i,d,0.0)
+    }
+    fun getPID(): PIDFCoefficients {
+        return shooter1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER)
+    }
 
 }

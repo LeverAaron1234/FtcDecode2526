@@ -115,6 +115,14 @@ public class BlueRoadRunner extends LinearOpMode {
     });
 
 
+    Actions.runBlocking(new ParallelAction(
+            shooter.stop(),
+            pew.set(),
+            intake.off(),
+            angle.down()
+    ));
+
+
     telemetry.update();
 
 
@@ -289,8 +297,12 @@ public class BlueRoadRunner extends LinearOpMode {
               turn
       );
 
-      angle.varangle(anglePos);
-      shooter.varshooter(wheeelSpeed);
+      runningActions.add(angle.varangle(anglePos));
+      runningActions.add(shooter.varshooter(wheeelSpeed));
+
+      if ((DriveConstants.p != shooter.getPID().p) || (DriveConstants.i != shooter.getPID().i) || (DriveConstants.d != shooter.getPID().d)) {
+        shooter.resetPID(DriveConstants.p,DriveConstants.i,DriveConstants.d);
+      }
 
       drive.setDrivePowers(movement);
       drive.updatePoseEstimate();

@@ -90,8 +90,8 @@ class Spin(hardwareMap: HardwareMap) {
 
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         val ticksPerDegree = 68.26666666666667
-        val targetX = if (isRedGoal) -70.0 else 70.0
-        val targetY = 70.0
+        val targetX = -70.0
+        val targetY = if (isRedGoal) 70.0 else -70.0
 
         val returnList: MutableList<Double?> = ArrayList()
 
@@ -102,10 +102,13 @@ class Spin(hardwareMap: HardwareMap) {
 //      Field heading as a complex number
         val realAng = drive.localizer.pose.heading.real
         val imagAng = drive.localizer.pose.heading.imag
-        val currentHeading = atan2(imagAng,realAng)
+        var currentHeading = atan2(imagAng,realAng)
+//      Make the currentHeading go from -180 to 180, to 0 to 360 (Will make everything else not work as intended.)
+//        currentHeading = if (currentHeading<0) ((((currentHeading + Math.PI)* -1) - Math.PI)* -1) else currentHeading
 
 //      encoder pos in degrees + current heading
         val currentAngle = (((encoder.currentPosition / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES)))
+
 
 //      Angle of current position (robot) to target (goal)
         val targetXdiff = (targetX - posX)
