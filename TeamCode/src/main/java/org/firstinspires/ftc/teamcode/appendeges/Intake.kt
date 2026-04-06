@@ -33,11 +33,10 @@ class Intake(hardwareMap: HardwareMap) {
     var targetPower = 0.0
 
     init {
-        intake.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         intake.direction = DcMotorSimple.Direction.FORWARD
         intake.power = 0.0
         intake.targetPosition = 0
-        intake.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         intake.power = power
     }
 
@@ -53,14 +52,13 @@ class Intake(hardwareMap: HardwareMap) {
         @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
-                targetPower = state.pwr.toDouble()
+                targetPower = state.pwr
                 intake.power = targetPower
-                IntakeState = state
                 initialized = true
             }
             intake.currentPosition
-            packet.put("Target Power", targetPower)
-            packet.put("Current Power", intake.power)
+            packet.put("Intake Target Power", targetPower)
+            packet.put("Intake Current Power", intake.power)
             return false
         }
     }

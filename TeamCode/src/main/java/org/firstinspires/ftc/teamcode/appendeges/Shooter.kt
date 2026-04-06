@@ -31,7 +31,7 @@ class Shooter(hardwareMap: HardwareMap) {
     init {
         shooter1.mode = DcMotor.RunMode.RUN_USING_ENCODER
         shooter1.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        shooter1.direction = DcMotorSimple.Direction.FORWARD
+        shooter1.direction = DcMotorSimple.Direction.REVERSE
         shooter1.targetPosition = 0
         shooter2.mode = DcMotor.RunMode.RUN_USING_ENCODER
         shooter2.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
