@@ -34,7 +34,7 @@ class Angle(hardwareMap: HardwareMap) {
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
                 targetPosition = state
-                angle.position = clamp(targetPosition, 0.1,1.0)
+                angle.position = clamp(targetPosition, 0.0,1.0)
 
                 initialized = true
             }

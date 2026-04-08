@@ -31,11 +31,11 @@ class Shooter(hardwareMap: HardwareMap) {
     init {
         shooter1.mode = DcMotor.RunMode.RUN_USING_ENCODER
         shooter1.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        shooter1.direction = DcMotorSimple.Direction.REVERSE
+        shooter1.direction = DcMotorSimple.Direction.FORWARD
         shooter1.targetPosition = 0
         shooter2.mode = DcMotor.RunMode.RUN_USING_ENCODER
         shooter2.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        shooter2.direction = DcMotorSimple.Direction.REVERSE
+        shooter2.direction = DcMotorSimple.Direction.FORWARD
         shooter2.targetPosition = 0
 
 
@@ -76,7 +76,7 @@ class Shooter(hardwareMap: HardwareMap) {
                 initialized = true
             }
             packet.put("SHOOTER1 Speed", shooter1.velocity*60/28)
-            packet.put("SHOOTER2 Speed", shooter2.velocity*60/28)
+            packet.put("SHOOTER2 Speed", -shooter2.velocity*60/28)
             //packet.put("SHOOTER Current Position",shooter.currentPosition)
             packet.put("SHOOTER Target Power", targetPower*2800)
             packet.put("SHOOTER1 Current Power", shooter1.power)

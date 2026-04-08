@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.appendeges.Angle;
 import org.firstinspires.ftc.teamcode.appendeges.Intake;
@@ -194,6 +195,7 @@ public class BlueRoadRunner extends LinearOpMode {
       if ((gamepad1.left_trigger >= 0.2) && !changed2) {
         runningActions.add(intake.on());
         runningActions.add(pew.launch());
+        runningActions.add(stopper.Out());
         changed2 = true;
       } else if (!(gamepad1.left_trigger >= 0.2) && changed2) {
         runningActions.add(pew.set());
@@ -299,6 +301,7 @@ public class BlueRoadRunner extends LinearOpMode {
               turn
       );
 
+      anglePos = Range.clip(anglePos,0.0,1.0);
       runningActions.add(angle.varangle(anglePos));
       runningActions.add(shooter.varshooter(wheeelSpeed));
 

@@ -84,8 +84,9 @@ class Spin(hardwareMap: HardwareMap) {
     }
 
     fun resetEncoder() {
-        encoder.mode = DcMotor.RunMode.RESET_ENCODERS
-        encoder.direction = DcMotorSimple.Direction.REVERSE
+        encoder.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        //encoder.direction = DcMotorSimple.Direction.REVERSE
+        encoder.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
@@ -104,10 +105,10 @@ class Spin(hardwareMap: HardwareMap) {
         val imagAng = drive.localizer.pose.heading.imag
         var currentHeading = atan2(imagAng,realAng)
 //      Make the currentHeading go from -180 to 180, to 0 to 360 (Will make everything else not work as intended.)
-//        currentHeading = if (currentHeading<0) ((((currentHeading + Math.PI)* -1) - Math.PI)* -1) else currentHeading
+//        currentHeading = if (currentHeading<0) currentHeading + 2*Math.PI else currentHeading
 
 //      encoder pos in degrees + current heading
-        val currentAngle = (((encoder.currentPosition / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES)))
+        val currentAngle = ((((-encoder.currentPosition) / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES)))
 
 
 //      Angle of current position (robot) to target (goal)
