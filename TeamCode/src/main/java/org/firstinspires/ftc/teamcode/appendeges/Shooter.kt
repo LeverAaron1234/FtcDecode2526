@@ -76,8 +76,9 @@ class Shooter(hardwareMap: HardwareMap) {
                 initialized = true
             }
             packet.put("SHOOTER1 Speed", shooter1.velocity*60/28)
-            packet.put("SHOOTER2 Speed", -shooter2.velocity*60/28)
-            //packet.put("SHOOTER Current Position",shooter.currentPosition)
+            packet.put("SHOOTER2 Speed", shooter2.velocity*60/28)
+            packet.put("SHOOTER1 Current Position",shooter1.currentPosition)
+            packet.put("SHOOTER2 Current Position",shooter2.currentPosition)
             packet.put("SHOOTER Target Power", targetPower*2800)
             packet.put("SHOOTER1 Current Power", shooter1.power)
             packet.put("SHOOTER2 Current Power", shooter2.power)
@@ -103,13 +104,13 @@ class Shooter(hardwareMap: HardwareMap) {
     fun low(): Action = SetState(0.55)
     fun stop(): Action = SetState(0.0)
     fun varshooter(spd: Double): Action = SetState(spd)
-    // Reset PID so that I can tune.
+
     fun resetPID(p:Double,i:Double,d:Double) {
         shooter1.setVelocityPIDFCoefficients(p,i,d,0.0)
         shooter2.setVelocityPIDFCoefficients(p,i,d,0.0)
     }
     fun getPID(): PIDFCoefficients {
-        return shooter1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER)
+        return shooter2.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER)
     }
 
 }

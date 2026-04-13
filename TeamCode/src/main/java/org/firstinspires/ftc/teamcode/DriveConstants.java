@@ -6,8 +6,8 @@ import com.acmerobotics.dashboard.config.Config;
 public class DriveConstants {
   // PID constants for the flywheel / shooter
   public static double p = 19;
-  public static double i = 1;
-  public static double d = 1;
+  public static double i = 5;
+  public static double d = 20;
   public static double f = 0;
 
   // PID constants for the turret

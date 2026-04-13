@@ -39,11 +39,11 @@ public class BlueRoadRunner extends LinearOpMode {
     Pose2d beginPose = null;
     boolean beginPoseValid = false;
 
-    if (RobotPose.lastRobotPose != null) {
+    if (RobotPose.updated) {
       beginPose = RobotPose.lastRobotPose;
       beginPoseValid = true;
     } else {
-      beginPose = new Pose2d(0,0,0);
+      beginPose = new Pose2d(61.33,-19.03,0.0);
     }
 
 
@@ -158,6 +158,7 @@ public class BlueRoadRunner extends LinearOpMode {
     boolean changed6 = false;
     boolean changed7 = false;
     boolean changed8 = false;
+    boolean changed9 = false;
 
     boolean slow = false;
 
@@ -230,7 +231,7 @@ public class BlueRoadRunner extends LinearOpMode {
       // Far
       if (gamepad1.a && !changed3) {
         anglePos = 0.63;
-        wheeelSpeed = 0.71;
+        wheeelSpeed = 1.0;
         changed3 = true;
       } else if (!gamepad1.a) {
         changed3 = false;
@@ -267,6 +268,13 @@ public class BlueRoadRunner extends LinearOpMode {
         runningActions.add(intake.off());
         runningActions.add(stopper.Out());
         changed6 = false;
+      }
+
+      if (gamepad1.right_stick_button && !changed9) {
+        spin.setInitialized(false);
+        changed9 = true;
+      } else if (!gamepad1.right_stick_button && changed9) {
+        changed9 = false;
       }
 
       // updated based on gamepads

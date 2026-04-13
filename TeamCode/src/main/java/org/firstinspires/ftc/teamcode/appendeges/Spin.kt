@@ -47,7 +47,7 @@ class Spin(hardwareMap: HardwareMap) {
     private val MAX_POWER = 1.0
     private var power = 0.0
     private var move_left = true
-    private var initialized = false
+    var initialized = false
     var lock = true // TODO: change to false to turn off lock
 
     private val timer = ElapsedTime()
