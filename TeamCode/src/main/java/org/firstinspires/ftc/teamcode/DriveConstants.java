@@ -14,4 +14,7 @@ public class DriveConstants {
   public static double spinP = 0.02;
   public static double spinI = 0.0003;
   public static double spinD = 0.001;
+  public static double camSpinP = 0.006;
+  public static double camSpinI = 0.003;
+  public static double camSpinD = 0.00001;
 }

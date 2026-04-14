@@ -40,13 +40,16 @@ class Spin(hardwareMap: HardwareMap) {
     private var kI = DriveConstants.spinI
     private var kD = DriveConstants.spinD
     private var kIgain = 0.0
+    private var camkIgain = 0.0
     private val goalX = 0.0
     private var lastError = 0.0
+    private var camLastError = 0.0
     private val deAcellSpeed = 0.01;
-    private val angleTolerance = 5.0
+    private val angleTolerance = 0.1
     private val MAX_POWER = 1.0
     private var power = 0.0
-    private var move_left = true
+    private var switched = false
+    private var i = 0.0
     var initialized = false
     var lock = true // TODO: change to false to turn off lock
 
@@ -66,7 +69,6 @@ class Spin(hardwareMap: HardwareMap) {
         override fun run(packet: TelemetryPacket): Boolean {
             if (!initialized) {
                 packet.put("Power", power)
-                packet.put("Search Dir", move_left)
 
                 spin.power = state.pwr
                 initialized = true
@@ -85,11 +87,11 @@ class Spin(hardwareMap: HardwareMap) {
 
     fun resetEncoder() {
         encoder.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        //encoder.direction = DcMotorSimple.Direction.REVERSE
         encoder.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
+        switched = true
         val ticksPerDegree = 68.26666666666667
         val targetX = -70.0
         val targetY = if (isRedGoal) 70.0 else -70.0
@@ -188,70 +190,61 @@ class Spin(hardwareMap: HardwareMap) {
     }
 
     fun camUpdate(result: LLResult, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
-        kP = DriveConstants.spinP
-        kI = DriveConstants.spinI
-        kD = DriveConstants.spinD
+        kP = DriveConstants.camSpinP
+        kI = DriveConstants.camSpinI
+        kD = DriveConstants.camSpinD
         val deltaTime = timer.seconds()
         timer.reset()
 
         val returnList: MutableList<Double?> = ArrayList<Double?>()
 
-        if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
-            power = 0.0
-        }
-
         if (!result.isValid) {
-            if (leftPressed) {
-                move_left = false
-            }
-            if (rightPressed) {
-                move_left = true
-            }
-
-            if (!lock) {
-                spin.power = (0.3 * (if (move_left) -1 else 1))
-            } else {
-                power -= deAcellSpeed * sign(power)
-                spin.power = (power)
-            }
-            lastError = 0.0
-            returnList.add(power)
+            camLastError = 0.0
             returnList.add(DriveConstants.spinP)
             returnList.add(DriveConstants.spinI)
             returnList.add(DriveConstants.spinD)
+            returnList.add(power)
             return returnList
         }
 
         val error = goalX - result.tx
-        val pTerm = error * DriveConstants.spinP
+        val pTerm = error * kP
 
-        kIgain += error * deltaTime
-        val iterm = kIgain * DriveConstants.spinI
+        camkIgain += error * deltaTime
+        val iterm = camkIgain * kI
 
         var dterm = 0.0
         if (deltaTime > 0) {
-            dterm = ((error - lastError) / deltaTime) * DriveConstants.spinD
+            dterm = ((error - lastError) / deltaTime) * kD
         }
 
         if (abs(error) < angleTolerance) {
             power = 0.0
-            kIgain = 0.0
+            camkIgain = 0.0
         } else {
             power = Range.clip(pTerm + iterm + dterm, -MAX_POWER, MAX_POWER)
         }
 
+        if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+            power = 0.0
+        }
 
-//        if (power == 0.0) {
-//            spin.power = (0.001)
-//        } else {
-//            spin.power = (power)
-//        }
-        lastError = error
+        spin.power = if (!switched) power else 0.0
 
-        returnList.add(power)
+        if (!switched) {
+            i = 0.0
+        } else {
+            if (i > 0.1) {switched = false}
+            i += deltaTime
+        }
+
+        camLastError = error
+
+
         returnList.add(DriveConstants.spinP)
         returnList.add(DriveConstants.spinI)
         returnList.add(DriveConstants.spinD)
+        returnList.add(power)
 
         return returnList
     }

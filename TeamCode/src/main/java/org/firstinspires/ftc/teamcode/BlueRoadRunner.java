@@ -82,7 +82,47 @@ public class BlueRoadRunner extends LinearOpMode {
       {
         if (Thread.currentThread().isInterrupted()) {
           // Update using odometry then add return data to telemetry
-          List vals = spin.odomUpdate(drive,false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          if (camq.getLatestResult().isValid()) {
+            List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+            telemetry.addData("Turret data",
+                    "\nspinP (%.2f)" +
+                            "\nspinI (%.2f)" +
+                            "\nspinD (%.2f)" +
+                            "\nspin power (%.2f)",
+                    vals.toArray()
+            );
+            break;
+
+          } else {
+            List vals = spin.odomUpdate(drive, false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+            telemetry.addData("Turret data",
+                    "\nposX (%.2f)" +
+                            "\nposY (%.2f)" +
+                            "\ntargetX (%.2f)" +
+                            "\ntargetY (%.2f)" +
+                            "\nencoder pos (%.2f)" +
+                            "\nCurrent angle (%.2f)" +
+                            "\nRobot Heading (%.2f)" +
+                            "\nTarget angle (%.2f)" +
+                            "\nspin power (%.2f)",
+                    vals.toArray()
+            );
+            break;
+          }
+        }
+
+        // Update using odometry then add return data to telemetry
+        if (camq.getLatestResult().isValid()) {
+          List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          telemetry.addData("Turret data",
+                  "\nspinP (%.2f)" +
+                          "\nspinI (%.2f)" +
+                          "\nspinD (%.2f)" +
+                          "\nspin power (%.2f)",
+                  vals.toArray()
+          );
+        } else {
+          List vals = spin.odomUpdate(drive, false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
           telemetry.addData("Turret data",
                   "\nposX (%.2f)" +
                           "\nposY (%.2f)" +
@@ -95,24 +135,7 @@ public class BlueRoadRunner extends LinearOpMode {
                           "\nspin power (%.2f)",
                   vals.toArray()
           );
-          break;
         }
-
-        // Update using odometry then add return data to telemetry
-        List vals = (spin.odomUpdate(drive,false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get()));
-        telemetry.addData("Turret data",
-                "\nposX (%.2f)" +
-                        "\nposY (%.2f)" +
-                        "\ntargetX (%.2f)" +
-                        "\ntargetY (%.2f)" +
-                        "\nencoder pos (%.2f)" +
-                        "\nCurrent angle (%.2f)" +
-                        "\nRobot Heading (%.2f)" +
-                        "\nTarget angle (%.2f)" +
-                        "\nspin power (%.2f)",
-                vals.toArray()
-
-        );
         telemetry.update();
       }
     });
@@ -230,28 +253,28 @@ public class BlueRoadRunner extends LinearOpMode {
       // Angles and Speeds
       // Far
       if (gamepad1.a && !changed3) {
-        anglePos = 0.63;
-        wheeelSpeed = 1.0;
-        changed3 = true;
-      } else if (!gamepad1.a) {
+        anglePos = 0.63; // Min 0 --- Max 1
+        wheeelSpeed = 1.5; // Min 0 --- Max 2
+        changed3 = true;  // try not to mess with changed3, it makes the button work when pressed
+      } else if (!gamepad1.a && changed3) {
         changed3 = false;
       }
 
       // Medium
       if (gamepad1.b && !changed4) {
         anglePos = 0.0;
-        wheeelSpeed = 0.52;
+        wheeelSpeed = 1.3;
         changed4 = true;
-      } else if (!gamepad1.b) {
+      } else if (!gamepad1.b && changed4) {
         changed4 = false;
       }
 
       //Close
       if (gamepad1.y && !changed5) {
         anglePos = 0.0;
-        wheeelSpeed = 0.46;
+        wheeelSpeed = 0.94;
         changed5 = true;
-      } else if (!gamepad1.y) {
+      } else if (!gamepad1.y  && changed5) {
         changed5 = false;
       }
 
