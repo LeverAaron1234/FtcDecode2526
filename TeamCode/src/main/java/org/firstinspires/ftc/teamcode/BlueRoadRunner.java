@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.appendeges.Stopper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp(group="Linear Opmode")
 public class BlueRoadRunner extends LinearOpMode {
@@ -43,7 +44,7 @@ public class BlueRoadRunner extends LinearOpMode {
       beginPose = RobotPose.lastRobotPose;
       beginPoseValid = true;
     } else {
-      beginPose = new Pose2d(61.33,-19.03,0.0);
+      beginPose = new Pose2d(61.95,-18.62,0.0);
     }
 
 
@@ -76,6 +77,8 @@ public class BlueRoadRunner extends LinearOpMode {
 
     AtomicBoolean turretLock = new AtomicBoolean(false);
 
+    AtomicInteger turretOffset = new AtomicInteger(0);
+
     // Autonomous threading so that the camera can control the turret in a loop
     Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
       while(opModeIsActive())
@@ -94,7 +97,7 @@ public class BlueRoadRunner extends LinearOpMode {
             break;
 
           } else {
-            List vals = spin.odomUpdate(drive, false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+            List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
             telemetry.addData("Turret data",
                     "\nposX (%.2f)" +
                             "\nposY (%.2f)" +
@@ -122,7 +125,7 @@ public class BlueRoadRunner extends LinearOpMode {
                   vals.toArray()
           );
         } else {
-          List vals = spin.odomUpdate(drive, false, leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
           telemetry.addData("Turret data",
                   "\nposX (%.2f)" +
                           "\nposY (%.2f)" +
@@ -182,6 +185,7 @@ public class BlueRoadRunner extends LinearOpMode {
     boolean changed7 = false;
     boolean changed8 = false;
     boolean changed9 = false;
+    boolean changed10 = false;
 
     boolean slow = false;
 
@@ -235,20 +239,23 @@ public class BlueRoadRunner extends LinearOpMode {
 
       // Debug angle / wheel speed
       if (gamepad1.dpad_left) {
-        if (slow) {
+        /*if (slow) {
           wheeelSpeed -= 0.01;
         } else {
           anglePos -= 0.01;
-        }
+        }*/
+        turretOffset.set(turretOffset.get() -1);
       }
 
       if (gamepad1.dpad_right) {
-        if (slow) {
+        /*if (slow) {
           wheeelSpeed += 0.01;
         } else {
           anglePos += 0.01;
-        }
+        }*/
+        turretOffset.set(turretOffset.get() +1);
       }
+      packet.put("turretOffset", turretOffset.get());
 
       // Angles and Speeds
       // Far
@@ -262,7 +269,7 @@ public class BlueRoadRunner extends LinearOpMode {
 
       // Medium
       if (gamepad1.b && !changed4) {
-        anglePos = 0.0;
+        anglePos = 0.22;
         wheeelSpeed = 1.3;
         changed4 = true;
       } else if (!gamepad1.b && changed4) {
@@ -272,7 +279,7 @@ public class BlueRoadRunner extends LinearOpMode {
       //Close
       if (gamepad1.y && !changed5) {
         anglePos = 0.0;
-        wheeelSpeed = 0.94;
+        wheeelSpeed = 1.0;
         changed5 = true;
       } else if (!gamepad1.y  && changed5) {
         changed5 = false;
@@ -321,6 +328,11 @@ public class BlueRoadRunner extends LinearOpMode {
         changed7 = true;
       } else if (!gamepad1.dpad_up) {
         changed7 = false;
+      }
+
+      if ((gamepad2.a && gamepad2.b && gamepad2.x && gamepad2.y) && !changed10) {
+        drive.updatePoseEstimate();
+        changed10 = true;
       }
 
 

@@ -27,7 +27,7 @@ class Intake(hardwareMap: HardwareMap) {
     private val intake = hardwareMap.get(DcMotor::class.java, "intake")
 
 
-    private val power = 1.0
+    private val power = 0.0
 
     var scoringArmOffset = 0 //offset used to reset the arm positions mid-match
     var targetPower = 0.0

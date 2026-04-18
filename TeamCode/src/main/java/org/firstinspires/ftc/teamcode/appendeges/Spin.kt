@@ -90,11 +90,11 @@ class Spin(hardwareMap: HardwareMap) {
         encoder.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
-    fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
+    fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, turretOffset:Int, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         switched = true
         val ticksPerDegree = 68.26666666666667
         val targetX = -70.0
-        val targetY = if (isRedGoal) 70.0 else -70.0
+        val targetY = if (isRedGoal) 70.0 else -60.0
 
         val returnList: MutableList<Double?> = ArrayList()
 
@@ -110,7 +110,7 @@ class Spin(hardwareMap: HardwareMap) {
 //        currentHeading = if (currentHeading<0) currentHeading + 2*Math.PI else currentHeading
 
 //      encoder pos in degrees + current heading
-        val currentAngle = ((((-encoder.currentPosition) / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES)))
+        val currentAngle = ((-encoder.currentPosition) / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES) - (turretOffset/2)
 
 
 //      Angle of current position (robot) to target (goal)

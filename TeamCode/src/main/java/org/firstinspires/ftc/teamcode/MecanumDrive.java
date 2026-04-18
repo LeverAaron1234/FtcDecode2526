@@ -115,6 +115,12 @@ public final class MecanumDrive {
     public final Localizer localizer;
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
+    //static boolean initialized;
+    // Added to try to reinit, for resetting purposes
+    //public void setInit(Boolean bool) {initialized = bool;}
+
+    //public boolean getInit(){return DriveLocalizer.initialized;}
+
     private final DownsampledWriter estimatedPoseWriter = new DownsampledWriter("ESTIMATED_POSE", 50_000_000);
     private final DownsampledWriter targetPoseWriter = new DownsampledWriter("TARGET_POSE", 50_000_000);
     private final DownsampledWriter driveCommandWriter = new DownsampledWriter("DRIVE_COMMAND", 50_000_000);
@@ -126,7 +132,7 @@ public final class MecanumDrive {
 
         private int lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
         private Rotation2d lastHeading;
-        private boolean initialized;
+        private boolean initialized; // TODO: Change back to private, so it doesn't break
         private Pose2d pose;
 
         public DriveLocalizer(Pose2d pose) {
