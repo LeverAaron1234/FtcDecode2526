@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -17,21 +19,28 @@ import org.firstinspires.ftc.teamcode.appendeges.Intake2;
 import org.firstinspires.ftc.teamcode.appendeges.Pew;
 import org.firstinspires.ftc.teamcode.appendeges.Shooter;
 import org.firstinspires.ftc.teamcode.appendeges.Spin;
+import org.firstinspires.ftc.teamcode.appendeges.Stopper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-@Autonomous
+@Autonomous(preselectTeleOp = "BlueRoadRunner")
 public final class BlueFarAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d beginPose = new Pose2d(64, -29, Math.toRadians(-90));
+
+        Pose2d beginPose = new Pose2d(61.95,-18.62,0.0);
+
+
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        Intake2 intake2 = new Intake2(hardwareMap);
         Pew pew = new Pew(hardwareMap);
         Angle angle = new Angle(hardwareMap);
+        Stopper stopper = new Stopper(hardwareMap);
 
         Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
         Spin spin = new Spin(hardwareMap);
@@ -51,31 +60,90 @@ public final class BlueFarAuto extends LinearOpMode {
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
+        FtcDashboard dash = FtcDashboard.getInstance();
+
         AtomicBoolean turretLock = new AtomicBoolean(false);
 
-            // Autonomous threading so that the camera can control the turret in a loop
+        AtomicInteger turretOffset = new AtomicInteger(30);
+
+        // Autonomous threading so that the camera can control the turret in a loop
         Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
             while(opModeIsActive())
             {
                 if (Thread.currentThread().isInterrupted()) {
-                    spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                    // Update using odometry then add return data to telemetry
+          /*if (camq.getLatestResult().isValid()) {
+            List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+            telemetry.addData("Turret data",
+                    "\nspinP (%.2f)" +
+                            "\nspinI (%.2f)" +
+                            "\nspinD (%.2f)" +
+                            "\nspin power (%.2f)",
+                    vals.toArray()
+            );
+            break;
+
+          } else {*/
+                    List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                    telemetry.addData("Turret data",
+                            "\nposX (%.2f)" +
+                                    "\nposY (%.2f)" +
+                                    "\ntargetX (%.2f)" +
+                                    "\ntargetY (%.2f)" +
+                                    "\nencoder pos (%.2f)" +
+                                    "\nCurrent angle (%.2f)" +
+                                    "\nRobot Heading (%.2f)" +
+                                    "\nTarget angle (%.2f)" +
+                                    "\nspin power (%.2f)",
+                            vals.toArray()
+                    );
                     break;
+                    //}
                 }
 
-                spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                // Update using odometry then add return data to telemetry
+        /*if (camq.getLatestResult().isValid()) {
+          List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          telemetry.addData("Turret data",
+                  "\nspinP (%.2f)" +
+                          "\nspinI (%.2f)" +
+                          "\nspinD (%.2f)" +
+                          "\nspin power (%.2f)",
+                  vals.toArray()
+          );
+        } else {*/
+                List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                telemetry.addData("Turret data",
+                        "\nposX (%.2f)" +
+                                "\nposY (%.2f)" +
+                                "\ntargetX (%.2f)" +
+                                "\ntargetY (%.2f)" +
+                                "\nencoder pos (%.2f)" +
+                                "\nCurrent angle (%.2f)" +
+                                "\nRobot Heading (%.2f)" +
+                                "\nTarget angle (%.2f)" +
+                                "\nspin power (%.2f)",
+                        vals.toArray()
+                );
+                //}
+                telemetry.update();
             }
         });
+
 
         Actions.runBlocking(new ParallelAction(
                 shooter.stop(),
                 pew.set(),
                 intake.off(),
-                intake2.off(),
-                angle.down()
+                angle.down(),
+                stopper.Out()
         ));
 
 
         telemetry.update();
+
+        /*=======================================WAIT FOR START=======================================*/
+
         waitForStart();
 
         thread.start(); // start the above defined thread
@@ -96,24 +164,32 @@ public final class BlueFarAuto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
-                        .strafeToSplineHeading(new Vector2d(60,- 20), Math.toRadians(-80))
+                        //.strafeToSplineHeading(beginPose.position,beginPose.heading)
                         .build(),
                 shooter.full(),
-                new SleepAction(1.5)
+                new SleepAction(5)
         ));
 
-        if (!camq.getLatestResult().isValid()) {
-            turretLock.set(true);
-        }
-        Actions.runBlocking(new SequentialAction(
+
+        /*Actions.runBlocking(new SequentialAction(
                 intake.on(),
-                intake2.on(),
+                stopper.In(),
                 pew.launch(),
-                new SleepAction(2.0)
+                new SleepAction(2.0),
+                stopper.Out()
+        ));*/
+
+        Actions.runBlocking(new SequentialAction(
+                drive.actionBuilder(beginPose)
+                        .strafeTo(new Vector2d(drive.localizer.getPose().position.x,drive.localizer.getPose().position.y-25))
+                        .build()
         ));
 
 
         thread.interrupt();
+
+        RobotPose.lastRobotPose = drive.localizer.getPose();
+        RobotPose.updated = true;
 
     }
 

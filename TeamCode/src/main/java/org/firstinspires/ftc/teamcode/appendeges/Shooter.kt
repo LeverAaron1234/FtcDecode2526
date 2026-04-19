@@ -98,7 +98,7 @@ class Shooter(hardwareMap: HardwareMap) {
      * alongside a collect action
      */
 
-    fun full(): Action = SetState(0.74)
+    fun full(): Action = SetState(1.5)
     fun fuller(): Action = SetState(0.75)
     fun medium(): Action = SetState(0.60)
     fun low(): Action = SetState(0.55)

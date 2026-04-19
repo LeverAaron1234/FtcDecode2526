@@ -110,7 +110,7 @@ class Spin(hardwareMap: HardwareMap) {
 //        currentHeading = if (currentHeading<0) currentHeading + 2*Math.PI else currentHeading
 
 //      encoder pos in degrees + current heading
-        val currentAngle = ((-encoder.currentPosition) / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES) - (turretOffset/2)
+        val currentAngle = ((-encoder.currentPosition) / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES) + (turretOffset)
 
 
 //      Angle of current position (robot) to target (goal)

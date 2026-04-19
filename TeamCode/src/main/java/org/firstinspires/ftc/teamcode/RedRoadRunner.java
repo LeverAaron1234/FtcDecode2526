@@ -44,7 +44,7 @@ public class RedRoadRunner extends LinearOpMode {
       beginPose = RobotPose.lastRobotPose;
       beginPoseValid = true;
     } else {
-      beginPose = new Pose2d(61.33,19.03,0.0);
+      beginPose = new Pose2d(61.95,18.62,0.0);
     }
 
 
@@ -76,6 +76,7 @@ public class RedRoadRunner extends LinearOpMode {
     List<Action> runningActions = new ArrayList<>();
 
     AtomicBoolean turretLock = new AtomicBoolean(false);
+
     AtomicInteger turretOffset = new AtomicInteger(0);
 
     // Autonomous threading so that the camera can control the turret in a loop
@@ -84,7 +85,7 @@ public class RedRoadRunner extends LinearOpMode {
       {
         if (Thread.currentThread().isInterrupted()) {
           // Update using odometry then add return data to telemetry
-          if (camq.getLatestResult().isValid()) {
+          /*if (camq.getLatestResult().isValid()) {
             List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
             telemetry.addData("Turret data",
                     "\nspinP (%.2f)" +
@@ -95,35 +96,7 @@ public class RedRoadRunner extends LinearOpMode {
             );
             break;
 
-          } else {
-            List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
-            telemetry.addData("Turret data",
-                    "\nposX (%.2f)" +
-                            "\nposY (%.2f)" +
-                            "\ntargetX (%.2f)" +
-                            "\ntargetY (%.2f)" +
-                            "\nencoder pos (%.2f)" +
-                            "\nCurrent angle (%.2f)" +
-                            "\nRobot Heading (%.2f)" +
-                            "\nTarget angle (%.2f)" +
-                            "\nspin power (%.2f)",
-                    vals.toArray()
-            );
-            break;
-          }
-        }
-
-        // Update using odometry then add return data to telemetry
-        if (camq.getLatestResult().isValid()) {
-          List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
-          telemetry.addData("Turret data",
-                  "\nspinP (%.2f)" +
-                          "\nspinI (%.2f)" +
-                          "\nspinD (%.2f)" +
-                          "\nspin power (%.2f)",
-                  vals.toArray()
-          );
-        } else {
+          } else {*/
           List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
           telemetry.addData("Turret data",
                   "\nposX (%.2f)" +
@@ -137,7 +110,35 @@ public class RedRoadRunner extends LinearOpMode {
                           "\nspin power (%.2f)",
                   vals.toArray()
           );
+          break;
+          //}
         }
+
+        // Update using odometry then add return data to telemetry
+        /*if (camq.getLatestResult().isValid()) {
+          List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          telemetry.addData("Turret data",
+                  "\nspinP (%.2f)" +
+                          "\nspinI (%.2f)" +
+                          "\nspinD (%.2f)" +
+                          "\nspin power (%.2f)",
+                  vals.toArray()
+          );
+        } else {*/
+        List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+        telemetry.addData("Turret data",
+                "\nposX (%.2f)" +
+                        "\nposY (%.2f)" +
+                        "\ntargetX (%.2f)" +
+                        "\ntargetY (%.2f)" +
+                        "\nencoder pos (%.2f)" +
+                        "\nCurrent angle (%.2f)" +
+                        "\nRobot Heading (%.2f)" +
+                        "\nTarget angle (%.2f)" +
+                        "\nspin power (%.2f)",
+                vals.toArray()
+        );
+        //}
         telemetry.update();
       }
     });
@@ -184,6 +185,7 @@ public class RedRoadRunner extends LinearOpMode {
     boolean changed7 = false;
     boolean changed8 = false;
     boolean changed9 = false;
+    boolean changed10 = false;
 
     boolean slow = false;
 
@@ -253,11 +255,12 @@ public class RedRoadRunner extends LinearOpMode {
         }*/
         turretOffset.set(turretOffset.get() +1);
       }
+      packet.put("turretOffset", turretOffset.get());
 
       // Angles and Speeds
       // Far
       if (gamepad1.a && !changed3) {
-        anglePos = 0.63; // Min 0 --- Max 1
+        anglePos = 0.33; // Min 0 --- Max 1
         wheeelSpeed = 1.5; // Min 0 --- Max 2
         changed3 = true;  // try not to mess with changed3, it makes the button work when pressed
       } else if (!gamepad1.a && changed3) {
@@ -266,7 +269,7 @@ public class RedRoadRunner extends LinearOpMode {
 
       // Medium
       if (gamepad1.b && !changed4) {
-        anglePos = 0.0;
+        anglePos = 0.22;
         wheeelSpeed = 1.3;
         changed4 = true;
       } else if (!gamepad1.b && changed4) {
@@ -276,7 +279,7 @@ public class RedRoadRunner extends LinearOpMode {
       //Close
       if (gamepad1.y && !changed5) {
         anglePos = 0.0;
-        wheeelSpeed = 0.94;
+        wheeelSpeed = 1.0/*5*/;
         changed5 = true;
       } else if (!gamepad1.y  && changed5) {
         changed5 = false;
@@ -325,6 +328,41 @@ public class RedRoadRunner extends LinearOpMode {
         changed7 = true;
       } else if (!gamepad1.dpad_up) {
         changed7 = false;
+      }
+
+      /*if (gamepad1.left_stick_button && !changed10) {
+        runningActions.add(
+                drive.actionBuilder(drive.localizer.getPose())
+                        .strafeTo(new Vector2d(-30.7,-14.5))
+                        .build();
+        );
+        changed10 = true;
+
+      } else if (!gamepad1.left_stick_button && changed10) {
+        changed10 = false;
+      }
+
+      if ((gamepad1.left_stick_x >= 0.2 || gamepad1.left_stick_y >= 0.2) && changed10) {
+        runningActions.remove(runningActions.size()-1);
+      }*/
+
+      // Debug angle / wheel speed
+      if (gamepad2.dpad_left) {
+        /*if (slow) {
+          wheeelSpeed -= 0.01;
+        } else {
+          anglePos -= 0.01;
+        }*/
+        turretOffset.set(turretOffset.get() -1);
+      }
+
+      if (gamepad2.dpad_right) {
+        /*if (slow) {
+          wheeelSpeed += 0.01;
+        } else {
+          anglePos += 0.01;
+        }*/
+        turretOffset.set(turretOffset.get() +1);
       }
 
 
