@@ -56,7 +56,6 @@ class Angle(hardwareMap: HardwareMap) {
      */
 
     fun far(): Action = SetState(0.33)
-    fun mid(): Action = SetState(0.6)
     fun middle(): Action = SetState(0.6)
     fun down(): Action = SetState(0.6)
     fun varangle(ang:Double): Action = SetState(ang)
