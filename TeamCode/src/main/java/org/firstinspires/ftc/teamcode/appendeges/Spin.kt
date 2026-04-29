@@ -85,11 +85,20 @@ class Spin(hardwareMap: HardwareMap) {
         timer.reset()
     }
 
+    /**
+     * Reset the encoder
+     * */
     fun resetEncoder() {
         encoder.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         encoder.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
+    /**
+     * Points the turret at the goal
+     * @param drive The current drive, used to get the localizer position
+     * @param isRedGoal A flag to change the target goal
+     * @param turretOffset The offset of the 
+     * */
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, turretOffset:Int, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         switched = true
         val ticksPerDegree = 68.26666666666667

@@ -9,10 +9,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 
 class Intake2(hardwareMap: HardwareMap) {
 
-    /**
-     * @param position the position of the scoringArm in that state, -1 means we don't currently
-     * know the position of the scoringArm
-     */
 
     enum class Intake2(val pwr: Double) {
         on(1.0),
@@ -23,6 +19,9 @@ class Intake2(hardwareMap: HardwareMap) {
 
     var IntakeState = Intake2.Neutral
 
+    /**
+     * Get an instance of the extra intake motor on the robot.
+     */
     private val intake = hardwareMap.get(DcMotor::class.java, "intake2")
 
 
@@ -41,10 +40,9 @@ class Intake2(hardwareMap: HardwareMap) {
     }
 
     /**
-     * Start: sets the arm state and position;
-     * IsFinished: the arm has reached the state's position
-     *
-     * @param state the state (and associated position) to set the arm to
+     * Inner class to work with RoadRunner.
+     * @param state The value you want to go to. Range 0.0-1.0
+     * Returns `false` so that RoadRunner doesn't try to run it twice.
      */
     inner class SetState(private val state: Intake2) : Action {
         private var initialized = false
@@ -65,16 +63,9 @@ class Intake2(hardwareMap: HardwareMap) {
     }
 
     /**
-     * manually changes the position of the scoringArm (typically with a joystick)
-     *
-     * @param input the percent speed (-1 to 1) normalized by delta time (the time between each loop)
+     * Functions used in code.
+     * Function `varangle` is used to set any value, for debug purposes
      */
-
-    /**
-     * Only use in the collect position; used to reset the positions of the arm; should be called
-     * alongside a collect action
-     */
-
     fun on(): Action = SetState(Intake2.on)
     fun firein(): Action = SetState(Intake2.fire)
     fun off(): Action = SetState(Intake2.Neutral)

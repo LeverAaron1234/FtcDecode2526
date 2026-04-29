@@ -9,12 +9,10 @@ import com.qualcomm.robotcore.hardware.Servo
 
 class Angle(hardwareMap: HardwareMap) {
 
+
     /**
-     * @param position the position of the scoringArm in that state, -1 means we don't currently
-     * know the position of the scoringArm
+     * Get an instance of the hood on the robot.
      */
-
-
     private val angle = hardwareMap.get(Servo::class.java, "angle")
 
 
@@ -22,10 +20,9 @@ class Angle(hardwareMap: HardwareMap) {
 
 
     /**
-     * Start: sets the arm state and position;
-     * IsFinished: the arm has reached the state's position
-     *
-     * @param state the state (and associated position) to set the arm to
+     * Inner class to work with RoadRunner.
+     * @param state The value you want to go to. Range 0.0-1.0
+     * Returns `false` so that RoadRunner doesn't try to run it twice.
      */
     inner class SetState(private val state: Double) : Action {
         private var initialized = false
@@ -44,17 +41,11 @@ class Angle(hardwareMap: HardwareMap) {
         }
     }
 
-    /**
-     * manually changes the position of the scoringArm (typically with a joystick)
-     *
-     * @param input the percent speed (-1 to 1) normalized by delta time (the time between each loop)
-     */
 
     /**
-     * Only use in the collect position; used to reset the positions of the arm; should be called
-     * alongside a collect action
+     * Functions used in code.
+     * Function `varangle` is used to set any value, for debug purposes
      */
-
     fun far(): Action = SetState(0.33)
     fun middle(): Action = SetState(0.6)
     fun down(): Action = SetState(0.6)
