@@ -37,36 +37,46 @@ public final class BlueFarAuto extends LinearOpMode {
         Angle angle = new Angle(hardwareMap);
         Stopper stopper = new Stopper(hardwareMap);
 
+        // More instantiating, this time, the camera and the turret
         Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
         Spin spin = new Spin(hardwareMap);
         spin.resetTimer();
 
 
 
-
+        // The limit switches on the turret
         TouchSensor leftLimit = hardwareMap.get(TouchSensor.class, "leftLimit");
         TouchSensor rightLimit = hardwareMap.get(TouchSensor.class, "rightLimit");
 
+        // Quick making sure the robot isn't moving
         Actions.runBlocking(pew.set());
 
-
+        // Make the camera work correctly, by putting it on the correct pipeline.
+        // The python dictionary shows what numbers correspond to the different targets
         camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
-        camq.start();
+        camq.start(); // start the camera
 
+        // Instantiating the chassis and its motors
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
+        // The Roadrunner Dashboard
         FtcDashboard dash = FtcDashboard.getInstance();
 
+        // Start of the turret thread
+
+        // So that the turret stops moving around so much
         AtomicBoolean turretLock = new AtomicBoolean(false);
 
+        // So that you can offset the turret if needed.
         AtomicInteger turretOffset = new AtomicInteger(30);
 
         // Autonomous threading so that the camera can control the turret in a loop
-        Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
-            while(opModeIsActive())
+        Thread thread = new Thread(() -> { // Lambda, such a funny word
+            while(opModeIsActive()) // Same loop as teleOp
             {
+                // Always wrap things, so that when they go wrong, they don't break.
                 if (Thread.currentThread().isInterrupted()) {
-                    // Update using odometry then add return data to telemetry
+           // Update using camera then add return data to telemetry (Not currently used)
           /*if (camq.getLatestResult().isValid()) {
             List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
             telemetry.addData("Turret data",
@@ -79,6 +89,7 @@ public final class BlueFarAuto extends LinearOpMode {
             break;
 
           } else {*/
+                    // Update using odometry, then return data to telemetry
                     List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
                     telemetry.addData("Turret data",
                             "\nposX (%.2f)" +
@@ -96,7 +107,7 @@ public final class BlueFarAuto extends LinearOpMode {
                     //}
                 }
 
-                // Update using odometry then add return data to telemetry
+                // Update using camera then add return data to telemetry
         /*if (camq.getLatestResult().isValid()) {
           List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
           telemetry.addData("Turret data",
@@ -107,6 +118,7 @@ public final class BlueFarAuto extends LinearOpMode {
                   vals.toArray()
           );
         } else {*/
+                // Yes, I did duplicate code. Shhhhhh...
                 List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
                 telemetry.addData("Turret data",
                         "\nposX (%.2f)" +
@@ -126,6 +138,7 @@ public final class BlueFarAuto extends LinearOpMode {
         });
 
 
+        // Make really sure that nothing moves
         Actions.runBlocking(new ParallelAction(
                 shooter.stop(),
                 pew.set(),
@@ -135,18 +148,19 @@ public final class BlueFarAuto extends LinearOpMode {
         ));
 
 
-        telemetry.update();
+        telemetry.update(); // update telemetry
 
         /*=======================================WAIT FOR START=======================================*/
 
         waitForStart();
 
-        thread.start(); // start the above defined thread
+        thread.start(); // start the turret thread
 
 
-        telemetry.update();
+        telemetry.update(); // you wanted comments, you get comments
 
 
+        // make the shooter and angle go to firing positions
         Actions.runBlocking(
                 new SequentialAction(
                         shooter.full(),
@@ -155,11 +169,35 @@ public final class BlueFarAuto extends LinearOpMode {
         );
 
 
-        thread.interrupt();
+        thread.interrupt(); // make sure that the thread isn't running anymore, we don't need it.
 
-        RobotPose.lastRobotPose = drive.localizer.getPose();
-        RobotPose.updated = true;
-
+        RobotPose.lastRobotPose = drive.localizer.getPose(); // update the robot pose
+        RobotPose.updated = true; // tell the updated pose that it was changed, because yes.
     }
 
 }
+// The end...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// What, you thought something was here?
+
