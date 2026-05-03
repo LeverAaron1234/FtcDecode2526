@@ -1,21 +1,17 @@
-package org.firstinspires.ftc.teamcode.appendeges
+package org.firstinspires.ftc.teamcode.appendages
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.DriveConstants
 import org.firstinspires.ftc.teamcode.MecanumDrive
 import kotlin.math.abs
-import kotlin.math.atan
 import kotlin.math.atan2
-import kotlin.math.sign
 
 
 class Spin(hardwareMap: HardwareMap) {
@@ -97,7 +93,7 @@ class Spin(hardwareMap: HardwareMap) {
      * Points the turret at the goal
      * @param drive The current drive, used to get the localizer position
      * @param isRedGoal A flag to change the target goal
-     * @param turretOffset The offset of the 
+     * @param turretOffset The offset of the
      * */
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, turretOffset:Int, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         switched = true

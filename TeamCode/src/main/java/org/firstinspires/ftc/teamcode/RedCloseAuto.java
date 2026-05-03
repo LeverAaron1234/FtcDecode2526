@@ -10,12 +10,12 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.appendeges.Angle;
-import org.firstinspires.ftc.teamcode.appendeges.Helper;
-import org.firstinspires.ftc.teamcode.appendeges.Intake;
-import org.firstinspires.ftc.teamcode.appendeges.LimelightCam;
-import org.firstinspires.ftc.teamcode.appendeges.Pew;
-import org.firstinspires.ftc.teamcode.appendeges.Shooter;
+import org.firstinspires.ftc.teamcode.appendages.Angle;
+import org.firstinspires.ftc.teamcode.appendages.Helper;
+import org.firstinspires.ftc.teamcode.appendages.Intake;
+import org.firstinspires.ftc.teamcode.appendages.LimelightCam;
+import org.firstinspires.ftc.teamcode.appendages.Pew;
+import org.firstinspires.ftc.teamcode.appendages.Shooter;
 
 
 @Autonomous

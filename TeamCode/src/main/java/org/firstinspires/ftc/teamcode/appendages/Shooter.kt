@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.appendeges
+package org.firstinspires.ftc.teamcode.appendages
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import org.firstinspires.ftc.teamcode.DriveConstants
-import kotlin.math.sqrt
 
 
 class Shooter(hardwareMap: HardwareMap) {

@@ -1,27 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.appendeges.Angle;
-import org.firstinspires.ftc.teamcode.appendeges.Intake;
-import org.firstinspires.ftc.teamcode.appendeges.Intake2;
-import org.firstinspires.ftc.teamcode.appendeges.Pew;
-import org.firstinspires.ftc.teamcode.appendeges.Shooter;
-import org.firstinspires.ftc.teamcode.appendeges.Spin;
-import org.firstinspires.ftc.teamcode.appendeges.Stopper;
+import org.firstinspires.ftc.teamcode.appendages.Angle;
+import org.firstinspires.ftc.teamcode.appendages.Intake;
+import org.firstinspires.ftc.teamcode.appendages.Pew;
+import org.firstinspires.ftc.teamcode.appendages.Shooter;
+import org.firstinspires.ftc.teamcode.appendages.Spin;
+import org.firstinspires.ftc.teamcode.appendages.Stopper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,10 +27,10 @@ public final class BlueFarAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        // The starting position for the robot
         Pose2d beginPose = new Pose2d(61.95,-18.62,0.0);
 
-
-
+        // Instantiating the classes from the appendages folder
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
         Pew pew = new Pew(hardwareMap);
@@ -158,32 +153,6 @@ public final class BlueFarAuto extends LinearOpMode {
                         angle.far()
                 )
         );
-
-
-        telemetry.update();
-
-        Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(beginPose)
-                        //.strafeToSplineHeading(beginPose.position,beginPose.heading)
-                        .build(),
-                shooter.full(),
-                new SleepAction(5)
-        ));
-
-
-        /*Actions.runBlocking(new SequentialAction(
-                intake.on(),
-                stopper.In(),
-                pew.launch(),
-                new SleepAction(2.0),
-                stopper.Out()
-        ));*/
-
-        Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(beginPose)
-                        .strafeTo(new Vector2d(drive.localizer.getPose().position.x,drive.localizer.getPose().position.y-25))
-                        .build()
-        ));
 
 
         thread.interrupt();

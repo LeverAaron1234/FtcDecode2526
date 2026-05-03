@@ -1,12 +1,9 @@
-package org.firstinspires.ftc.teamcode.appendeges
+package org.firstinspires.ftc.teamcode.appendages
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
-import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.Servo
 
 
 class Pew(hardwareMap: HardwareMap) {

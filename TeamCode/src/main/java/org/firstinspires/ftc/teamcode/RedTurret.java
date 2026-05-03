@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.appendeges.TurretSpinner;
+import org.firstinspires.ftc.teamcode.appendages.TurretSpinner;
 
 import java.util.concurrent.TimeUnit;
 

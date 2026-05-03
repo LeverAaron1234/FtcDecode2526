@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -13,15 +12,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.appendeges.Angle;
-import org.firstinspires.ftc.teamcode.appendeges.Intake;
-import org.firstinspires.ftc.teamcode.appendeges.Intake2;
-import org.firstinspires.ftc.teamcode.appendeges.Pew;
-import org.firstinspires.ftc.teamcode.appendeges.Shooter;
-import org.firstinspires.ftc.teamcode.appendeges.Spin;
-import org.firstinspires.ftc.teamcode.appendeges.Stopper;
+import org.firstinspires.ftc.teamcode.appendages.Angle;
+import org.firstinspires.ftc.teamcode.appendages.Intake;
+import org.firstinspires.ftc.teamcode.appendages.Pew;
+import org.firstinspires.ftc.teamcode.appendages.Shooter;
+import org.firstinspires.ftc.teamcode.appendages.Spin;
+import org.firstinspires.ftc.teamcode.appendages.Stopper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;

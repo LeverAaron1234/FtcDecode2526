@@ -12,11 +12,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.appendeges.Angle;
-import org.firstinspires.ftc.teamcode.appendeges.Intake;
-import org.firstinspires.ftc.teamcode.appendeges.Pew;
-import org.firstinspires.ftc.teamcode.appendeges.Shooter;
-import org.firstinspires.ftc.teamcode.appendeges.Spin;
+import org.firstinspires.ftc.teamcode.appendages.Angle;
+import org.firstinspires.ftc.teamcode.appendages.Intake;
+import org.firstinspires.ftc.teamcode.appendages.Pew;
+import org.firstinspires.ftc.teamcode.appendages.Shooter;
+import org.firstinspires.ftc.teamcode.appendages.Spin;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

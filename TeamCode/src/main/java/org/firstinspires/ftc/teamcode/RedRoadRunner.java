@@ -11,18 +11,16 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.appendeges.Angle;
-import org.firstinspires.ftc.teamcode.appendeges.Intake;
-import org.firstinspires.ftc.teamcode.appendeges.Pew;
-import org.firstinspires.ftc.teamcode.appendeges.Shooter;
-import org.firstinspires.ftc.teamcode.appendeges.Spin;
-import org.firstinspires.ftc.teamcode.appendeges.Stopper;
+import org.firstinspires.ftc.teamcode.appendages.Angle;
+import org.firstinspires.ftc.teamcode.appendages.Intake;
+import org.firstinspires.ftc.teamcode.appendages.Pew;
+import org.firstinspires.ftc.teamcode.appendages.Shooter;
+import org.firstinspires.ftc.teamcode.appendages.Spin;
+import org.firstinspires.ftc.teamcode.appendages.Stopper;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.appendeges
+package org.firstinspires.ftc.teamcode.appendages
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
