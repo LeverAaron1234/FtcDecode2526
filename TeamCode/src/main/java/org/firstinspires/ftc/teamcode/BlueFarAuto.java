@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -170,7 +171,46 @@ public final class BlueFarAuto extends LinearOpMode {
                 new SequentialAction(
                         shooter.full(),
                         angle.far(),
-                        new SleepAction(0.5)
+                        new SleepAction(2.0), // wait for the shooter and turret to start up
+                        intake.on(), // Fire!!!
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.launch(),
+                        drive.actionBuilder(beginPose) // Tell the drive its pos
+                                // move in front of the first set of artifacts
+                                .strafeToSplineHeading(new Vector2d(36,20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(36, 45)) // grab the artifacts
+                                .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
+                                .build(),
+                        intake.on(), // Fire!!!
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.launch(),
+                        drive.actionBuilder(beginPose) // Tell the drive its pos
+                                // move in front of the second set of artifacts
+                                .strafeToSplineHeading(new Vector2d(12,20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(12, 45)) // grab the artifacts
+                                .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
+                                .build(),
+                        intake.on(), // Fire!!!
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.launch(),
+                        drive.actionBuilder(beginPose) // Tell the drive its pos
+                                // move in front of the third set of artifacts
+                                .strafeToSplineHeading(new Vector2d(-12,20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(-12, 45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(24,40),Math.toRadians(90)) // go to end pos
+                                .build()
                 )
         );
 
