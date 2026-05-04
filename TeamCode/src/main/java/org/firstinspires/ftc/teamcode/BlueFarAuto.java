@@ -181,8 +181,8 @@ public final class BlueFarAuto extends LinearOpMode {
                         pew.launch(),
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // move in front of the first set of artifacts
-                                .strafeToSplineHeading(new Vector2d(36,20), Math.toRadians(90))
-                                .strafeTo(new Vector2d(36, 45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(36,-20), Math.toRadians(-90))
+                                .strafeTo(new Vector2d(36, -45)) // grab the artifacts
                                 .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
                                 .build(),
                         intake.on(), // Fire!!!
@@ -194,8 +194,8 @@ public final class BlueFarAuto extends LinearOpMode {
                         pew.launch(),
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // move in front of the second set of artifacts
-                                .strafeToSplineHeading(new Vector2d(12,20), Math.toRadians(90))
-                                .strafeTo(new Vector2d(12, 45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(12,-20), Math.toRadians(-90))
+                                .strafeTo(new Vector2d(12, -45)) // grab the artifacts
                                 .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
                                 .build(),
                         intake.on(), // Fire!!!
@@ -207,9 +207,9 @@ public final class BlueFarAuto extends LinearOpMode {
                         pew.launch(),
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // move in front of the third set of artifacts
-                                .strafeToSplineHeading(new Vector2d(-12,20), Math.toRadians(90))
-                                .strafeTo(new Vector2d(-12, 45)) // grab the artifacts
-                                .strafeToSplineHeading(new Vector2d(24,40),Math.toRadians(90)) // go to end pos
+                                .strafeToSplineHeading(new Vector2d(-12,-20), Math.toRadians(-90))
+                                .strafeTo(new Vector2d(-12, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(24,-40),Math.toRadians(-90)) // go to end pos
                                 .build()
                 )
         );
