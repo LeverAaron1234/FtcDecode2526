@@ -132,7 +132,7 @@ public final class RedFarAuto extends LinearOpMode {
                 shooter.stop(),
                 pew.set(),
                 intake.off(),
-                angle.down(),
+                angle.close(),
                 stopper.Out()
         ));
 

@@ -46,7 +46,7 @@ public final class BlueCloseAuto extends LinearOpMode {
                 pew.set(),
                 helper.off(),
                 intake.off(),
-                angle.down()
+                angle.close()
         ));
 
 
@@ -70,7 +70,7 @@ public final class BlueCloseAuto extends LinearOpMode {
                         intake.off(),
                         pew.set(),
                         helper.forward(),
-                        angle.down()
+                        angle.close()
                 )
         );
 

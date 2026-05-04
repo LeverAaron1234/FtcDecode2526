@@ -69,7 +69,7 @@ public final class RedManyAuto extends LinearOpMode {
                 shooter.stop(),
                 pew.set(),
                 intake.off(),
-                angle.down()
+                angle.close()
         ));
 
 

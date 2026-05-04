@@ -29,69 +29,98 @@ public final class BlueFarAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        // The starting position for the robot
-        Pose2d beginPose = new Pose2d(61.95,-18.62,0.0);
+            // The starting position for the robot
+            Pose2d beginPose = new Pose2d(61.95,-18.62,0.0);
 
-        // Instantiating the classes from the appendages folder
-        Shooter shooter = new Shooter(hardwareMap);
-        Intake intake = new Intake(hardwareMap);
-        Pew pew = new Pew(hardwareMap);
-        Angle angle = new Angle(hardwareMap);
-        Stopper stopper = new Stopper(hardwareMap);
+            // Instantiating the classes from the appendages folder
+            Shooter shooter = new Shooter(hardwareMap);
+            Intake intake = new Intake(hardwareMap);
+            Pew pew = new Pew(hardwareMap);
+            Angle angle = new Angle(hardwareMap);
+            Stopper stopper = new Stopper(hardwareMap);
 
-        // More instantiating, this time, the camera and the turret
-        Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
-        Spin spin = new Spin(hardwareMap);
-        spin.resetTimer();
+            // More instantiating, this time, the camera and the turret
+            Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
+            Spin spin = new Spin(hardwareMap);
+            spin.resetTimer();
 
 
 
-        // The limit switches on the turret
-        TouchSensor leftLimit = hardwareMap.get(TouchSensor.class, "leftLimit");
-        TouchSensor rightLimit = hardwareMap.get(TouchSensor.class, "rightLimit");
+            // The limit switches on the turret
+            TouchSensor leftLimit = hardwareMap.get(TouchSensor.class, "leftLimit");
+            TouchSensor rightLimit = hardwareMap.get(TouchSensor.class, "rightLimit");
 
-        // Quick making sure the robot isn't moving
-        Actions.runBlocking(pew.set());
+            // Quick making sure the robot isn't moving
+            Actions.runBlocking(pew.set());
 
-        // Make the camera work correctly, by putting it on the correct pipeline.
-        // The python dictionary shows what numbers correspond to the different targets
-        camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
-        camq.start(); // start the camera
+            // Make the camera work correctly, by putting it on the correct pipeline.
+            // The python dictionary shows what numbers correspond to the different targets
+            camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
+            camq.start(); // start the camera
 
-        // Instantiating the chassis and its motors
-        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+            // Instantiating the chassis and its motors
+            MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-        // The Roadrunner Dashboard
-        FtcDashboard dash = FtcDashboard.getInstance();
+            // The Roadrunner Dashboard
+            FtcDashboard dash = FtcDashboard.getInstance();
 
-        // Start of the turret thread
+            // Start of the turret thread
 
-        // So that the turret stops moving around so much
-        AtomicBoolean turretLock = new AtomicBoolean(false);
+            // So that the turret stops moving around so much
+            AtomicBoolean turretLock = new AtomicBoolean(false);
 
-        // So that you can offset the turret if needed.
-        AtomicInteger turretOffset = new AtomicInteger(30);
+            // So that you can offset the turret if needed.
+            AtomicInteger turretOffset = new AtomicInteger(30);
 
-        // Autonomous threading so that the camera can control the turret in a loop
-        Thread thread = new Thread(() -> { // Lambda, such a funny word
-            while(opModeIsActive()) // Same loop as teleOp
-            {
-                // Always wrap things, so that when they go wrong, they don't break.
-                if (Thread.currentThread().isInterrupted()) {
-           // Update using camera then add return data to telemetry (Not currently used)
-          /*if (camq.getLatestResult().isValid()) {
-            List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
-            telemetry.addData("Turret data",
-                    "\nspinP (%.2f)" +
-                            "\nspinI (%.2f)" +
-                            "\nspinD (%.2f)" +
-                            "\nspin power (%.2f)",
-                    vals.toArray()
-            );
-            break;
+            // Autonomous threading so that the camera can control the turret in a loop
+            Thread thread = new Thread(() -> { // Lambda, such a funny word
+                while(opModeIsActive()) // Same loop as teleOp
+                {
+                    // Always wrap things, so that when they go wrong, they don't break.
+                    if (Thread.currentThread().isInterrupted()) {
+               // Update using camera then add return data to telemetry (Not currently used)
+              /*if (camq.getLatestResult().isValid()) {
+                List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                telemetry.addData("Turret data",
+                        "\nspinP (%.2f)" +
+                                "\nspinI (%.2f)" +
+                                "\nspinD (%.2f)" +
+                                "\nspin power (%.2f)",
+                        vals.toArray()
+                );
+                break;
 
-          } else {*/
-                    // Update using odometry, then return data to telemetry
+              } else {*/
+                        // Update using odometry, then return data to telemetry
+                        List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                        telemetry.addData("Turret data",
+                                "\nposX (%.2f)" +
+                                        "\nposY (%.2f)" +
+                                        "\ntargetX (%.2f)" +
+                                        "\ntargetY (%.2f)" +
+                                        "\nencoder pos (%.2f)" +
+                                        "\nCurrent angle (%.2f)" +
+                                        "\nRobot Heading (%.2f)" +
+                                        "\nTarget angle (%.2f)" +
+                                        "\nspin power (%.2f)",
+                                vals.toArray()
+                        );
+                        break;
+                        //}
+                    }
+
+                    // Update using camera then add return data to telemetry
+            /*if (camq.getLatestResult().isValid()) {
+              List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+              telemetry.addData("Turret data",
+                      "\nspinP (%.2f)" +
+                              "\nspinI (%.2f)" +
+                              "\nspinD (%.2f)" +
+                              "\nspin power (%.2f)",
+                      vals.toArray()
+              );
+            } else {*/
+                    // Yes, I did duplicate code. Shhhhhh...
                     List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
                     telemetry.addData("Turret data",
                             "\nposX (%.2f)" +
@@ -105,62 +134,33 @@ public final class BlueFarAuto extends LinearOpMode {
                                     "\nspin power (%.2f)",
                             vals.toArray()
                     );
-                    break;
                     //}
+                    telemetry.update();
                 }
-
-                // Update using camera then add return data to telemetry
-        /*if (camq.getLatestResult().isValid()) {
-          List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
-          telemetry.addData("Turret data",
-                  "\nspinP (%.2f)" +
-                          "\nspinI (%.2f)" +
-                          "\nspinD (%.2f)" +
-                          "\nspin power (%.2f)",
-                  vals.toArray()
-          );
-        } else {*/
-                // Yes, I did duplicate code. Shhhhhh...
-                List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
-                telemetry.addData("Turret data",
-                        "\nposX (%.2f)" +
-                                "\nposY (%.2f)" +
-                                "\ntargetX (%.2f)" +
-                                "\ntargetY (%.2f)" +
-                                "\nencoder pos (%.2f)" +
-                                "\nCurrent angle (%.2f)" +
-                                "\nRobot Heading (%.2f)" +
-                                "\nTarget angle (%.2f)" +
-                                "\nspin power (%.2f)",
-                        vals.toArray()
-                );
-                //}
-                telemetry.update();
-            }
-        });
+            });
 
 
-        // Make really sure that nothing moves
-        Actions.runBlocking(new ParallelAction(
-                shooter.stop(),
-                pew.set(),
-                intake.off(),
-                angle.down(),
-                stopper.Out()
-        ));
+            // Make really sure that nothing moves
+            Actions.runBlocking(new ParallelAction(
+                    shooter.stop(),
+                    pew.set(),
+                    intake.off(),
+                    angle.close(),
+                    stopper.Out()
+            ));
 
 
-        telemetry.update(); // update telemetry
+            telemetry.update(); // update telemetry
 
-        /*=======================================WAIT FOR START=======================================*/
+            /*=======================================WAIT FOR START=======================================*/
 
-        waitForStart();
+            waitForStart();
 
-        thread.start(); // start the turret thread
+            thread.start(); // start the turret thread
 
         // The turret is moving now
 
-        telemetry.update(); // you wanted comments, you get comments
+            telemetry.update(); // you wanted comments, you get comments
 
 
         // About here, the robot should start moving.
