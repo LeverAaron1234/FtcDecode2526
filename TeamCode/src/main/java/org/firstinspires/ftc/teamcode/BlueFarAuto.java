@@ -221,7 +221,7 @@ public final class BlueFarAuto extends LinearOpMode {
 
         RobotPose.lastRobotPose = drive.localizer.getPose(); // update the robot pose
         RobotPose.updated = true; // tell the updated pose that it was changed, because yes.
-    }
+}
 
 }
 // The end...
