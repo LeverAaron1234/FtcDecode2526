@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+// Very important
+// import unresolvable;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -29,7 +31,7 @@ public final class RedFarAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Pose2d beginPose = new Pose2d(61.95,-18.62,0.0);
+        Pose2d beginPose = new Pose2d(62.4,-14.88,0.0);
 
 
 
@@ -146,35 +148,70 @@ public final class RedFarAuto extends LinearOpMode {
         thread.start(); // start the above defined thread
 
 
-        telemetry.update();
+        // Me and Dexter edit stuff past here
 
+        /*
+        Good Info:
+            stopper.In() takes the thing out of the way of the balls
+            stopper.Out() puts the thing into the way of the balls
+            intake.on()
+            intake.off()
+            These are self explanatory
+            pew.set()
+            pew.launch()
+            These are not
+            (these make a wheel go spin spin and you can shove balls onto them to make them go flying)
+         */
+
+        telemetry.update();
 
         Actions.runBlocking(
                 new SequentialAction(
-                        shooter.full(),
-                        angle.far()
+                        shooter.full(),// Ready you spells and weapon for the enemy draws near
+                        angle.far(),// Make sure you have a least some long ranged spells
+                        new SleepAction(1.0), // wait for the shooter and turret to start up
+                        intake.on(), // Fireball!!!
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.launch(),
+                        drive.actionBuilder(beginPose) // Tell the drive its pos
+                                // position thyself in front of the first set of artifacts
+                                .strafeToSplineHeading(new Vector2d(36,20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(36, 50)) // grab the artifacts
+                                .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
+                                .build(),
+                        intake.on(), // Fireball!!!
+                        stopper.In(),// Start firing for the enemy let down his guard
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.launch(),
+                        drive.actionBuilder(beginPose) // Tell the drive its pos
+                                // position thyself in front of the second set of artifacts
+                                .strafeToSplineHeading(new Vector2d(12,20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(12, 50)) // grab the artifacts
+                                .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
+                                .build(),
+                        intake.on(), // Fireball!!!
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.launch(),
+                        drive.actionBuilder(beginPose) // Tell the drive its pos
+                                // position thyself in front of the third set of artifacts
+                                .strafeToSplineHeading(new Vector2d(-12,20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(-12, 45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(24,45),Math.toRadians(90)) // go to end pos
+                                .build()
                 )
         );
 
-
-        telemetry.update();
-
-        Actions.runBlocking(new SequentialAction(
-                drive.actionBuilder(beginPose)
-                        //.strafeToSplineHeading(beginPose.position,beginPose.heading)
-                        .build(),
-                shooter.full(),
-                new SleepAction(5)
-        ));
-
-
-        /*Actions.runBlocking(new SequentialAction(
-                intake.on(),
-                stopper.In(),
-                pew.launch(),
-                new SleepAction(2.0),
-                stopper.Out()
-        ));*/
 
         Actions.runBlocking(new SequentialAction(
                 drive.actionBuilder(beginPose)
@@ -183,11 +220,10 @@ public final class RedFarAuto extends LinearOpMode {
         ));
 
 
-        thread.interrupt();
+        thread.interrupt(); // make sure that the thread isn't running anymore, we don't need it.
 
-        RobotPose.lastRobotPose = drive.localizer.getPose();
-        RobotPose.updated = true;
-
+        RobotPose.lastRobotPose = drive.localizer.getPose(); // update the robot pose
+        RobotPose.updated = true; // tell the updated pose that it was changed, because yes.
     }
 
 }
