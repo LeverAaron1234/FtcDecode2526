@@ -146,7 +146,7 @@ public class RedRoadRunner extends LinearOpMode {
             shooter.stop(),
             pew.set(),
             intake.off(),
-            angle.down()
+            angle.close()
     ));
 
 

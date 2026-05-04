@@ -30,7 +30,7 @@ public final class DistanceSensor extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(
                 pew.set(),
                 intake.off(),
-                angle.down(),
+                angle.close(),
                 helper.off()
 
         ));

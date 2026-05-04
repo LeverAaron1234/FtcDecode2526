@@ -146,7 +146,7 @@ public class BlueRoadRunner extends LinearOpMode {
             shooter.stop(),
             pew.set(),
             intake.off(),
-            angle.down()
+            angle.close()
     ));
 
 
