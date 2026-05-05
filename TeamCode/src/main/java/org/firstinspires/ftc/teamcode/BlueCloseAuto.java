@@ -148,7 +148,7 @@ public final class BlueCloseAuto extends LinearOpMode {
                 shooter.stop(),
                 pew.set(),
                 intake.off(),
-                angle.down(),
+                angle.close(),
                 stopper.Out()
         ));
 
