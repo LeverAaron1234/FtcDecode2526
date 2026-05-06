@@ -24,13 +24,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Autonomous(preselectTeleOp = "BlueRoadRunner")
-public final class BlueFarAuto extends LinearOpMode {
+public final class BlueGateAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
 
             // The starting position for the robot
-            Pose2d beginPose = new Pose2d(61.95,-18.62,0.0);
+            Pose2d beginPose = new Pose2d(-59,46,0.94/*or 53.86*/);
 
             // Instantiating the classes from the appendages folder
             Shooter shooter = new Shooter(hardwareMap);
@@ -169,8 +169,11 @@ public final class BlueFarAuto extends LinearOpMode {
         // make the shooter and angle go to firing positions
         Actions.runBlocking(
                 new SequentialAction(
-                        shooter.full(),
-                        angle.far(),
+                        shooter.low(),
+                        angle.middle(),
+                        drive.actionBuilder(beginPose) // tell the drive it's start positon
+                                .strafeTo(new Vector2d(-36,-36))
+                                .build(),
                         new SleepAction(2.0), // wait for the shooter and turret to start up
                         intake.on(), // Fire!!!
                         stopper.In(),
@@ -179,40 +182,83 @@ public final class BlueFarAuto extends LinearOpMode {
                         // Stop firing, but keep the intake on
                         stopper.Out(),
                         pew.set(),
-                        drive.actionBuilder(beginPose) // Tell the drive its pos
+                        drive.actionBuilder(new Pose2d(-36,-36,0.94)) // Tell the drive its pos
                                 // move in front of the first set of artifacts
-                                .strafeToSplineHeading(new Vector2d(36,-20), Math.toRadians(-90))
-                                .strafeTo(new Vector2d(36, -45)) // grab the artifacts
-                                .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
-                                .build(),
-                        intake.on(), // Fire!!!
-                        stopper.In(),
-                        pew.launch(),
-                        new SleepAction(2.0), // Wait till it's done
-                        // Stop firing, but keep the intake on
-                        stopper.Out(),
-                        pew.set(),
-                        drive.actionBuilder(beginPose) // Tell the drive its pos
-                                // move in front of the second set of artifacts
-                                .strafeToSplineHeading(new Vector2d(12,-20), Math.toRadians(-90))
-                                .strafeTo(new Vector2d(12, -45)) // grab the artifacts
-                                .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
-                                .build(),
-                        intake.on(), // Fire!!!
-                        stopper.In(),
-                        pew.launch(),
-                        new SleepAction(2.0), // Wait till it's done
-                        // Stop firing, but keep the intake on
-                        stopper.Out(),
-                        pew.set(),
-                        drive.actionBuilder(beginPose) // Tell the drive its pos
-                                // move in front of the third set of artifacts
-                                .strafeToSplineHeading(new Vector2d(-12,-20), Math.toRadians(-90))
+                                .strafeToSplineHeading(new Vector2d(-12,-20), Math.toRadians(90))
                                 .strafeTo(new Vector2d(-12, -45)) // grab the artifacts
-                                .strafeToSplineHeading(new Vector2d(24,-40),Math.toRadians(-90)) // go to end pos
-                                .build()
-                )
+                                .strafeToSplineHeading(new Vector2d(-36,-36),beginPose.heading) // go to fire pos
+                                .build(),
+                        intake.on(), // Fire!!!
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.set(),
+                        drive.actionBuilder(new Pose2d(-36,-36,0.94)) // Tell the drive its pos
+                                // move in front of the second set of artifacts
+                                .strafeToSplineHeading(new Vector2d(12,-20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(12, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(-36,-36),beginPose.heading) // go to fire pos
+                                .build(),
+                        intake.on(), // Fire!!!
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.set(),
+                        // Go to the gate and grab artifacts
+                        drive.actionBuilder(new Pose2d(-36,-36,0.94))
+                                .strafeToSplineHeading(new Vector2d(-9,-48),2.66)
+                                .strafeTo(new Vector2d(-9,-59))
+                                .build(),
+                        new SleepAction(2.0),
+                        drive.actionBuilder(new Pose2d(-9,-59,2.66))
+                                .strafeTo(new Vector2d(-9,-48))
+                                .strafeToSplineHeading(new Vector2d(-36,-36), 0.94)
+                                .build(),
+                        intake.on(), // Fire!!!
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.set()
+                        )
         );
+
+        while (getRuntime() <= 25) {
+          Actions.runBlocking(new SequentialAction(
+                  // Go to the gate and grab artifacts
+                  drive.actionBuilder(new Pose2d(-36,-36,0.94))
+                          .strafeToSplineHeading(new Vector2d(-9,-48),2.66)
+                          .strafeTo(new Vector2d(-9,-59))
+                          .build(),
+                  new SleepAction(2.0),
+                  drive.actionBuilder(new Pose2d(-9,-59,2.66))
+                          .strafeTo(new Vector2d(-9,-48))
+                          .strafeToSplineHeading(new Vector2d(-36,-36), 0.94)
+                          .build(),
+                  intake.on(), // Fire!!!
+                  stopper.In(),
+                  pew.launch(),
+                  new SleepAction(2.0), // Wait till it's done
+                  // Stop firing, but keep the intake on
+                  stopper.Out(),
+                  pew.set()
+          ));
+        }
+
+        Actions.runBlocking(new ParallelAction(
+                intake.off(),
+                stopper.Out(),
+                pew.set(),
+                shooter.stop(),
+                drive.actionBuilder(new Pose2d(-36,-36,0.94))
+                        .strafeToSplineHeading(new Vector2d(-9,-48), 2.66)
+                        .build()
+        ));
 
 
         // Note to Elijah and Dexter: Good job you did it
