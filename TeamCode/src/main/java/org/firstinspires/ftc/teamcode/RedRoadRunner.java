@@ -110,7 +110,7 @@ public class RedRoadRunner extends LinearOpMode {
           );
           break;
           //}
-        }
+        } else {
 
         // Update using odometry then add return data to telemetry
         /*if (camq.getLatestResult().isValid()) {
@@ -137,7 +137,7 @@ public class RedRoadRunner extends LinearOpMode {
                 vals.toArray()
         );
         //}
-        telemetry.update();
+        }
       }
     });
 
@@ -371,6 +371,10 @@ public class RedRoadRunner extends LinearOpMode {
               ),
               turn
       );
+
+      telemetry.addData("leftLimit", leftLimit.isPressed());
+      telemetry.addData("rightLimit", rightLimit.isPressed());
+      telemetry.update();
 
       anglePos = Range.clip(anglePos,0.0,1.0);
       runningActions.add(angle.varangle(anglePos));

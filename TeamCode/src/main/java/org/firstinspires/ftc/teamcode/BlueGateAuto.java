@@ -30,7 +30,7 @@ public final class BlueGateAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
             // The starting position for the robot
-            Pose2d beginPose = new Pose2d(-59,46,0.94/*or 53.86*/);
+            Pose2d beginPose = new Pose2d(-59,46,0.94/*or Math.toRadians(53.86)*/);
 
             // Instantiating the classes from the appendages folder
             Shooter shooter = new Shooter(hardwareMap);
