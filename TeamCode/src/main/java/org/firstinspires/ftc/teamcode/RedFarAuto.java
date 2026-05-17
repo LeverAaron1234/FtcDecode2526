@@ -31,7 +31,7 @@ public final class RedFarAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Pose2d beginPose = new Pose2d(62.4,-14.88,0.0);
+        Pose2d beginPose = new Pose2d(62.4,-14.88,3.14159265358979);
 
 
 

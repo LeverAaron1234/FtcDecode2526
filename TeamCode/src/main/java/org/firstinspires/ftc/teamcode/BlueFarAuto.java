@@ -70,7 +70,7 @@ public final class BlueFarAuto extends LinearOpMode {
             AtomicBoolean turretLock = new AtomicBoolean(false);
 
             // So that you can offset the turret if needed.
-            AtomicInteger turretOffset = new AtomicInteger(30);
+            AtomicInteger turretOffset = new AtomicInteger(0);
 
             // Autonomous threading so that the camera can control the turret in a loop
             Thread thread = new Thread(() -> { // Lambda, such a funny word
@@ -181,8 +181,8 @@ public final class BlueFarAuto extends LinearOpMode {
                         pew.set(),
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // move in front of the first set of artifacts
-                                .strafeToSplineHeading(new Vector2d(36,-20), Math.toRadians(-90))
-                                .strafeTo(new Vector2d(36, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(48,-30), Math.toRadians(-90))
+                                .strafeTo(new Vector2d(48, -60)) // grab the artifacts
                                 .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
                                 .build(),
                         intake.on(), // Fire!!!
@@ -194,8 +194,8 @@ public final class BlueFarAuto extends LinearOpMode {
                         pew.set(),
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // move in front of the second set of artifacts
-                                .strafeToSplineHeading(new Vector2d(12,-20), Math.toRadians(-90))
-                                .strafeTo(new Vector2d(12, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(24,-30), Math.toRadians(-90))
+                                .strafeTo(new Vector2d(24, -60)) // grab the artifacts
                                 .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
                                 .build(),
                         intake.on(), // Fire!!!
@@ -207,8 +207,8 @@ public final class BlueFarAuto extends LinearOpMode {
                         pew.set(),
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // move in front of the third set of artifacts
-                                .strafeToSplineHeading(new Vector2d(-12,-20), Math.toRadians(-90))
-                                .strafeTo(new Vector2d(-12, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(0,-30), Math.toRadians(-90))
+                                .strafeTo(new Vector2d(0, -60)) // grab the artifacts
                                 .strafeToSplineHeading(new Vector2d(24,-40),Math.toRadians(-90)) // go to end pos
                                 .build()
                 )

@@ -46,6 +46,7 @@ class Spin(hardwareMap: HardwareMap) {
     private var power = 0.0
     private var switched = false
     private var i = 0.0
+    private var j = 0
     var initialized = false
     var lock = true // TODO: change to false to turn off lock
 
@@ -125,13 +126,16 @@ class Spin(hardwareMap: HardwareMap) {
         val targetAngle = (targetHeading)*RADIANS_TO_DEGREES
 
         if (leftPressed) {
-            initialized = true
-            resetEncoder()
+            j += 1
+            if (j > 100) {
+                initialized = true
+                resetEncoder()
+            }
         }
 
         if (lock || !initialized) {
             if (!initialized) {
-                spin.power = -1.0
+                spin.power = -0.25
             } else {
                 spin.power = 0.0
             }
