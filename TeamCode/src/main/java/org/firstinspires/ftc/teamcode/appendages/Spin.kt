@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.DriveConstants
 import org.firstinspires.ftc.teamcode.MecanumDrive
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 class Spin(hardwareMap: HardwareMap) {
@@ -98,15 +100,11 @@ class Spin(hardwareMap: HardwareMap) {
      * */
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, turretOffset:Int, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         switched = true
-        val ticksPerDegree = 68.26666666666667
-        val targetX = -70.0
-        val targetY = if (isRedGoal) 70.0 else -60.0
+        val ticksPerDegree = 66.928104575163
+        val targetX = if (isRedGoal) -65.0 else -70.0
+        val targetY = if (isRedGoal) 65.0 else -60.0
 
         val returnList: MutableList<Double?> = ArrayList()
-
-//      Field position in x,y
-        val posX = drive.localizer.pose.position.x
-        val posY = drive.localizer.pose.position.y
 
 //      Field heading as a complex number
         val realAng = drive.localizer.pose.heading.real
@@ -114,6 +112,11 @@ class Spin(hardwareMap: HardwareMap) {
         var currentHeading = atan2(imagAng,realAng)
 //      Make the currentHeading go from -180 to 180, to 0 to 360 (Will make everything else not work as intended.)
 //        currentHeading = if (currentHeading<0) currentHeading + 2*Math.PI else currentHeading
+
+//      Field position in x,y
+        val posX = drive.localizer.pose.position.x + (1.74 * sin(currentHeading*(1/RADIANS_TO_DEGREES)))
+        val posY = drive.localizer.pose.position.y + (-1.74 * cos(currentHeading*(1/RADIANS_TO_DEGREES)))
+
 
 //      encoder pos in degrees + current heading
         val currentAngle = ((-encoder.currentPosition) / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES) + (turretOffset)
@@ -127,15 +130,18 @@ class Spin(hardwareMap: HardwareMap) {
 
         if (leftPressed) {
             j += 1
-            if (j > 100) {
+            if (j > 3) {
                 initialized = true
                 resetEncoder()
+                j = 0
             }
+        } else {
+            j = 0
         }
 
         if (lock || !initialized) {
             if (!initialized) {
-                spin.power = -0.25
+                spin.power = -0.15
             } else {
                 spin.power = 0.0
             }

@@ -235,31 +235,27 @@ public class BlueRoadRunner extends LinearOpMode {
         wheeelSpeed = 0.0;
       }
 
-      // Debug angle / wheel speed
-      if (gamepad1.dpad_left) {
-        /*if (slow) {
-          wheeelSpeed -= 0.01;
-        } else {
-          anglePos -= 0.01;
-        }*/
-        turretOffset.set(turretOffset.get() - 1);
+      if (gamepad2.dpad_left) { // debug wheel speed
+        wheeelSpeed -= 0.01;
       }
 
-      if (gamepad1.dpad_right) {
-        /*if (slow) {
-          wheeelSpeed += 0.01;
-        } else {
-          anglePos += 0.01;
-        }*/
-        turretOffset.set(turretOffset.get() + 1);
+      if (gamepad2.dpad_right) {
+        wheeelSpeed += 0.01;
       }
-      packet.put("turretOffset", turretOffset.get());
+
+      if (gamepad2.x) { // debug angle pos
+        anglePos -= 0.01;
+      }
+
+      if (gamepad2.b) {
+        anglePos += 0.01;
+      }
 
       // Angles and Speeds
       // Far
       if (gamepad1.a && !changed3) {
-        anglePos = 0.33; // Min 0 --- Max 1
-        wheeelSpeed = 1.5; // Min 0 --- Max 2
+        anglePos = 0.52; // Min 0 --- Max 1
+        wheeelSpeed = 1.342; // Min 0 --- Max 2
         changed3 = true;  // try not to mess with changed3, it makes the button work when pressed
       } else if (!gamepad1.a && changed3) {
         changed3 = false;
@@ -268,7 +264,7 @@ public class BlueRoadRunner extends LinearOpMode {
       // Medium
       if (gamepad1.b && !changed4) {
         anglePos = 0.22;
-        wheeelSpeed = 1.3;
+        wheeelSpeed = 1.17;
         changed4 = true;
       } else if (!gamepad1.b && changed4) {
         changed4 = false;
@@ -370,7 +366,5 @@ public class BlueRoadRunner extends LinearOpMode {
 
 
   }
-
-  //public void asfg(drive)
 
 }

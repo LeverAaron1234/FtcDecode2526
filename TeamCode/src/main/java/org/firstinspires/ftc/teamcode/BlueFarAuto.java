@@ -31,6 +31,7 @@ public final class BlueFarAuto extends LinearOpMode {
 
             // The starting position for the robot
             Pose2d beginPose = new Pose2d(61.95,-18.62,0.0);
+            //new Pose2d(59.5,-16.5,0.0);
 
             // Instantiating the classes from the appendages folder
             Shooter shooter = new Shooter(hardwareMap);
