@@ -40,7 +40,7 @@ public final class BlueCloseAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // The starting position for the robot
-        Pose2d beginPose = new Pose2d(-59,-46,0.94/*or 53.86*/);
+        Pose2d beginPose = new Pose2d(-59,-46,0.0);
 
         // Instantiating the classes from the appendages folder
         Shooter shooter = new Shooter(hardwareMap);
@@ -182,7 +182,7 @@ public final class BlueCloseAuto extends LinearOpMode {
                         shooter.low(),
                         angle.middle(),
                         drive.actionBuilder(beginPose) // tell the drive it's start positon
-                                .strafeTo(new Vector2d(-36,-36))
+                                .strafeTo(new Vector2d(-24,-24))
                                 .build(),
                         new SleepAction(2.0), // wait for the shooter and turret to start up
                         intake.on(), // Fire!!!
@@ -192,11 +192,11 @@ public final class BlueCloseAuto extends LinearOpMode {
                         // Stop firing, but keep the intake on
                         stopper.Out(),
                         pew.set(),
-                        drive.actionBuilder(new Pose2d(-36,-36,2.6)) // Tell the drive its pos
+                        drive.actionBuilder(new Pose2d(-24,-24,beginPose.heading.toDouble())) // Tell the drive its pos
                                 // move in front of the first set of artifacts
-                                .strafeToSplineHeading(new Vector2d(12,-20), Math.toRadians(270))
-                                .strafeTo(new Vector2d(12, -45)) // grab the artifacts
-                                .strafeToSplineHeading(new Vector2d(-36,-36),beginPose.heading) // go to fire pos
+                                .strafeToSplineHeading(new Vector2d(10,-20), Math.toRadians(270))
+                                .strafeTo(new Vector2d(10, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(-20,-20),Math.toRadians(300)) // go to fire pos
                                 .build(),
                         intake.on(), // Fire!!!
                         stopper.In(),
@@ -205,11 +205,11 @@ public final class BlueCloseAuto extends LinearOpMode {
                         // Stop firing, but keep the intake on
                         stopper.Out(),
                         pew.set(),
-                        drive.actionBuilder(new Pose2d(-36,-36,2.6)) // Tell the drive its pos
+                        drive.actionBuilder(new Pose2d(-24,-24,Math.toRadians(300))) // Tell the drive its pos
                                 // move in front of the second set of artifacts
-                                .strafeToSplineHeading(new Vector2d(30,-20), Math.toRadians(270))
-                                .strafeTo(new Vector2d(30, -45)) // grab the artifacts
-                                .strafeToSplineHeading(new Vector2d(-36,-36),beginPose.heading) // go to fire pos
+                                .strafeToSplineHeading(new Vector2d(34,-20), Math.toRadians(270))
+                                .strafeTo(new Vector2d(34, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(-24,-24),Math.toRadians(300)) // go to fire pos
                                 .build(),
                         intake.on(), // Fire!!!
                         stopper.In(),
@@ -218,10 +218,10 @@ public final class BlueCloseAuto extends LinearOpMode {
                         // Stop firing, but keep the intake on
                         stopper.Out(),
                         pew.set(),
-                        drive.actionBuilder(new Pose2d(-36,-36,2.6)) // Tell the drive its pos
+                        drive.actionBuilder(new Pose2d(-24,-24,Math.toRadians(300))) // Tell the drive its pos
                                 // move in front of the third set of artifacts
-                                .strafeToSplineHeading(new Vector2d(60,-20), Math.toRadians(270))
-                                .strafeTo(new Vector2d(60, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(58,-20), Math.toRadians(270))
+                                .strafeTo(new Vector2d(58, -45)) // grab the artifacts
                                 .strafeToSplineHeading(new Vector2d(24,-45),Math.toRadians(270)) // go to end pos
                                 .build()
                 )
