@@ -30,10 +30,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Autonomous
 public final class BlueCloseAuto extends LinearOpMode {
 
+    /*
+     * Blue Goal ---- Red Goal
+     *            -x
+     *         -y    y+
+     *            +x
+     */
+
     @Override
     public void runOpMode() throws InterruptedException {
         // The starting position for the robot
-        Pose2d beginPose = new Pose2d(-59,46,0.94/*or 53.86*/);
+        Pose2d beginPose = new Pose2d(-59,-46,0.94/*or 53.86*/);
 
         // Instantiating the classes from the appendages folder
         Shooter shooter = new Shooter(hardwareMap);
@@ -73,7 +80,7 @@ public final class BlueCloseAuto extends LinearOpMode {
         AtomicBoolean turretLock = new AtomicBoolean(false);
 
         // So that you can offset the turret if needed.
-        AtomicInteger turretOffset = new AtomicInteger(30);
+        AtomicInteger turretOffset = new AtomicInteger(0);
 
         // Autonomous threading so that the camera can control the turret in a loop
         Thread thread = new Thread(() -> { // Lambda, such a funny word
@@ -185,22 +192,9 @@ public final class BlueCloseAuto extends LinearOpMode {
                         // Stop firing, but keep the intake on
                         stopper.Out(),
                         pew.set(),
-                        drive.actionBuilder(new Pose2d(-36,-36,0.94)) // Tell the drive its pos
+                        drive.actionBuilder(new Pose2d(-36,-36,2.6)) // Tell the drive its pos
                                 // move in front of the first set of artifacts
-                                .strafeToSplineHeading(new Vector2d(-12,-20), Math.toRadians(90))
-                                .strafeTo(new Vector2d(-12, -45)) // grab the artifacts
-                                .strafeToSplineHeading(new Vector2d(-36,-36),beginPose.heading) // go to fire pos
-                                .build(),
-                        intake.on(), // Fire!!!
-                        stopper.In(),
-                        pew.launch(),
-                        new SleepAction(2.0), // Wait till it's done
-                        // Stop firing, but keep the intake on
-                        stopper.Out(),
-                        pew.set(),
-                        drive.actionBuilder(new Pose2d(-36,-36,0.94)) // Tell the drive its pos
-                                // move in front of the second set of artifacts
-                                .strafeToSplineHeading(new Vector2d(12,-20), Math.toRadians(90))
+                                .strafeToSplineHeading(new Vector2d(12,-20), Math.toRadians(270))
                                 .strafeTo(new Vector2d(12, -45)) // grab the artifacts
                                 .strafeToSplineHeading(new Vector2d(-36,-36),beginPose.heading) // go to fire pos
                                 .build(),
@@ -211,11 +205,24 @@ public final class BlueCloseAuto extends LinearOpMode {
                         // Stop firing, but keep the intake on
                         stopper.Out(),
                         pew.set(),
-                        drive.actionBuilder(new Pose2d(-36,-36,0.94)) // Tell the drive its pos
+                        drive.actionBuilder(new Pose2d(-36,-36,2.6)) // Tell the drive its pos
+                                // move in front of the second set of artifacts
+                                .strafeToSplineHeading(new Vector2d(30,-20), Math.toRadians(270))
+                                .strafeTo(new Vector2d(30, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(-36,-36),beginPose.heading) // go to fire pos
+                                .build(),
+                        intake.on(), // Fire!!!
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(2.0), // Wait till it's done
+                        // Stop firing, but keep the intake on
+                        stopper.Out(),
+                        pew.set(),
+                        drive.actionBuilder(new Pose2d(-36,-36,2.6)) // Tell the drive its pos
                                 // move in front of the third set of artifacts
-                                .strafeToSplineHeading(new Vector2d(36,-20), Math.toRadians(90))
-                                .strafeTo(new Vector2d(36, 45)) // grab the artifacts
-                                .strafeToSplineHeading(new Vector2d(24,-45),Math.toRadians(90)) // go to end pos
+                                .strafeToSplineHeading(new Vector2d(60,-20), Math.toRadians(270))
+                                .strafeTo(new Vector2d(60, -45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(24,-45),Math.toRadians(270)) // go to end pos
                                 .build()
                 )
         );

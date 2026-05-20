@@ -26,6 +26,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Autonomous(preselectTeleOp = "BlueRoadRunner")
 public final class BlueFarAuto extends LinearOpMode {
 
+
+  /*
+   * Blue Goal ---- Red Goal
+   *            -x
+   *         -y    y+
+   *            +x
+   */
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -176,7 +184,7 @@ public final class BlueFarAuto extends LinearOpMode {
                         intake.on(), // Fire!!!
                         stopper.In(),
                         pew.launch(),
-                        new SleepAction(2.0), // Wait till it's done
+                        new SleepAction(1.0), // Wait till it's done
                         // Stop firing, but keep the intake on
                         stopper.Out(),
                         pew.set(),
@@ -189,7 +197,7 @@ public final class BlueFarAuto extends LinearOpMode {
                         intake.on(), // Fire!!!
                         stopper.In(),
                         pew.launch(),
-                        new SleepAction(2.0), // Wait till it's done
+                        new SleepAction(1.0), // Wait till it's done
                         // Stop firing, but keep the intake on
                         stopper.Out(),
                         pew.set(),
@@ -202,7 +210,7 @@ public final class BlueFarAuto extends LinearOpMode {
                         intake.on(), // Fire!!!
                         stopper.In(),
                         pew.launch(),
-                        new SleepAction(2.0), // Wait till it's done
+                        new SleepAction(1.0), // Wait till it's done
                         // Stop firing, but keep the intake on
                         stopper.Out(),
                         pew.set(),

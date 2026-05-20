@@ -44,11 +44,11 @@ class Angle(hardwareMap: HardwareMap) {
 
     /**
      * Functions used in code.
-     * Function `varangle` is used to set any value, for debug purposes
+     * Function `varangle()` is used to set any value, for debug purposes
      */
-    fun far(): Action = SetState(0.33)
-    fun middle(): Action = SetState(0.6)
-    fun close(): Action = SetState(0.6)
+    fun far(): Action = SetState(0.52)
+    fun middle(): Action = SetState(0.22)
+    fun close(): Action = SetState(0.0)
     fun varangle(ang:Double): Action = SetState(ang)
 
 }
