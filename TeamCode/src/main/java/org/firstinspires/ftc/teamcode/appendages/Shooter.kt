@@ -97,9 +97,9 @@ class Shooter(hardwareMap: HardwareMap) {
      * alongside a collect action
      */
 
-    fun full(): Action = SetState(1.342)
+    fun full(): Action = SetState(1.36)
     fun med(): Action = SetState(1.17)
-    fun low(): Action = SetState(1.0)
+    fun low(): Action = SetState(1.05)
     fun stop(): Action = SetState(0.0)
     fun varshooter(spd: Double): Action = SetState(spd)
 

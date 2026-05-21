@@ -327,10 +327,10 @@ public class BlueRoadRunner extends LinearOpMode {
 
       movement = new PoseVelocity2d(
               new Vector2d(
-                      strafe * MecanumDrive.PARAMS.maxWheelVel,
-                      drivevar * MecanumDrive.PARAMS.maxWheelVel
+                      strafe,
+                      drivevar
               ),
-              turn * MecanumDrive.PARAMS.maxAngVel
+              turn
       );
 
       anglePos = Range.clip(anglePos,0.0,1.0);

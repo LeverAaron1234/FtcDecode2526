@@ -37,10 +37,13 @@ public final class BlueCloseAuto extends LinearOpMode {
      *            +x
      */
 
+    // Robot size is 16.5 * 13.5 (in.)
+    // center offset from corner: (8.25, 6.75) (also in.)
+
     @Override
     public void runOpMode() throws InterruptedException {
         // The starting position for the robot
-        Pose2d beginPose = new Pose2d(-59,-46,0.0);
+        Pose2d beginPose = new Pose2d(-62.75,-40.25,0.0);
 
         // Instantiating the classes from the appendages folder
         Shooter shooter = new Shooter(hardwareMap);
@@ -164,6 +167,64 @@ public final class BlueCloseAuto extends LinearOpMode {
 
         /*=======================================WAIT FOR START=======================================*/
 
+        SequentialAction FirstSet = new SequentialAction(
+                shooter.low(),
+                angle.middle(),
+                drive.actionBuilder(beginPose) // tell the drive it's start positon
+                        .splineTo(new Vector2d(-20,-20),0.0)
+                        .build(),
+                new SleepAction(1.0), // wait for the shooter and turret to start up
+                intake.on(), // Fire!!!
+                stopper.In(),
+                pew.launch(),
+                new SleepAction(2.0), // Wait till it's done
+                // Stop firing, but keep the intake on
+                stopper.Out(),
+                pew.set()
+        );
+        // turretOffset.set(-15)
+        SequentialAction SecondSet = new SequentialAction(
+                drive.actionBuilder(new Pose2d(-20,-20,beginPose.heading.toDouble())) // Tell the drive its pos
+                        // move in front of the first set of artifacts
+                        .splineTo(new Vector2d(-2,-30),Math.toRadians(270))
+                        .splineTo(new Vector2d(-2, -65), Math.toRadians(270)) // grab the artifacts
+                        .splineTo(new Vector2d(-20,-30),Math.toRadians(0)) // go to fire pos
+                        .build(),
+                intake.on(), // Fire!!!
+                stopper.In(),
+                pew.launch(),
+                new SleepAction(2.0), // Wait till it's done
+                // Stop firing, but keep the intake on
+                stopper.Out(),
+                pew.set()
+        );
+        // drive.updatePoseEstimate()
+        SequentialAction ThirdSet = new SequentialAction(
+                drive.actionBuilder(new Pose2d(-20,-24,Math.toRadians(330))) // Tell the drive its pos
+                        // move in front of the second set of artifacts
+                        .splineTo(new Vector2d(22,-30), Math.toRadians(270))
+                        .splineTo(new Vector2d(22, -65), Math.toRadians(270)) // grab the artifacts
+                        .splineTo(new Vector2d(22, -50), Math.toRadians(270)) // grab the artifacts
+                        .splineTo(new Vector2d(-20,-30),Math.toRadians(0)) // go to fire pos
+                        .build(),
+                intake.on(), // Fire!!!
+                stopper.In(),
+                pew.launch(),
+                new SleepAction(2.0), // Wait till it's done
+                // Stop firing, but keep the intake on
+                stopper.Out(),
+                pew.set()
+        );
+        // drive.updatePoseEstimate()
+        SequentialAction LastSet = new SequentialAction(
+                drive.actionBuilder(new Pose2d(-20,-24,Math.toRadians(120))) // Tell the drive its pos
+                        // move in front of the third set of artifacts
+                        .strafeToSplineHeading(new Vector2d(46,-30), Math.toRadians(270))
+                        .strafeTo(new Vector2d(46, -75)) // grab the artifacts
+                        .strafeToSplineHeading(new Vector2d(24,-45),Math.toRadians(270)) // go to end pos
+                        .build()
+        );
+
         waitForStart();
 
         thread.start(); // start the turret thread
@@ -176,55 +237,22 @@ public final class BlueCloseAuto extends LinearOpMode {
         // About here, the robot should start moving.
         // Note to Elijah and Dexter: Here is where you code
 
+
         // make the shooter and angle go to firing positions
         Actions.runBlocking(
-                new SequentialAction(
-                        shooter.low(),
-                        angle.middle(),
-                        drive.actionBuilder(beginPose) // tell the drive it's start positon
-                                .strafeTo(new Vector2d(-24,-24))
-                                .build(),
-                        new SleepAction(2.0), // wait for the shooter and turret to start up
-                        intake.on(), // Fire!!!
-                        stopper.In(),
-                        pew.launch(),
-                        new SleepAction(2.0), // Wait till it's done
-                        // Stop firing, but keep the intake on
-                        stopper.Out(),
-                        pew.set(),
-                        drive.actionBuilder(new Pose2d(-24,-24,beginPose.heading.toDouble())) // Tell the drive its pos
-                                // move in front of the first set of artifacts
-                                .strafeToSplineHeading(new Vector2d(10,-20), Math.toRadians(270))
-                                .strafeTo(new Vector2d(10, -45)) // grab the artifacts
-                                .strafeToSplineHeading(new Vector2d(-20,-20),Math.toRadians(300)) // go to fire pos
-                                .build(),
-                        intake.on(), // Fire!!!
-                        stopper.In(),
-                        pew.launch(),
-                        new SleepAction(2.0), // Wait till it's done
-                        // Stop firing, but keep the intake on
-                        stopper.Out(),
-                        pew.set(),
-                        drive.actionBuilder(new Pose2d(-24,-24,Math.toRadians(300))) // Tell the drive its pos
-                                // move in front of the second set of artifacts
-                                .strafeToSplineHeading(new Vector2d(34,-20), Math.toRadians(270))
-                                .strafeTo(new Vector2d(34, -45)) // grab the artifacts
-                                .strafeToSplineHeading(new Vector2d(-24,-24),Math.toRadians(300)) // go to fire pos
-                                .build(),
-                        intake.on(), // Fire!!!
-                        stopper.In(),
-                        pew.launch(),
-                        new SleepAction(2.0), // Wait till it's done
-                        // Stop firing, but keep the intake on
-                        stopper.Out(),
-                        pew.set(),
-                        drive.actionBuilder(new Pose2d(-24,-24,Math.toRadians(300))) // Tell the drive its pos
-                                // move in front of the third set of artifacts
-                                .strafeToSplineHeading(new Vector2d(58,-20), Math.toRadians(270))
-                                .strafeTo(new Vector2d(58, -45)) // grab the artifacts
-                                .strafeToSplineHeading(new Vector2d(24,-45),Math.toRadians(270)) // go to end pos
-                                .build()
-                )
+                FirstSet
+        );
+        turretOffset.set(-15);
+        Actions.runBlocking(
+                SecondSet
+        );
+        drive.updatePoseEstimate();
+        Actions.runBlocking(
+                ThirdSet
+        );
+        drive.updatePoseEstimate();
+        Actions.runBlocking(
+                LastSet
         );
 
 

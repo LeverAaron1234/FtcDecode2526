@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -191,7 +192,7 @@ public final class BlueFarAuto extends LinearOpMode {
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // move in front of the first set of artifacts
                                 .strafeToSplineHeading(new Vector2d(48,-30), Math.toRadians(-90))
-                                .strafeTo(new Vector2d(48, -60)) // grab the artifacts
+                                .strafeTo(new Vector2d(48, -70), new TranslationalVelConstraint(15)) // grab the artifacts
                                 .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
                                 .build(),
                         intake.on(), // Fire!!!
@@ -204,7 +205,7 @@ public final class BlueFarAuto extends LinearOpMode {
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // move in front of the second set of artifacts
                                 .strafeToSplineHeading(new Vector2d(24,-30), Math.toRadians(-90))
-                                .strafeTo(new Vector2d(24, -60)) // grab the artifacts
+                                .strafeTo(new Vector2d(24, -70), new TranslationalVelConstraint(15)) // grab the artifacts
                                 .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
                                 .build(),
                         intake.on(), // Fire!!!
@@ -217,7 +218,7 @@ public final class BlueFarAuto extends LinearOpMode {
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // move in front of the third set of artifacts
                                 .strafeToSplineHeading(new Vector2d(0,-30), Math.toRadians(-90))
-                                .strafeTo(new Vector2d(0, -60)) // grab the artifacts
+                                .strafeTo(new Vector2d(0, -65), new TranslationalVelConstraint(15)) // grab the artifacts
                                 .strafeToSplineHeading(new Vector2d(24,-40),Math.toRadians(-90)) // go to end pos
                                 .build()
                 )
