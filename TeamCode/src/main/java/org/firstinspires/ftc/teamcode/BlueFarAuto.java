@@ -133,7 +133,7 @@ public final class BlueFarAuto extends LinearOpMode {
                     // Yes, I did duplicate code. Shhhhhh...
                     List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
                     telemetry.addData("Turret data",
-                            "\nposX (%.2f)" +
+                             "\nposX (%.2f)" +
                                     "\nposY (%.2f)" +
                                     "\ntargetX (%.2f)" +
                                     "\ntargetY (%.2f)" +
@@ -150,27 +150,38 @@ public final class BlueFarAuto extends LinearOpMode {
             });
 
 
-            // Make really sure that nothing moves
-            Actions.runBlocking(new ParallelAction(
-                    shooter.stop(),
-                    pew.set(),
-                    intake.off(),
-                    angle.close(),
-                    stopper.Out()
-            ));
+        // Make really sure that nothing moves
+        Actions.runBlocking(new ParallelAction(
+                shooter.stop(),
+                pew.set(),
+                intake.off(),
+                angle.close(),
+                stopper.Out()
+        ));
 
 
-            telemetry.update(); // update telemetry
+        telemetry.update(); // update telemetry
 
-            /*=======================================WAIT FOR START=======================================*/
+        /*=======================================WAIT FOR START=======================================*/
 
-            waitForStart();
+        double head = drive.localizer.getPose().heading.toDouble();
 
-            thread.start(); // start the turret thread
+        while (opModeInInit()) {
+          telemetry.addLine("Gyro");
+          telemetry.addData("Started at", head);
+          telemetry.addData("Current", drive.localizer.getPose().heading.toDouble());
+          telemetry.update();
+          drive.updatePoseEstimate();
+        }
+
+
+        waitForStart();
+
+        thread.start(); // start the turret thread
 
         // The turret is moving now
 
-            telemetry.update(); // you wanted comments, you get comments
+        telemetry.update(); // you wanted comments, you get comments
 
 
         // About here, the robot should start moving.

@@ -33,7 +33,7 @@ public final class RedCloseAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // The starting position for the robot
-        Pose2d beginPose = new Pose2d(-55.68,50.88,-135);
+        Pose2d beginPose = new Pose2d(-55.68,50.88,0.0);
 
         // Instantiating the classes from the appendages folder
         Shooter shooter = new Shooter(hardwareMap);
@@ -154,6 +154,16 @@ public final class RedCloseAuto extends LinearOpMode {
 
 
         telemetry.update(); // update telemetry
+
+        double head = drive.localizer.getPose().heading.toDouble();
+
+        while (opModeInInit()) {
+            telemetry.addLine("Gyro");
+            telemetry.addData("Started at", head);
+            telemetry.addData("Current", drive.localizer.getPose().heading.toDouble());
+            telemetry.update();
+            drive.updatePoseEstimate();
+        }
 
         /*=======================================WAIT FOR START=======================================*/
 

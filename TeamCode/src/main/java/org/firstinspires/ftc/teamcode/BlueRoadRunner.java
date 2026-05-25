@@ -38,11 +38,32 @@ public class BlueRoadRunner extends LinearOpMode {
     Pose2d beginPose = null;
     boolean beginPoseValid = false;
 
+    boolean startFar = true;
+    while (opModeInInit()) {
+      if (gamepad2.a) {
+        startFar = !startFar;
+      }
+      if (gamepad2.y) {break;}
+      telemetry.addLine("Starting Pos");
+      if (startFar) {
+        telemetry.addLine("Far");
+      } else {
+        telemetry.addLine("Close");
+      }
+      telemetry.update();
+    }
+    telemetry.addLine("Ready");
+    telemetry.update();
+
     if (RobotPose.updated) {
       beginPose = RobotPose.lastRobotPose;
       beginPoseValid = true;
     } else {
-      beginPose = new Pose2d(61.95,-18.62,0.0);
+      if (startFar) {
+        beginPose = new Pose2d(61.95, -18.62, 0.0);
+      } else {
+        beginPose = new Pose2d(-62.75,-40.25,0.0);
+      }
     }
 
 
@@ -235,12 +256,20 @@ public class BlueRoadRunner extends LinearOpMode {
         wheeelSpeed = 0.0;
       }
 
-      if (gamepad2.dpad_left) { // debug wheel speed
+      if (gamepad2.dpad_up) { // debug wheel speed
         wheeelSpeed -= 0.01;
       }
 
-      if (gamepad2.dpad_right) {
+      if (gamepad2.dpad_down) {
         wheeelSpeed += 0.01;
+      }
+
+      if (gamepad2.dpad_left) {
+        turretOffset.set(turretOffset.get()-1);
+      }
+
+      if (gamepad2.dpad_right) {
+        turretOffset.set(turretOffset.get()+1);
       }
 
       if (gamepad2.x) { // debug angle pos

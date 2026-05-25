@@ -28,10 +28,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Autonomous(preselectTeleOp = "RedRoadRunner")
 public final class RedFarAuto extends LinearOpMode {
 
+    /*
+     * Blue Goal ---- Red Goal
+     *            -x
+     *         -y    y+
+     *            +x
+     */
+
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Pose2d beginPose = new Pose2d(62.4,-14.88,3.14159265358979);
+        Pose2d beginPose = new Pose2d(62.4,14.88,0.0);
 
 
 
@@ -141,6 +148,16 @@ public final class RedFarAuto extends LinearOpMode {
 
         telemetry.update();
 
+        double head = drive.localizer.getPose().heading.toDouble();
+
+        while (opModeInInit()) {
+            telemetry.addLine("Gyro");
+            telemetry.addData("Started at", head);
+            telemetry.addData("Current", drive.localizer.getPose().heading.toDouble());
+            telemetry.update();
+            drive.updatePoseEstimate();
+        }
+
         /*=======================================WAIT FOR START=======================================*/
 
         waitForStart();
@@ -169,7 +186,7 @@ public final class RedFarAuto extends LinearOpMode {
                 new SequentialAction(
                         shooter.full(),// Ready you spells and weapon for the enemy draws near
                         angle.far(),// Make sure you have a least some long ranged spells
-                        new SleepAction(1.0), // wait for the shooter and turret to start up
+                        new SleepAction(2.0), // wait for the shooter and turret to start up
                         intake.on(), // Fireball!!!
                         stopper.In(),
                         pew.launch(),
@@ -179,8 +196,8 @@ public final class RedFarAuto extends LinearOpMode {
                         pew.launch(),
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // position thyself in front of the first set of artifacts
-                                .strafeToSplineHeading(new Vector2d(36,20), Math.toRadians(90))
-                                .strafeTo(new Vector2d(36, 50)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(24,20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(24, 50)) // grab the artifacts
                                 .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
                                 .build(),
                         intake.on(), // Fireball!!!
@@ -192,8 +209,8 @@ public final class RedFarAuto extends LinearOpMode {
                         pew.launch(),
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // position thyself in front of the second set of artifacts
-                                .strafeToSplineHeading(new Vector2d(12,20), Math.toRadians(90))
-                                .strafeTo(new Vector2d(12, 50)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(0,20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(0, 50)) // grab the artifacts
                                 .strafeToSplineHeading(beginPose.position,beginPose.heading) // go to fire pos
                                 .build(),
                         intake.on(), // Fireball!!!
@@ -205,8 +222,8 @@ public final class RedFarAuto extends LinearOpMode {
                         pew.launch(),
                         drive.actionBuilder(beginPose) // Tell the drive its pos
                                 // position thyself in front of the third set of artifacts
-                                .strafeToSplineHeading(new Vector2d(-12,20), Math.toRadians(90))
-                                .strafeTo(new Vector2d(-12, 45)) // grab the artifacts
+                                .strafeToSplineHeading(new Vector2d(-24,20), Math.toRadians(90))
+                                .strafeTo(new Vector2d(-24, 45)) // grab the artifacts
                                 .strafeToSplineHeading(new Vector2d(24,45),Math.toRadians(90)) // go to end pos
                                 .build()
                 )

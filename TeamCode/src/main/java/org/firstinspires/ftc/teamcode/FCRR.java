@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @TeleOp(group="Linear Opmode")
-public class RedRoadRunner extends LinearOpMode {
+public class FCRR extends LinearOpMode {
 
   private final ElapsedTime runtime = new ElapsedTime();
 
@@ -38,21 +38,58 @@ public class RedRoadRunner extends LinearOpMode {
     Pose2d beginPose = null;
     boolean beginPoseValid = false;
 
+    int selector = 0;
     boolean startFar = true;
+    boolean redTeam = false;
     while (opModeInInit()) {
+      if (gamepad2.dpadLeftWasPressed()) {
+        selector = (selector-1) % 2;
+      } else if (gamepad2.dpadRightWasPressed()) {
+        selector = (selector+1) % 2;
+      }
       if (gamepad2.a) {
-        startFar = !startFar;
+        switch (selector) {
+          case 0:
+            startFar = !startFar;
+            break;
+          case 1:
+            redTeam = !redTeam;
+            break;
+          default:
+            telemetry.addLine("Selector Error: selector out of bounds: " + selector);
+        }
       }
-      if (gamepad2.y) {break;}
-      telemetry.addLine("Starting Pos");
-      if (startFar) {
-        telemetry.addLine("Far");
-      } else {
-        telemetry.addLine("Close");
+
+      switch (selector) {
+        case 0:
+          telemetry.addLine("Starting Pos");
+          if (startFar) {
+            telemetry.addLine("Far");
+          } else {
+            telemetry.addLine("Close");
+          }
+          break;
+
+        case 1:
+          telemetry.addLine("Team");
+          if (redTeam) {
+            telemetry.addLine("Red");
+          } else {
+            telemetry.addLine("Blue");
+          }
+          break;
+
+        default:
+          telemetry.addLine("Error");
+
       }
+
       telemetry.update();
+      if (gamepad2.yWasPressed()) {break;}
     }
     telemetry.addLine("Ready");
+    telemetry.addLine("Starting Pos: " + ((startFar)? "Far" : "Close"));
+    telemetry.addLine("Team: " + ((redTeam)? "Red" : "Blue"));
     telemetry.update();
 
     if (RobotPose.updated) {
@@ -60,22 +97,22 @@ public class RedRoadRunner extends LinearOpMode {
       beginPoseValid = true;
     } else {
       if (startFar) {
-        beginPose = new Pose2d(61.95,18.62,0.0);
+        beginPose = new Pose2d(61.95,((redTeam)?-1:1) * -18.62, 0.0);
       } else {
-        beginPose = new Pose2d(-55.68,50.88,0.0);
+        beginPose = (!redTeam)? new Pose2d(-62.75,-40.25,0.0): new Pose2d(-55.68,50.88,0.0);
       }
     }
 
 
-    Shooter shooter = new Shooter(hardwareMap);
-    Intake intake = new Intake(hardwareMap);
-    Pew pew = new Pew(hardwareMap);
-    Angle angle = new Angle(hardwareMap);
-    Stopper stopper = new Stopper(hardwareMap);
+    //Shooter shooter = new Shooter(hardwareMap);
+    //Intake intake = new Intake(hardwareMap);
+    //Pew pew = new Pew(hardwareMap);
+    //Angle angle = new Angle(hardwareMap);
+    //Stopper stopper = new Stopper(hardwareMap);
 
-    Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
-    Spin spin = new Spin(hardwareMap);
-    spin.resetTimer();
+    //Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
+    //Spin spin = new Spin(hardwareMap);
+   /* spin.resetTimer();
 
 
 
@@ -86,8 +123,8 @@ public class RedRoadRunner extends LinearOpMode {
     Actions.runBlocking(pew.set());
 
 
-    camq.pipelineSwitch(2);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
-    camq.start();
+    camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
+    camq.start();*/
 
     MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
@@ -95,11 +132,11 @@ public class RedRoadRunner extends LinearOpMode {
     List<Action> runningActions = new ArrayList<>();
 
     AtomicBoolean turretLock = new AtomicBoolean(false);
-
+    AtomicBoolean team = new AtomicBoolean(redTeam);
     AtomicInteger turretOffset = new AtomicInteger(0);
 
     // Autonomous threading so that the camera can control the turret in a loop
-    Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
+    /*Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
       while(opModeIsActive())
       {
         if (Thread.currentThread().isInterrupted()) {
@@ -115,8 +152,36 @@ public class RedRoadRunner extends LinearOpMode {
             );
             break;
 
-          } else {*/
-          List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          } else {*//*
+            List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+            telemetry.addData("Turret data",
+                    "\nposX (%.2f)" +
+                            "\nposY (%.2f)" +
+                            "\ntargetX (%.2f)" +
+                            "\ntargetY (%.2f)" +
+                            "\nencoder pos (%.2f)" +
+                            "\nCurrent angle (%.2f)" +
+                            "\nRobot Heading (%.2f)" +
+                            "\nTarget angle (%.2f)" +
+                            "\nspin power (%.2f)",
+                    vals.toArray()
+            );
+            break;
+          //}
+        }
+
+        // Update using odometry then add return data to telemetry
+        /*if (camq.getLatestResult().isValid()) {
+          List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          telemetry.addData("Turret data",
+                  "\nspinP (%.2f)" +
+                          "\nspinI (%.2f)" +
+                          "\nspinD (%.2f)" +
+                          "\nspin power (%.2f)",
+                  vals.toArray()
+          );
+        } else {*//*
+          List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
           telemetry.addData("Turret data",
                   "\nposX (%.2f)" +
                           "\nposY (%.2f)" +
@@ -129,36 +194,8 @@ public class RedRoadRunner extends LinearOpMode {
                           "\nspin power (%.2f)",
                   vals.toArray()
           );
-          break;
-          //}
-        } else {
-
-        // Update using odometry then add return data to telemetry
-        /*if (camq.getLatestResult().isValid()) {
-          List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
-          telemetry.addData("Turret data",
-                  "\nspinP (%.2f)" +
-                          "\nspinI (%.2f)" +
-                          "\nspinD (%.2f)" +
-                          "\nspin power (%.2f)",
-                  vals.toArray()
-          );
-        } else {*/
-        List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
-        telemetry.addData("Turret data",
-                "\nposX (%.2f)" +
-                        "\nposY (%.2f)" +
-                        "\ntargetX (%.2f)" +
-                        "\ntargetY (%.2f)" +
-                        "\nencoder pos (%.2f)" +
-                        "\nCurrent angle (%.2f)" +
-                        "\nRobot Heading (%.2f)" +
-                        "\nTarget angle (%.2f)" +
-                        "\nspin power (%.2f)",
-                vals.toArray()
-        );
         //}
-        }
+        telemetry.update();
       }
     });
 
@@ -177,10 +214,10 @@ public class RedRoadRunner extends LinearOpMode {
     /*=======================================WAIT FOR START=======================================*/
     waitForStart();
 
-    thread.start(); // start the above defined thread
+    //thread.start(); // start the above defined thread
 
     runtime.reset();
-    spin.resetTimer();
+    //spin.resetTimer();
 
 
     //  ----------Define Variables----------
@@ -217,7 +254,7 @@ public class RedRoadRunner extends LinearOpMode {
       TelemetryPacket packet = new TelemetryPacket();
 
       drivevar = -gamepad1.left_stick_x;
-      strafe = -gamepad1.left_stick_y;
+      strafe = gamepad1.left_stick_y * ((redTeam)? -1: 1);
       turn = -gamepad1.right_stick_x;
 
 
@@ -239,7 +276,7 @@ public class RedRoadRunner extends LinearOpMode {
 
       // left trigger -> Run intake and the helper motor
       // to get the ball into the launcher
-      if ((gamepad1.left_trigger >= 0.2) && !changed2) {
+      /*if ((gamepad1.left_trigger >= 0.2) && !changed2) {
         runningActions.add(intake.on());
         runningActions.add(pew.launch());
         runningActions.add(stopper.Out());
@@ -248,15 +285,13 @@ public class RedRoadRunner extends LinearOpMode {
         runningActions.add(pew.set());
         runningActions.add(intake.off());
         changed2 = false;
-      }
+      }*/
 
       // Stop the launcher and lower the hood
       if (gamepad1.x) {
         anglePos = 0.0;
         wheeelSpeed = 0.0;
       }
-
-
 
       if (gamepad2.dpad_up) { // debug wheel speed
         wheeelSpeed -= 0.01;
@@ -283,6 +318,14 @@ public class RedRoadRunner extends LinearOpMode {
       }
 
       // Angles and Speeds
+
+      // Heatmap
+      double goalDist = 0.0;
+      anglePos = 0.0055215 * goalDist - 0.309497;
+      wheeelSpeed = 0.00358292 * goalDist - 0.809771;
+
+
+
       // Far
       if (gamepad1.a && !changed3) {
         anglePos = 0.52; // Min 0 --- Max 1
@@ -313,7 +356,7 @@ public class RedRoadRunner extends LinearOpMode {
 
       // Right trigger -> push ball into launcher
       // stops the intake servo so balls don't get stuck under
-      if (gamepad1.right_trigger >= 0.2 && !changed6) {
+      /*if (gamepad1.right_trigger >= 0.2 && !changed6) {
         runningActions.add(pew.launch());
         runningActions.add(intake.on());
         runningActions.add(stopper.In());
@@ -346,7 +389,7 @@ public class RedRoadRunner extends LinearOpMode {
         //pew.setPower(0);
         runningActions.add(pew.set());
         changed8 = false;
-      }
+      }*/
 
       if (gamepad1.dpad_up && !changed7) {
         turretLock.getAndSet(!turretLock.get());
@@ -355,61 +398,25 @@ public class RedRoadRunner extends LinearOpMode {
         changed7 = false;
       }
 
-      /*if (gamepad1.left_stick_button && !changed10) {
-        runningActions.add(
-                drive.actionBuilder(drive.localizer.getPose())
-                        .strafeTo(new Vector2d(-30.7,-14.5))
-                        .build();
-        );
-        changed10 = true;
-
-      } else if (!gamepad1.left_stick_button && changed10) {
-        changed10 = false;
-      }
-
-      if ((gamepad1.left_stick_x >= 0.2 || gamepad1.left_stick_y >= 0.2) && changed10) {
-        runningActions.remove(runningActions.size()-1);
-      }*/
-
-      // Debug angle / wheel speed
-      if (gamepad2.dpad_left) {
-        /*if (slow) {
-          wheeelSpeed -= 0.01;
-        } else {
-          anglePos -= 0.01;
-        }*/
-        turretOffset.set(turretOffset.get() -1);
-      }
-
-      if (gamepad2.dpad_right) {
-        /*if (slow) {
-          wheeelSpeed += 0.01;
-        } else {
-          anglePos += 0.01;
-        }*/
-        turretOffset.set(turretOffset.get() +1);
-      }
-
+      double heading = drive.localizer.getPose().heading.toDouble();
+      double newdrivevar = strafe * Math.cos(heading) - drivevar * Math.sin(heading);
+      double newstrafe = strafe * Math.sin(heading) + drivevar * Math.cos(heading);
 
       movement = new PoseVelocity2d(
               new Vector2d(
-                      strafe,
-                      drivevar
+                      newstrafe,
+                      newdrivevar
               ),
               turn
       );
 
-      telemetry.addData("leftLimit", leftLimit.isPressed());
-      telemetry.addData("rightLimit", rightLimit.isPressed());
-      telemetry.update();
-
       anglePos = Range.clip(anglePos,0.0,1.0);
-      runningActions.add(angle.varangle(anglePos));
+      /*runningActions.add(angle.varangle(anglePos));
       runningActions.add(shooter.varshooter(wheeelSpeed));
 
       if ((DriveConstants.p != shooter.getPID().p) || (DriveConstants.i != shooter.getPID().i) || (DriveConstants.d != shooter.getPID().d)) {
         shooter.resetPID(DriveConstants.p,DriveConstants.i,DriveConstants.d);
-      }
+      }*/
 
       drive.setDrivePowers(movement);
       drive.updatePoseEstimate();

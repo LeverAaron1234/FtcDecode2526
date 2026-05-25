@@ -165,6 +165,16 @@ public final class BlueCloseAuto extends LinearOpMode {
 
         telemetry.update(); // update telemetry
 
+        double head = drive.localizer.getPose().heading.toDouble();
+
+        while (opModeInInit()) {
+            telemetry.addLine("Gyro");
+            telemetry.addData("Started at", head);
+            telemetry.addData("Current", drive.localizer.getPose().heading.toDouble());
+            telemetry.update();
+            drive.updatePoseEstimate();
+        }
+
         /*=======================================WAIT FOR START=======================================*/
 
         SequentialAction FirstSet = new SequentialAction(

@@ -143,7 +143,7 @@ class Spin(hardwareMap: HardwareMap) {
             if (!initialized) {
                 spin.power = -0.15
             } else {
-                spin.power = 0.0
+                spin.power = 0.001
             }
             if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
                 power = 0.0
