@@ -44,6 +44,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -52,6 +53,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.Prism.Color;
 
 import java.util.concurrent.TimeUnit;
 
@@ -118,6 +120,7 @@ Y -> slower drive
     helper = hardwareMap.get(CRServo.class, "helper");
     angle = hardwareMap.get(Servo.class, "angle");
     packet = new TelemetryPacket(true);
+    DigitalChannel beambreak = hardwareMap.get(DigitalChannel.class, "beambreak");
 
 
 //        inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
@@ -155,6 +158,14 @@ Y -> slower drive
     double tagArea = -1.0;
     int tagid = -1;
     LLResult result = camq.getLatestResult();
+
+    Thread Prism = new Thread(() -> {
+      if (beambreak.getState()){
+        new Color(255, 0, 0); //prism off
+      } else {
+        //prism on
+      }
+    });
 
 
 
