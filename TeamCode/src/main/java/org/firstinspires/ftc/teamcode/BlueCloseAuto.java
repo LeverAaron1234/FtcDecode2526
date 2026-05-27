@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-@Autonomous
+@Autonomous(preselectTeleOp = "BlueRoadRunner")
 public final class BlueCloseAuto extends LinearOpMode {
 
     /*

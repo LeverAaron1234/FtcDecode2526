@@ -41,7 +41,9 @@ public class FCRR extends LinearOpMode {
     int selector = 0;
     boolean startFar = true;
     boolean redTeam = false;
+    if (!RobotPose.updated) {
     while (opModeInInit()) {
+      if (isStopRequested()) {break;}
       if (gamepad2.dpadLeftWasPressed()) {
         selector = (selector-1) % 2;
       } else if (gamepad2.dpadRightWasPressed()) {
@@ -87,6 +89,14 @@ public class FCRR extends LinearOpMode {
       telemetry.update();
       if (gamepad2.yWasPressed()) {break;}
     }
+    } else {
+      startFar = RobotPose.startFar;
+      redTeam = RobotPose.redTeam;
+    }
+    if (isStopRequested()) {
+      return;
+    }
+
     telemetry.addLine("Ready");
     telemetry.addLine("Starting Pos: " + ((startFar)? "Far" : "Close"));
     telemetry.addLine("Team: " + ((redTeam)? "Red" : "Blue"));
@@ -104,15 +114,15 @@ public class FCRR extends LinearOpMode {
     }
 
 
-    //Shooter shooter = new Shooter(hardwareMap);
-    //Intake intake = new Intake(hardwareMap);
-    //Pew pew = new Pew(hardwareMap);
-    //Angle angle = new Angle(hardwareMap);
-    //Stopper stopper = new Stopper(hardwareMap);
+    Shooter shooter = new Shooter(hardwareMap);
+    Intake intake = new Intake(hardwareMap);
+    Pew pew = new Pew(hardwareMap);
+    Angle angle = new Angle(hardwareMap);
+    Stopper stopper = new Stopper(hardwareMap);
 
-    //Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
-    //Spin spin = new Spin(hardwareMap);
-   /* spin.resetTimer();
+    Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
+    Spin spin = new Spin(hardwareMap);
+    spin.resetTimer();
 
 
 
@@ -124,7 +134,7 @@ public class FCRR extends LinearOpMode {
 
 
     camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
-    camq.start();*/
+    camq.start();
 
     MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
@@ -136,7 +146,7 @@ public class FCRR extends LinearOpMode {
     AtomicInteger turretOffset = new AtomicInteger(0);
 
     // Autonomous threading so that the camera can control the turret in a loop
-    /*Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
+    Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
       while(opModeIsActive())
       {
         if (Thread.currentThread().isInterrupted()) {
@@ -152,7 +162,7 @@ public class FCRR extends LinearOpMode {
             );
             break;
 
-          } else {*//*
+          } else {*/
             List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
             telemetry.addData("Turret data",
                     "\nposX (%.2f)" +
@@ -180,7 +190,7 @@ public class FCRR extends LinearOpMode {
                           "\nspin power (%.2f)",
                   vals.toArray()
           );
-        } else {*//*
+        } else {*/
           List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
           telemetry.addData("Turret data",
                   "\nposX (%.2f)" +
@@ -214,10 +224,10 @@ public class FCRR extends LinearOpMode {
     /*=======================================WAIT FOR START=======================================*/
     waitForStart();
 
-    //thread.start(); // start the above defined thread
+    thread.start(); // start the above defined thread
 
     runtime.reset();
-    //spin.resetTimer();
+    spin.resetTimer();
 
 
     //  ----------Define Variables----------
@@ -276,7 +286,7 @@ public class FCRR extends LinearOpMode {
 
       // left trigger -> Run intake and the helper motor
       // to get the ball into the launcher
-      /*if ((gamepad1.left_trigger >= 0.2) && !changed2) {
+      if ((gamepad1.left_trigger >= 0.2) && !changed2) {
         runningActions.add(intake.on());
         runningActions.add(pew.launch());
         runningActions.add(stopper.Out());
@@ -285,7 +295,7 @@ public class FCRR extends LinearOpMode {
         runningActions.add(pew.set());
         runningActions.add(intake.off());
         changed2 = false;
-      }*/
+      }
 
       // Stop the launcher and lower the hood
       if (gamepad1.x) {
@@ -320,13 +330,13 @@ public class FCRR extends LinearOpMode {
       // Angles and Speeds
 
       // Heatmap
-      double goalDist = 0.0;
-      anglePos = 0.0055215 * goalDist - 0.309497;
-      wheeelSpeed = 0.00358292 * goalDist - 0.809771;
+      double goalDist;
+      goalDist = Math.sqrt(Math.pow((drive.localizer.getPose().position.x - ((redTeam)? -65.0 : -70.0)),2) + Math.pow((drive.localizer.getPose().position.y - ((redTeam)? 65.0 : -60.0)),2));
+      anglePos = 0.00620728 * goalDist - 0.358573; // 0.00620728x-0.358573
+      wheeelSpeed = 0.00424584 * goalDist + 0.762331; // 0.00424584x+0.762331
 
 
-
-      // Far
+/*      // Far
       if (gamepad1.a && !changed3) {
         anglePos = 0.52; // Min 0 --- Max 1
         wheeelSpeed = 1.342; // Min 0 --- Max 2
@@ -347,16 +357,16 @@ public class FCRR extends LinearOpMode {
       //Close
       if (gamepad1.y && !changed5) {
         anglePos = 0.0;
-        wheeelSpeed = 1.0/*5*/;
+        wheeelSpeed = 1.0/*5*/;/*
         changed5 = true;
       } else if (!gamepad1.y  && changed5) {
         changed5 = false;
-      }
+      }*/
 
 
       // Right trigger -> push ball into launcher
       // stops the intake servo so balls don't get stuck under
-      /*if (gamepad1.right_trigger >= 0.2 && !changed6) {
+      if (gamepad1.right_trigger >= 0.2 && !changed6) {
         runningActions.add(pew.launch());
         runningActions.add(intake.on());
         runningActions.add(stopper.In());
@@ -389,7 +399,7 @@ public class FCRR extends LinearOpMode {
         //pew.setPower(0);
         runningActions.add(pew.set());
         changed8 = false;
-      }*/
+      }
 
       if (gamepad1.dpad_up && !changed7) {
         turretLock.getAndSet(!turretLock.get());
@@ -411,12 +421,12 @@ public class FCRR extends LinearOpMode {
       );
 
       anglePos = Range.clip(anglePos,0.0,1.0);
-      /*runningActions.add(angle.varangle(anglePos));
+      runningActions.add(angle.varangle(anglePos));
       runningActions.add(shooter.varshooter(wheeelSpeed));
 
       if ((DriveConstants.p != shooter.getPID().p) || (DriveConstants.i != shooter.getPID().i) || (DriveConstants.d != shooter.getPID().d)) {
         shooter.resetPID(DriveConstants.p,DriveConstants.i,DriveConstants.d);
-      }*/
+      }
 
       drive.setDrivePowers(movement);
       drive.updatePoseEstimate();
