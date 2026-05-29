@@ -41,13 +41,14 @@ public class FCRR extends LinearOpMode {
     int selector = 0;
     boolean startFar = true;
     boolean redTeam = false;
+    boolean fieldDrive = true;
     if (!RobotPose.updated) {
     while (opModeInInit()) {
       if (isStopRequested()) {break;}
       if (gamepad2.dpadLeftWasPressed()) {
-        selector = (selector-1) % 2;
+        selector = (selector-1) % 3;
       } else if (gamepad2.dpadRightWasPressed()) {
-        selector = (selector+1) % 2;
+        selector = (selector+1) % 3;
       }
       if (gamepad2.a) {
         switch (selector) {
@@ -56,6 +57,9 @@ public class FCRR extends LinearOpMode {
             break;
           case 1:
             redTeam = !redTeam;
+            break;
+          case 2:
+            fieldDrive = !fieldDrive;
             break;
           default:
             telemetry.addLine("Selector Error: selector out of bounds: " + selector);
@@ -80,6 +84,14 @@ public class FCRR extends LinearOpMode {
             telemetry.addLine("Blue");
           }
           break;
+        case 2:
+          telemetry.addLine("Drive style");
+          if (fieldDrive) {
+            telemetry.addLine("Field Oriented");
+          } else {
+            telemetry.addLine("Robot Oriented");
+          }
+          break;
 
         default:
           telemetry.addLine("Error");
@@ -90,7 +102,7 @@ public class FCRR extends LinearOpMode {
       if (gamepad2.yWasPressed()) {break;}
     }
     } else {
-      startFar = RobotPose.startFar;
+      startFar = RobotPose.startFar; // TODO: Add startFar and redTeam to ALL autos
       redTeam = RobotPose.redTeam;
     }
     if (isStopRequested()) {
@@ -100,6 +112,7 @@ public class FCRR extends LinearOpMode {
     telemetry.addLine("Ready");
     telemetry.addLine("Starting Pos: " + ((startFar)? "Far" : "Close"));
     telemetry.addLine("Team: " + ((redTeam)? "Red" : "Blue"));
+    telemetry.addLine("Drive Style: " + ((fieldDrive)? "Field" : "Robot"));
     telemetry.update();
 
     if (RobotPose.updated) {
@@ -109,7 +122,7 @@ public class FCRR extends LinearOpMode {
       if (startFar) {
         beginPose = new Pose2d(61.95,((redTeam)?-1:1) * -18.62, 0.0);
       } else {
-        beginPose = (!redTeam)? new Pose2d(-62.75,-40.25,0.0): new Pose2d(-55.68,50.88,0.0);
+        beginPose = (!redTeam)? new Pose2d(-62.75,-40.25,0.0) : new Pose2d(-55.68,50.88,0.0);
       }
     }
 
@@ -264,7 +277,7 @@ public class FCRR extends LinearOpMode {
       TelemetryPacket packet = new TelemetryPacket();
 
       drivevar = -gamepad1.left_stick_x;
-      strafe = gamepad1.left_stick_y * ((redTeam)? -1: 1);
+      strafe = gamepad1.left_stick_y * ((redTeam || !fieldDrive)? -1: 1);
       turn = -gamepad1.right_stick_x;
 
 
@@ -332,8 +345,43 @@ public class FCRR extends LinearOpMode {
       // Heatmap
       double goalDist;
       goalDist = Math.sqrt(Math.pow((drive.localizer.getPose().position.x - ((redTeam)? -65.0 : -70.0)),2) + Math.pow((drive.localizer.getPose().position.y - ((redTeam)? 65.0 : -60.0)),2));
-      anglePos = 0.00620728 * goalDist - 0.358573; // 0.00620728x-0.358573
-      wheeelSpeed = 0.00424584 * goalDist + 0.762331; // 0.00424584x+0.762331
+      // pt 1
+      double Aa = 0.0; // power
+      double Ab = 58.41; // dist
+      // pt 2
+      double Ac = 0.15; // power
+      double Ad = 92.2; // dist
+      double Am1_2 = (Ac-Aa)/(Ad-Ab); // slope
+      // pt 3
+      double Ae = 0.27; // power
+      double Af = 151.6; // dist
+      double Am2_3 = (Ae-Ac)/(Af-Ad); // slope
+
+      if (goalDist <= 92.2) {
+        anglePos = Am1_2 * goalDist + (-Am1_2*Ab + Aa); // equation
+      } else {
+        anglePos = Am2_3 * goalDist + (-Am2_3*Ac + Ac); // equation
+      }
+
+
+
+      // pt 1
+      double Sa = 1.2; // power
+      double Sb = 58.41; // dist
+      // pt 2
+      double Sc = 1.27; // power
+      double Sd = 92.2; // dist
+      double Sm1_2 = (Sc-Sa)/(Sd-Sb); // slope
+      // pt 3
+      double Se = 1.4; // power
+      double Sf = 151.6; // dist
+      double Sm2_3 = (Se-Sc)/(Sf-Sd); // slope
+
+      if (goalDist <= 92.2) {
+        wheeelSpeed = Sm1_2 * goalDist + (-Sm1_2*Sb + Sa); // equation
+      } else {
+        wheeelSpeed = Sm2_3 * goalDist + (-Sm2_3*Sc + Sc); // equation
+      }
 
 
 /*      // Far
@@ -414,8 +462,8 @@ public class FCRR extends LinearOpMode {
 
       movement = new PoseVelocity2d(
               new Vector2d(
-                      newstrafe,
-                      newdrivevar
+                      (fieldDrive)? newstrafe : strafe,
+                      (fieldDrive) ? newdrivevar : drivevar
               ),
               turn
       );
