@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -24,13 +25,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Autonomous
-public final class RedCloseGateLoop extends LinearOpMode {
+public final class BlueFarGateLoop extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         // The starting position for the robot
-        Pose2d beginPose = new Pose2d(-61.5,41.25,0.0);
-        Pose2d firingPose = new Pose2d(-12, 12, 0.0);// Can be changed as the enemy move close or raises their shields
+        Pose2d beginPose = new Pose2d(61.95,-18.62,0.0);
+        Pose2d firingPose = new Pose2d(55, -18, 0.0);// Can be changed as the enemy move close or raises their shields
 
         // Instantiating the classes from the appendages folder
         Shooter shooter = new Shooter(hardwareMap);
@@ -70,7 +71,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
         AtomicBoolean turretLock = new AtomicBoolean(false);
 
         // So that you can offset the turret if needed.
-        AtomicInteger turretOffset = new AtomicInteger(5);
+        AtomicInteger turretOffset = new AtomicInteger(0);
 
         // Autonomous threading so that the camera can control the turret in a loop
         Thread thread = new Thread(() -> { // Lambda, such a funny word
@@ -92,7 +93,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
 
           } else {*/
                     // Update using odometry, then return data to telemetry
-                    List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                    List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
                     telemetry.addData("Turret data",
                             "\nposX (%.2f)" +
                                     "\nposY (%.2f)" +
@@ -121,7 +122,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
           );
         } else {*/
                 // Yes, I did duplicate code. Shhhhhh...
-                List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
                 telemetry.addData("Turret data",
                         "\nposX (%.2f)" +
                                 "\nposY (%.2f)" +
@@ -174,12 +175,13 @@ public final class RedCloseGateLoop extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-                        shooter.varshooter(1.27),
+                        shooter.varshooter(1.4),
                         intake.on(),
                         pew.set(),
-                        angle.varangle(0.11),
+                        angle.varangle(0.3),
                         drive.actionBuilder(beginPose)
-                                .strafeToSplineHeading(firingPose.position,firingPose.heading)
+                                .strafeTo(firingPose.position)
+                                .turnTo(firingPose.heading)
                                 .build()
                 )
         );
@@ -198,19 +200,19 @@ public final class RedCloseGateLoop extends LinearOpMode {
                         intake.on(), // Begin the casting ritual!!!
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
-                        new SleepAction(2.0), // Have patience, for the weary traveler needs time to rest
+                        new SleepAction(1.0), // Have patience, for the weary traveler needs time to rest
                         // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
                         stopper.Out(),
                         pew.launch(),
                         intake.on()
         ));
 
-        Actions.runBlocking( // grab middle set
+        //turretOffset.set(3);
+        Actions.runBlocking( // grab closest set
                 new SequentialAction(
                         drive.actionBuilder(firingPose)
-                                .splineTo(new Vector2d(3,12),Math.toRadians(90))
-                                .strafeTo(new Vector2d(3,50))
-                                .strafeTo(new Vector2d(3,20))
+                                .strafeToSplineHeading(new Vector2d(47,-22),Math.toRadians(-90))
+                                .strafeTo(new Vector2d(47,-70))
                                 .strafeToSplineHeading(firingPose.position,firingPose.heading)
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
@@ -222,17 +224,15 @@ public final class RedCloseGateLoop extends LinearOpMode {
                         intake.on()
                 )
         );
-
-        while(getRuntime() <= 23){ // take from goal
+        int i = 0;
+        while(getRuntime() <= 24){ // take from goal
             if (isStopRequested()) {break;}
             Actions.runBlocking(
                 new SequentialAction(
                         drive.actionBuilder(firingPose)
-                                .splineTo(new Vector2d(0,12),Math.toRadians(90))
-                                .strafeToSplineHeading(new Vector2d(6,50),Math.toRadians(130))
-                                .waitSeconds(0.2)
-                                .strafeTo(new Vector2d(0,20))
-                                .strafeToSplineHeading(firingPose.position,firingPose.heading)
+                                .strafeToSplineHeading(new Vector2d(75,-70),Math.toRadians(-90))
+                                .strafeTo(new Vector2d(75,-75))
+                                .strafeToSplineHeading(firingPose.position,Math.toRadians(-90))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -243,14 +243,15 @@ public final class RedCloseGateLoop extends LinearOpMode {
                         intake.on()
                         )
             );
+            i++;
         }
 
-        Actions.runBlocking( // grab closest set
+        Actions.runBlocking( // grab last set
                 new SequentialAction(
-                        angle.varangle(0.2),
-                        drive.actionBuilder(new Pose2d(firingPose.position.x,firingPose.position.y,Math.toRadians(90)))
-                                .strafeToSplineHeading(new Vector2d(-24,45),Math.toRadians(90))
-                                .strafeToSplineHeading(new Vector2d(-36,12),Math.toRadians(0))
+                        drive.actionBuilder(firingPose)
+                                .strafeToSplineHeading(new Vector2d(70,-18),Math.toRadians(-90))
+                                .strafeTo(new Vector2d(70,-70))
+                                .strafeToSplineHeading(firingPose.position,Math.toRadians(-90))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -258,16 +259,22 @@ public final class RedCloseGateLoop extends LinearOpMode {
                         // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
                         stopper.Out(),
                         pew.launch(),
-                        intake.on()
+                        intake.on(),
+                        drive.actionBuilder(firingPose)
+                                .strafeTo(new Vector2d(30,-20))
+                                .build(),
+                        stopper.In()
                 )
         );
 
-
+        while (opModeIsActive()) {
+            drive.updatePoseEstimate();
+        }
         thread.interrupt(); // make sure that the thread isn't running anymore, we don't need it.
 
         RobotPose.lastRobotPose = drive.localizer.getPose(); // update the robot pose
-        RobotPose.redTeam = true;
-        RobotPose.startFar = false;
+        RobotPose.redTeam = false;
+        RobotPose.startFar = true;
         RobotPose.updated = true; // tell the updated pose that it was changed, because yes.
     }
 }

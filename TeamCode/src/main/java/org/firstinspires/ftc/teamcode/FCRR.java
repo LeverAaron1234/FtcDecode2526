@@ -276,7 +276,7 @@ public class FCRR extends LinearOpMode {
 
       TelemetryPacket packet = new TelemetryPacket();
 
-      drivevar = -gamepad1.left_stick_x;
+      drivevar = gamepad1.left_stick_x * ((redTeam && fieldDrive)?1:-1);
       strafe = gamepad1.left_stick_y * ((redTeam || !fieldDrive)? -1: 1);
       turn = -gamepad1.right_stick_x;
 
@@ -350,7 +350,7 @@ public class FCRR extends LinearOpMode {
       double Ab = 58.41; // dist
       // pt 2
       double Ac = 0.15; // power
-      double Ad = 92.2; // dist
+      double Ad = 100; // dist / Actual is 92.2
       double Am1_2 = (Ac-Aa)/(Ad-Ab); // slope
       // pt 3
       double Ae = 0.27; // power
