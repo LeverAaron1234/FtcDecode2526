@@ -36,8 +36,6 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -49,13 +47,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-
-
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.Prism.Color;
-
+import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import java.util.concurrent.TimeUnit;
+import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 
 
 // Setup
@@ -71,7 +69,6 @@ public class Launcher extends LinearOpMode {
   private DcMotor backRightDrive = null;
   private DcMotorEx wheeel = null;
   private DcMotorEx intake = null;
-  private Limelight3A camq = null;
   private Servo pew = null;
   private CRServo helper = null;
   private Servo angle = null;
@@ -115,12 +112,16 @@ Y -> slower drive
     backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
     wheeel = hardwareMap.get(DcMotorEx.class, "launcher");
     intake = hardwareMap.get(DcMotorEx.class, "intake");
-    camq = hardwareMap.get(Limelight3A.class, "limelight");
     pew = hardwareMap.get(Servo.class, "pew");
-    helper = hardwareMap.get(CRServo.class, "helper");
-    angle = hardwareMap.get(Servo.class, "angle");
+    helper = hardwareMap.get(CRServo.class, "helper"); angle = hardwareMap.get(Servo.class, "angle");
     packet = new TelemetryPacket(true);
+    GoBildaPrismDriver prism = hardwareMap.get(GoBildaPrismDriver.class, "prism");
     DigitalChannel beambreak = hardwareMap.get(DigitalChannel.class, "beambreak");
+
+
+
+
+
 
 
 //        inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
@@ -150,27 +151,23 @@ Y -> slower drive
     angle.setPosition(0);
 
     // Camera Stuff
-
-    camq.pipelineSwitch(1); // {0: "goal", 1: "obelisk"}
-    camq.start();
     double tagx = 0.0;
     double tagy = 0.0;
     double tagArea = -1.0;
     int tagid = -1;
-    LLResult result = camq.getLatestResult();
 
     Thread Prism = new Thread(() -> {
-      if (beambreak.getState()){
-        new Color(255, 0, 0); //prism off
+      if (!beambreak.getState()){
+        prism.setAnimation(GoBildaPrismDriver.Animation.SOLID);
+        prism.setColor(255, 0, 0);
+        prism.setBrightness(80);
       } else {
-        //prism on
+
       }
     });
 
 
 
-
-    
 
     waitForStart();
     runtime.reset();
@@ -410,6 +407,7 @@ Y -> slower drive
       dt = runtime.now(TimeUnit.MILLISECONDS) - dt;
 
       // TELEMETRY
+      telemetry.addData("Beambreak", beambreak.getState());
       telemetry.addData("Status", "Run Time: " + runtime);
       telemetry.addData("Motors", "left (%.2f), right (%.2f)", frontLeftPower, frontRightPower, backLeftPower, backRightPower);
       telemetry.addData("FL Encoder", frontLeftDrive.getCurrentPosition());
