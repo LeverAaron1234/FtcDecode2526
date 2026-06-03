@@ -414,6 +414,25 @@ public class GoBildaPrismDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSimpl
         };
         deviceClient.write(Register.ARTBOARD_CONTROL.address, data);
     }
+    /**
+     * Set a basic static solid RGB color on Layer 0.
+     * Values for r, g, and b range from 0 to 255.
+     */
+    public void setSolidColor(int r, int g, int b) {
+        // Pack 32-bit register command: [Mode 0x01 (Solid), R, G, B]
+        byte[] commandData = new byte[] {
+                (byte) 0x01, // Mode 1 = Solid
+                (byte) r,
+                (byte) g,
+                (byte) b
+        };
+
+        // This specific driver relies on TypeConversion to send Little Endian Int32s
+        int payload = TypeConversion.byteArrayToInt(commandData, ByteOrder.LITTLE_ENDIAN);
+
+        // Write directly to the Layer 0 register slot
+        deviceClient.write(Register.ANIMATION_SLOT_0.address, TypeConversion.intToByteArray(payload, ByteOrder.LITTLE_ENDIAN));
+    }
 
     public void enableDefaultBootArtboard(boolean enable)
     {

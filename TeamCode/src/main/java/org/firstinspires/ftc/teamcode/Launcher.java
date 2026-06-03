@@ -51,6 +51,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.Prism.Color;
 import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
+import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
+
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import java.util.concurrent.TimeUnit;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
@@ -155,23 +157,42 @@ Y -> slower drive
     double tagy = 0.0;
     double tagArea = -1.0;
     int tagid = -1;
+    prism.setStripLength(36);
 
-    Thread Prism = new Thread(() -> {
-      if (!beambreak.getState()){
-        prism.setAnimation(GoBildaPrismDriver.Animation.SOLID);
-        prism.setColor(255, 0, 0);
-        prism.setBrightness(80);
-      } else {
+      Thread Prism = new Thread(() -> {
+        PrismAnimations.Solid solid = new PrismAnimations.Solid();
+        PrismAnimations.Snakes snakes = new PrismAnimations.Snakes();
+        snakes.setColors();// May be unfinished
+        prism.clearAllAnimations();
+        solid.setPrimaryColor(0, 0, 0);
+        solid.setBrightness(0);
+        prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
+        boolean laststate = false;
+        solid.setPrimaryColor(0, 0, 255);
+        solid.setBrightness(100);
+        prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
+        sleep(5000);
 
-      }
-    });
-
+        while (opModeIsActive()) {
+          if (beambreak.getState() != laststate) {
+            if (!beambreak.getState()) {
+              solid.setPrimaryColor(0, 255, 0);
+              solid.setBrightness(100);
+            } else {
+              solid.setPrimaryColor(0, 0, 0);
+              solid.setBrightness(0);
+            }
+            laststate = beambreak.getState();
+            prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
+          }
+        }
+      });
 
 
 
     waitForStart();
     runtime.reset();
-
+    Prism.start();
 //        spin.setPosition(0.5);
 //
 //        wrist.setPosition(0);
