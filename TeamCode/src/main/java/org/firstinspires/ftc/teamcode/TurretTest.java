@@ -83,7 +83,7 @@ public class TurretTest extends LinearOpMode {
             break;
 
           } else {*/
-            List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+            List vals = spin.odomUpdate(drive, true, turretOffset.get(), turretLock.get());
             telemetry.addData("Turret data",
                     "\nposX (%.2f)" +
                             "\nposY (%.2f)" +
@@ -111,19 +111,30 @@ public class TurretTest extends LinearOpMode {
                   vals.toArray()
           );
         } else {*/
-          List vals = spin.odomUpdate(drive, false, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          List vals = spin.odomUpdate(drive, true, turretOffset.get(), turretLock.get());
           telemetry.addData("Turret data",
                   "\nposX (%.2f)" +
                           "\nposY (%.2f)" +
                           "\ntargetX (%.2f)" +
                           "\ntargetY (%.2f)" +
                           "\nencoder pos (%.2f)" +
-                          "\nCurrent angle (%.2f)" +
                           "\nRobot Heading (%.2f)" +
+                          "\nCurrent angle (%.2f)" +
                           "\nTarget angle (%.2f)" +
-                          "\nspin power (%.2f)",
+                          "\nspin pos (%.2f)",
                   vals.toArray()
           );
+         /*
+          * returnList.add(posX)
+          * returnList.add(posY)
+          * returnList.add(targetX)
+          * returnList.add(targetY)
+          * returnList.add(encoder.currentPosition/ticksPerDegree)
+          * returnList.add(currentHeading*RADIANS_TO_DEGREES)
+          * returnList.add(currentAngle)
+          * returnList.add(targetAngle)
+          * returnList.add(spin.position)
+          */
         //}
         telemetry.update();
       }
@@ -186,6 +197,15 @@ public class TurretTest extends LinearOpMode {
         changed7 = true;
       } else if (!gamepad1.dpad_up) {
         changed7 = false;
+      }
+      if (gamepad1.x) {
+        turretOffset.set(-200);
+      }
+      if (gamepad1.b) {
+        turretOffset.set(200);
+      }
+      if (gamepad1.y) {
+        turretOffset.set(0);
       }
 
 

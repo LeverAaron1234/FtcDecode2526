@@ -92,7 +92,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
 
           } else {*/
                     // Update using odometry, then return data to telemetry
-                    List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                    List vals = spin.odomUpdate(drive, true, turretOffset.get(), turretLock.get());
                     telemetry.addData("Turret data",
                             "\nposX (%.2f)" +
                                     "\nposY (%.2f)" +
@@ -121,7 +121,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
           );
         } else {*/
                 // Yes, I did duplicate code. Shhhhhh...
-                List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+                List vals = spin.odomUpdate(drive, true, turretOffset.get(), turretLock.get());
                 telemetry.addData("Turret data",
                         "\nposX (%.2f)" +
                                 "\nposY (%.2f)" +

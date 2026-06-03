@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.appendages
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
+import com.acmerobotics.roadrunner.lerp
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.DriveConstants
@@ -13,6 +15,8 @@ import org.firstinspires.ftc.teamcode.MecanumDrive
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sign
 import kotlin.math.sin
 
@@ -31,7 +35,7 @@ class Spin(hardwareMap: HardwareMap) {
     }
 
 
-    private val spin = hardwareMap.get(CRServo::class.java, "spin")
+    private val spin = hardwareMap.get(Servo::class.java, "spin")
     private val encoder = hardwareMap.get(DcMotor::class.java, "intake")
     private val encoderOffset = 125
     private val RADIANS_TO_DEGREES = 180/Math.PI
@@ -73,7 +77,7 @@ class Spin(hardwareMap: HardwareMap) {
             if (!initialized) {
                 packet.put("Power", power)
 
-                spin.power = state.pwr
+                spin.position = state.pwr
                 initialized = true
             }
 
@@ -102,7 +106,7 @@ class Spin(hardwareMap: HardwareMap) {
      * @param isRedGoal A flag to change the target goal
      * @param turretOffset The offset of the
      * */
-    fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, turretOffset:Int, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
+    fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, turretOffset:Int, lock: Boolean): MutableList<Double?> {
         switched = true
         val ticksPerDegree = 66.928104575163
         val targetX = if (isRedGoal) -65.0 else -70.0
@@ -123,8 +127,7 @@ class Spin(hardwareMap: HardwareMap) {
 
 
 //      encoder pos in degrees + current heading
-        val currentAngle = ((-encoder.currentPosition) / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES) + (turretOffset)
-
+        val currentAngle = ((-encoder.currentPosition) / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES)
 
 //      Angle of current position (robot) to target (goal)
         val targetXdiff = (targetX - posX)
@@ -132,93 +135,32 @@ class Spin(hardwareMap: HardwareMap) {
         val targetHeading = atan2(-targetYdiff,-targetXdiff)
         val targetAngle = (targetHeading)*RADIANS_TO_DEGREES
 
-        if (leftPressed) {
-            j += 1
-            if (j > 3) {
-                initialized = true
-                resetEncoder()
-                j = 0
-            }
-        } else {
-            j = 0
-        }
-
-        if (lock || !initialized) {
-            if (!initialized) {
-                spin.power = -0.15
-            } else {
-                spin.power = 0.001
-            }
-            if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
-                power = 0.0
-            }
-            returnList.add(posX)
-            returnList.add(posY)
-            returnList.add(targetX)
-            returnList.add(targetY)
-            returnList.add(encoder.currentPosition/ticksPerDegree)
-            returnList.add(currentAngle)
-            returnList.add(currentHeading*RADIANS_TO_DEGREES)
-            returnList.add(targetAngle)
-            returnList.add(spin.power)
-            return returnList
-        }
+        //
 
 
-        kP = DriveConstants.spinP
-        kI = DriveConstants.spinI
-        kD = DriveConstants.spinD
+        val test = invlerp(-125.0,90.0,min(max(targetAngle-(currentHeading*RADIANS_TO_DEGREES),-125.0),90.0))
+        spin.position = lerp(spin.position,test,0.1)
+        // target angle -> 0.0-1.0
+        // angles 225-82
+        // 307 degrees
+        // -90 - 127
 
-        val deltaTime = timer.seconds()
-        timer.reset()
-        val error = targetAngle - currentAngle
+        // 0.32 - 0.67
+        // -90  - 90
+        lerp(-125.0,90.0,invlerp(0.0,0.67,0.5))
 
-        if (abs(error) <= posTolorance) {
-            power = 0.0
-            spin.power = 0.001 // for breaking
-        } else if (abs(error) <= creepThreshhold) {
-            // creep code
-            power = sign(error) * creepSpeed
-            if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
-                power = 0.0
-            }
-            spin.power = power
-        } else {
-
-            val Pterm = error * kP
-
-            kIgain += error * deltaTime
-            val Iterm = kIgain * kI
-
-            var Dterm = 0.0
-            if (deltaTime > 0) {
-                Dterm = ((error - lastError) / deltaTime) * kD
-            }
-            lastError = error
-
-            power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER, MAX_POWER)
-
-            if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
-                power = 0.0
-            }
-
-            spin.power = power
-
-        }
-        if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
-            power = 0.0
-            spin.power = 0.0
-        }
+        lerp(currentHeading,targetHeading,0.5)
+        //
 
         returnList.add(posX)
         returnList.add(posY)
         returnList.add(targetX)
         returnList.add(targetY)
-        returnList.add(encoder.currentPosition/ticksPerDegree)
+        returnList.add(encoder.currentPosition/ticksPerDegree - encoderOffset)
         returnList.add(currentHeading*RADIANS_TO_DEGREES)
         returnList.add(currentAngle)
         returnList.add(targetAngle)
-        returnList.add(spin.power)
+        returnList.add(spin.position)
 
         return returnList
 
@@ -264,7 +206,7 @@ class Spin(hardwareMap: HardwareMap) {
             power = 0.0
         }
 
-        spin.power = if (!switched) power else 0.0
+        //spin.power = if (!switched) power else 0.0
 
         if (!switched) {
             i = 0.0
@@ -287,4 +229,10 @@ class Spin(hardwareMap: HardwareMap) {
     fun lock(): Action = SetState(SpinPos.locked)
     fun unlock(): Action = SetState(SpinPos.unlocked)
     fun Init(): Action = SetState(SpinPos.Init)
+    fun lerp(a:Double, b:Double, t:Double): Double {
+        return a+(t*(b-a))
+    }
+    fun invlerp(a:Double, b:Double, value:Double): Double {
+        return (value-a)/(b-a)
+    }
 }

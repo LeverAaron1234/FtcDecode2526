@@ -116,7 +116,7 @@ public class RedRoadRunner extends LinearOpMode {
             break;
 
           } else {*/
-          List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          List vals = spin.odomUpdate(drive, true, turretOffset.get(), turretLock.get());
           telemetry.addData("Turret data",
                   "\nposX (%.2f)" +
                           "\nposY (%.2f)" +
@@ -144,7 +144,7 @@ public class RedRoadRunner extends LinearOpMode {
                   vals.toArray()
           );
         } else {*/
-        List vals = spin.odomUpdate(drive, true, turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+        List vals = spin.odomUpdate(drive, true, turretOffset.get(), turretLock.get());
         telemetry.addData("Turret data",
                 "\nposX (%.2f)" +
                         "\nposY (%.2f)" +

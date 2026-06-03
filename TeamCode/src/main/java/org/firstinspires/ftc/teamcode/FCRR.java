@@ -176,7 +176,7 @@ public class FCRR extends LinearOpMode {
             break;
 
           } else {*/
-            List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+            List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), turretLock.get());
             telemetry.addData("Turret data",
                     "\nposX (%.2f)" +
                             "\nposY (%.2f)" +
@@ -204,7 +204,7 @@ public class FCRR extends LinearOpMode {
                   vals.toArray()
           );
         } else {*/
-          List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), turretLock.get());
           telemetry.addData("Turret data",
                   "\nposX (%.2f)" +
                           "\nposY (%.2f)" +
