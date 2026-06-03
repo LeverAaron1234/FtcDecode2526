@@ -100,8 +100,8 @@ public final class BlueFarGateLoop extends LinearOpMode {
                                     "\ntargetX (%.2f)" +
                                     "\ntargetY (%.2f)" +
                                     "\nencoder pos (%.2f)" +
-                                    "\nCurrent angle (%.2f)" +
                                     "\nRobot Heading (%.2f)" +
+                                    "\nCurrent angle (%.2f)" +
                                     "\nTarget angle (%.2f)" +
                                     "\nspin power (%.2f)",
                             vals.toArray()
@@ -129,8 +129,8 @@ public final class BlueFarGateLoop extends LinearOpMode {
                                 "\ntargetX (%.2f)" +
                                 "\ntargetY (%.2f)" +
                                 "\nencoder pos (%.2f)" +
-                                "\nCurrent angle (%.2f)" +
                                 "\nRobot Heading (%.2f)" +
+                                "\nCurrent angle (%.2f)" +
                                 "\nTarget angle (%.2f)" +
                                 "\nspin power (%.2f)",
                         vals.toArray()
@@ -232,7 +232,7 @@ public final class BlueFarGateLoop extends LinearOpMode {
                         drive.actionBuilder(firingPose)
                                 .strafeToSplineHeading(new Vector2d(75,-70),Math.toRadians(-90))
                                 .strafeTo(new Vector2d(75,-75))
-                                .strafeToSplineHeading(firingPose.position,Math.toRadians(-90))
+                                .strafeToSplineHeading(firingPose.position,Math.toRadians(-60))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -251,7 +251,7 @@ public final class BlueFarGateLoop extends LinearOpMode {
                         drive.actionBuilder(firingPose)
                                 .strafeToSplineHeading(new Vector2d(70,-18),Math.toRadians(-90))
                                 .strafeTo(new Vector2d(70,-70))
-                                .strafeToSplineHeading(firingPose.position,Math.toRadians(-90))
+                                .strafeToSplineHeading(firingPose.position,Math.toRadians(-60))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!

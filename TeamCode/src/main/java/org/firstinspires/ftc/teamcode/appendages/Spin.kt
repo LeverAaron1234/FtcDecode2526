@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.sign
 import kotlin.math.sin
 
 
@@ -47,6 +48,9 @@ class Spin(hardwareMap: HardwareMap) {
     private val MAX_POWER = 1.0
     private var power = 0.0
     private var switched = false
+    private val posTolorance = 1.0
+    private val creepThreshhold = 8
+    private val creepSpeed = 0.08
     private var i = 0.0
     private var j = 0
     var initialized = false
@@ -103,7 +107,7 @@ class Spin(hardwareMap: HardwareMap) {
         val ticksPerDegree = 66.928104575163
         val targetX = if (isRedGoal) -65.0 else -70.0
         val targetY = if (isRedGoal) 65.0 else -60.0
-
+        // TODO: MAKE TURRET SERVO MODE INSTEAD OF CONTINUOUS
         val returnList: MutableList<Double?> = ArrayList()
 
 //      Field heading as a complex number
@@ -160,6 +164,7 @@ class Spin(hardwareMap: HardwareMap) {
             return returnList
         }
 
+
         kP = DriveConstants.spinP
         kI = DriveConstants.spinI
         kD = DriveConstants.spinD
@@ -168,35 +173,50 @@ class Spin(hardwareMap: HardwareMap) {
         timer.reset()
         val error = targetAngle - currentAngle
 
-        val Pterm = error * kP
+        if (abs(error) <= posTolorance) {
+            power = 0.0
+            spin.power = 0.001 // for breaking
+        } else if (abs(error) <= creepThreshhold) {
+            // creep code
+            power = sign(error) * creepSpeed
+            if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+                power = 0.0
+            }
+            spin.power = power
+        } else {
 
-        kIgain += error * deltaTime
-        val Iterm = kIgain * kI
+            val Pterm = error * kP
 
-        var Dterm = 0.0
-        if (deltaTime > 0) {
-            Dterm = ((error - lastError) / deltaTime) * kD
+            kIgain += error * deltaTime
+            val Iterm = kIgain * kI
+
+            var Dterm = 0.0
+            if (deltaTime > 0) {
+                Dterm = ((error - lastError) / deltaTime) * kD
+            }
+            lastError = error
+
+            power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER, MAX_POWER)
+
+            if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+                power = 0.0
+            }
+
+            spin.power = power
+
         }
-        lastError = error
-
-        power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER,MAX_POWER)
-
-
-
-
         if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
             power = 0.0
+            spin.power = 0.0
         }
-
-        spin.power = power
 
         returnList.add(posX)
         returnList.add(posY)
         returnList.add(targetX)
         returnList.add(targetY)
         returnList.add(encoder.currentPosition/ticksPerDegree)
-        returnList.add(currentAngle)
         returnList.add(currentHeading*RADIANS_TO_DEGREES)
+        returnList.add(currentAngle)
         returnList.add(targetAngle)
         returnList.add(spin.power)
 

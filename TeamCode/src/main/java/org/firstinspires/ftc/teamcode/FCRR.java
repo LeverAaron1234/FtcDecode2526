@@ -183,8 +183,8 @@ public class FCRR extends LinearOpMode {
                             "\ntargetX (%.2f)" +
                             "\ntargetY (%.2f)" +
                             "\nencoder pos (%.2f)" +
-                            "\nCurrent angle (%.2f)" +
                             "\nRobot Heading (%.2f)" +
+                            "\nCurrent angle (%.2f)" +
                             "\nTarget angle (%.2f)" +
                             "\nspin power (%.2f)",
                     vals.toArray()
@@ -211,8 +211,8 @@ public class FCRR extends LinearOpMode {
                           "\ntargetX (%.2f)" +
                           "\ntargetY (%.2f)" +
                           "\nencoder pos (%.2f)" +
-                          "\nCurrent angle (%.2f)" +
                           "\nRobot Heading (%.2f)" +
+                          "\nCurrent angle (%.2f)" +
                           "\nTarget angle (%.2f)" +
                           "\nspin power (%.2f)",
                   vals.toArray()
