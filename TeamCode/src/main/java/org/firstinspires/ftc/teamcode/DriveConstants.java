@@ -14,7 +14,7 @@ public class DriveConstants {
 
   // For the odometry tuning (uses angle differences in degrees)
   public static double spinP = 0.0195;
-  public static double spinI = 0.0002;
+  public static double spinI = 0.0008;
   public static double spinD = 0.004;
   // For the camera tuning (uses x/y positions on the camera)
   // Camera tuning isn't currently used, so values are really off.
