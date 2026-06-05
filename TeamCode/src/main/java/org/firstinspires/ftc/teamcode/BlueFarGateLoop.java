@@ -224,34 +224,30 @@ public final class BlueFarGateLoop extends LinearOpMode {
                         intake.on()
                 )
         );
-        int i = 0;
-        while(getRuntime() <= 24){ // take from goal
-            if (isStopRequested()) {break;}
-            Actions.runBlocking(
-                new SequentialAction(
-                        drive.actionBuilder(firingPose)
-                                .strafeToSplineHeading(new Vector2d(75,-70),Math.toRadians(-90))
-                                .strafeTo(new Vector2d(75,-75))
-                                .strafeToSplineHeading(firingPose.position,Math.toRadians(-60))
-                                .build(),
-                        stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
-                        pew.launch(), // Fireball!!!
-                        new SleepAction(2.0), // Have patience, for the weary traveler needs time to rest
-                        // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
-                        stopper.Out(),
-                        pew.launch(),
-                        intake.on()
-                        )
-            );
-            i++;
-        }
+        // take from goal
+        Actions.runBlocking(
+            new SequentialAction(
+                    drive.actionBuilder(firingPose)
+                            .strafeToSplineHeading(new Vector2d(75,-70),Math.toRadians(-90))
+                            .strafeTo(new Vector2d(75,-75))
+                            .strafeToSplineHeading(new Vector2d(60,-18),Math.toRadians(-60))
+                            .build(),
+                    stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
+                    pew.launch(), // Fireball!!!
+                    new SleepAction(2.0), // Have patience, for the weary traveler needs time to rest
+                    // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
+                    stopper.Out(),
+                    pew.launch(),
+                    intake.on()
+                    )
+        );
 
         Actions.runBlocking( // grab last set
                 new SequentialAction(
-                        drive.actionBuilder(firingPose)
+                        drive.actionBuilder(new Pose2d(60,-18,Math.toRadians(-60)))
                                 .strafeToSplineHeading(new Vector2d(70,-18),Math.toRadians(-90))
                                 .strafeTo(new Vector2d(70,-70))
-                                .strafeToSplineHeading(firingPose.position,Math.toRadians(-60))
+                                .strafeToSplineHeading(new Vector2d(60,-18),Math.toRadians(-60))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -260,7 +256,7 @@ public final class BlueFarGateLoop extends LinearOpMode {
                         stopper.Out(),
                         pew.launch(),
                         intake.on(),
-                        drive.actionBuilder(firingPose)
+                        drive.actionBuilder(new Pose2d(60,-18,Math.toRadians(-60)))
                                 .strafeTo(new Vector2d(30,-20))
                                 .build(),
                         stopper.In()

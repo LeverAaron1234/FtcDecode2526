@@ -27,10 +27,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class BlueCloseGateLoop extends LinearOpMode {
 
     @Override
-    public void runOpMode() throws InterruptedException { // TODO: TEST THIS!!!
+    public void runOpMode() throws InterruptedException {
         // The starting position for the robot
-        Pose2d beginPose = new Pose2d(-61.5,-41.25,0.0);
-        Pose2d firingPose = new Pose2d(-12, -12, 0.0);// Can be changed as the enemy move close or raises their shields
+        Pose2d beginPose = new Pose2d(-62.75,-40.25,0.0);
+        Pose2d firingPose = new Pose2d(-18, -18, 0.0);// Can be changed as the enemy move close or raises their shields
 
         // Instantiating the classes from the appendages folder
         Shooter shooter = new Shooter(hardwareMap);
@@ -70,7 +70,7 @@ public final class BlueCloseGateLoop extends LinearOpMode {
         AtomicBoolean turretLock = new AtomicBoolean(false);
 
         // So that you can offset the turret if needed.
-        AtomicInteger turretOffset = new AtomicInteger(0);
+        AtomicInteger turretOffset = new AtomicInteger(-5);
 
         // Autonomous threading so that the camera can control the turret in a loop
         Thread thread = new Thread(() -> { // Lambda, such a funny word
@@ -177,7 +177,7 @@ public final class BlueCloseGateLoop extends LinearOpMode {
                         shooter.varshooter(1.27),
                         intake.on(),
                         pew.set(),
-                        angle.varangle(0.11),
+                        angle.varangle(0.15),
                         drive.actionBuilder(beginPose)
                                 .strafeToSplineHeading(firingPose.position,firingPose.heading)
                                 .build()
@@ -208,9 +208,9 @@ public final class BlueCloseGateLoop extends LinearOpMode {
         Actions.runBlocking( // grab middle set
                 new SequentialAction(
                         drive.actionBuilder(firingPose)
-                                .splineTo(new Vector2d(3,-12),Math.toRadians(90))
-                                .strafeTo(new Vector2d(3,-50))
-                                .strafeTo(new Vector2d(3,-20))
+                                .splineTo(new Vector2d(24,-24),Math.toRadians(-90))
+                                .strafeTo(new Vector2d(24,-60))
+                                .strafeTo(new Vector2d(24,-30))
                                 .strafeToSplineHeading(firingPose.position,firingPose.heading)
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
@@ -223,15 +223,15 @@ public final class BlueCloseGateLoop extends LinearOpMode {
                 )
         );
 
-        while(getRuntime() <= 23){ // take from goal
-            if (isStopRequested()) {break;}
+        //while(getRuntime() <= 23){ // take from goal
+        //    if (isStopRequested()) {break;}
             Actions.runBlocking(
                 new SequentialAction(
                         drive.actionBuilder(firingPose)
-                                .splineTo(new Vector2d(0,-12),Math.toRadians(90))
-                                .strafeToSplineHeading(new Vector2d(6,-50),Math.toRadians(130))
+                                .splineTo(new Vector2d(24,-30),Math.toRadians(-90))
+                                .strafeToSplineHeading(new Vector2d(20,-80),Math.toRadians(-130))
                                 .waitSeconds(0.2)
-                                .strafeTo(new Vector2d(0,-20))
+                                .strafeTo(new Vector2d(24,-40))
                                 .strafeToSplineHeading(firingPose.position,firingPose.heading)
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
@@ -243,22 +243,22 @@ public final class BlueCloseGateLoop extends LinearOpMode {
                         intake.on()
                         )
             );
-        }
+        //}
 
         Actions.runBlocking( // grab closest set
                 new SequentialAction(
                         angle.varangle(0.2),
-                        drive.actionBuilder(new Pose2d(firingPose.position.x,firingPose.position.y,Math.toRadians(90)))
-                                .strafeToSplineHeading(new Vector2d(-24,-45),Math.toRadians(90))
-                                .strafeToSplineHeading(new Vector2d(-36,-12),Math.toRadians(0))
-                                .build(),
-                        stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
+                        drive.actionBuilder(new Pose2d(firingPose.position.x,firingPose.position.y,Math.toRadians(-90)))
+                                .strafeToSplineHeading(new Vector2d(0,-60),Math.toRadians(-90))
+                                //.strafeToSplineHeading(new Vector2d(-12,-24),Math.toRadians(0))
+                                .build()//,
+                        /*stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
                         new SleepAction(2.0), // Have patience, for the weary traveler needs time to rest
                         // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
                         stopper.Out(),
                         pew.launch(),
-                        intake.on()
+                        intake.on()*/
                 )
         );
 
