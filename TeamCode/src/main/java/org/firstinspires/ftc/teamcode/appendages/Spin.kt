@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.appendages
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.Action
+import com.acmerobotics.roadrunner.clamp
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -48,9 +49,9 @@ class Spin(hardwareMap: HardwareMap) {
     private val MAX_POWER = 1.0
     private var power = 0.0
     private var switched = false
-    private val posTolorance = 1.0
-    private val creepThreshhold = 8
-    private val creepSpeed = 0.08
+    private val posTolorance = 0.1
+    private val creepThreshhold = 2
+    private val creepSpeed = 0.02
     private var i = 0.0
     private var j = 0
     var initialized = false
@@ -129,7 +130,10 @@ class Spin(hardwareMap: HardwareMap) {
 //      Angle of current position (robot) to target (goal)
         val targetXdiff = (targetX - posX)
         val targetYdiff = (targetY - posY)
-        val targetHeading = atan2(-targetYdiff,-targetXdiff)
+        val targetHeading = atan2(-targetYdiff,-targetXdiff) + (Math.PI/180 * (if (isRedGoal) (if (encoder.currentPosition/ticksPerDegree < -180) 0 else -4 + if (encoder.currentPosition/ticksPerDegree > -50) -2 else 0) else ((if (encoder.currentPosition/ticksPerDegree < -180) 10 else 0) + if (encoder.currentPosition/ticksPerDegree > -50) 5 /* <- Causes problems */ else 0)))
+        // if (encoder.currentPosition/ticksPerDegree < -180) 10 else 0 works on blue
+        // if (encoder.currentPosition/ticksPerDegree > -50) -2 else 0 works on red
+        // if (isRedGoal) (if (encoder.currentPosition/ticksPerDegree < -180) 10 else 0 + if (encoder.currentPosition/ticksPerDegree > -50) -2 else 0) else (if (encoder.currentPosition/ticksPerDegree < -180) 10 else 0 + if (encoder.currentPosition/ticksPerDegree > -50) 0 else 0)
         val targetAngle = (targetHeading)*RADIANS_TO_DEGREES
 
         if (leftPressed) {
@@ -145,9 +149,10 @@ class Spin(hardwareMap: HardwareMap) {
 
         if (lock || !initialized) {
             if (!initialized) {
-                spin.power = -0.15
+                spin.power = -0.5
             } else {
-                spin.power = 0.001
+                spin.power = 0.001 // to make the turret not move
+                kIgain = 0.0
             }
             if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
                 power = 0.0
@@ -173,7 +178,7 @@ class Spin(hardwareMap: HardwareMap) {
         timer.reset()
         val error = targetAngle - currentAngle
 
-        if (abs(error) <= posTolorance) {
+        /*if (abs(error) <= posTolorance) {
             power = 0.0
             spin.power = 0.001 // for breaking
         } else if (abs(error) <= creepThreshhold) {
@@ -183,28 +188,29 @@ class Spin(hardwareMap: HardwareMap) {
                 power = 0.0
             }
             spin.power = power
-        } else {
+        } else {*/
 
-            val Pterm = error * kP
+        val Pterm = error * kP
 
-            kIgain += error * deltaTime
-            val Iterm = kIgain * kI
+        kIgain += error * deltaTime
+        kIgain = clamp(kIgain,-1.0,1.0)
+        val Iterm = kIgain * kI
 
-            var Dterm = 0.0
-            if (deltaTime > 0) {
-                Dterm = ((error - lastError) / deltaTime) * kD
-            }
-            lastError = error
-
-            power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER, MAX_POWER)
-
-            if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
-                power = 0.0
-            }
-
-            spin.power = power
-
+        var Dterm = 0.0
+        if (deltaTime > 0) {
+            Dterm = ((error - lastError) / deltaTime) * kD
         }
+        lastError = error
+
+        power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER, MAX_POWER)
+
+        if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+            power = 0.0
+        }
+
+        spin.power = power
+
+        //}
         if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
             power = 0.0
             spin.power = 0.0

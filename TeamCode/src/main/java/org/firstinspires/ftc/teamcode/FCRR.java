@@ -227,7 +227,8 @@ public class FCRR extends LinearOpMode {
             shooter.stop(),
             pew.set(),
             intake.off(),
-            angle.close()
+            angle.close(),
+            stopper.Out()
     ));
 
 
@@ -349,11 +350,11 @@ public class FCRR extends LinearOpMode {
       double Aa = 0.0; // power
       double Ab = 58.41; // dist
       // pt 2
-      double Ac = 0.15; // power
+      double Ac = 0.26; // power
       double Ad = 100; // dist / Actual is 92.2
       double Am1_2 = (Ac-Aa)/(Ad-Ab); // slope
       // pt 3
-      double Ae = 0.27; // power
+      double Ae = 0.35; // power
       double Af = 151.6; // dist
       double Am2_3 = (Ae-Ac)/(Af-Ad); // slope
 

@@ -42,7 +42,7 @@ public class TurretTest extends LinearOpMode {
       beginPose = RobotPose.lastRobotPose;
       beginPoseValid = true;
     } else {
-      beginPose = new Pose2d(61.95,-18.62,0.0);
+      beginPose = new Pose2d(61.95,-18.62, 0.0);
     }
 
 
