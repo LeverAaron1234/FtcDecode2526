@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
@@ -43,7 +44,17 @@ public final class PinpointLocalizer implements Localizer {
 
         driver.setEncoderDirections(initialParDirection, initialPerpDirection);
 
+        // === IMPROVED INITIALIZATION ===
         driver.resetPosAndIMU();
+
+        // Critical: Give the IMU time to calibrate while robot is perfectly still
+        sleep(450);  // 400-600ms recommended
+
+        // Optional: Extra check / telemetry (remove if you don't want to import ElapsedTime)
+        // ElapsedTime timer = new ElapsedTime();
+        // while (timer.seconds() < 0.3) {
+        //     driver.update();
+        // }
 
         txWorldPinpoint = initialPose;
     }
@@ -69,5 +80,14 @@ public final class PinpointLocalizer implements Localizer {
             return new PoseVelocity2d(robotVelocity, driver.getHeadingVelocity(UnnormalizedAngleUnit.RADIANS));
         }
         return new PoseVelocity2d(new Vector2d(0, 0), 0);
+    }
+
+    // Helper for sleep (since this is not an OpMode)
+    private void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

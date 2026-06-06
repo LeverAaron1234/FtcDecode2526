@@ -99,6 +99,16 @@ class Spin(hardwareMap: HardwareMap) {
         encoder.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
+    private fun getTurretOffset(isRedGoal: Boolean, encoderDegrees: Double): Double {
+        return if (isRedGoal) {
+            if (encoderDegrees < -180) 0.0
+            else -4.0 + if (encoderDegrees > -50) -2.0 else 0.0
+        } else {
+            (if (encoderDegrees < -180) 10.0 else 0.0) +
+                    if (encoderDegrees > -50) 5.0 else 0.0
+        }
+    }
+
     /**
      * Points the turret at the goal
      * @param drive The current drive, used to get the localizer position
@@ -107,8 +117,9 @@ class Spin(hardwareMap: HardwareMap) {
      * */
     fun odomUpdate(drive: MecanumDrive, isRedGoal: Boolean, turretOffset:Int, leftPressed: Boolean, rightPressed: Boolean, lock: Boolean): MutableList<Double?> {
         switched = true
-        val ticksPerDegree = 66.928104575163
-        val targetX = if (isRedGoal) -65.0 else -70.0
+        //val ticksPerDegree = 66.928104575163  // this is correct, putting math in so easier to understand
+        val ticksPerDegree = 8192.0 * (150.0 / 51.0) / 360.0  //51 teeth, 150 teeth (turret) /360 degrees * tpi
+        val targetX = if (isRedGoal) -65.0 else -70.0     //Why is the goal in a different position, is this the problem or a symptom
         val targetY = if (isRedGoal) 65.0 else -60.0
         // TODO: MAKE TURRET SERVO MODE INSTEAD OF CONTINUOUS
         val returnList: MutableList<Double?> = ArrayList()
@@ -120,10 +131,13 @@ class Spin(hardwareMap: HardwareMap) {
 //      Make the currentHeading go from -180 to 180, to 0 to 360 (Will make everything else not work as intended.)
 //        currentHeading = if (currentHeading<0) currentHeading + 2*Math.PI else currentHeading
 
+//      Mr. Whelan found these were incorrect and made the starting position to be different on each side by about 3.8 inches or 1.74*2
 //      Field position in x,y
-        val posX = drive.localizer.pose.position.x + (1.74 * sin(currentHeading*(1/RADIANS_TO_DEGREES)))
-        val posY = drive.localizer.pose.position.y + (-1.74 * cos(currentHeading*(1/RADIANS_TO_DEGREES)))
-
+//        val posX = drive.localizer.pose.position.x + (1.74 * sin(currentHeading*(1/RADIANS_TO_DEGREES)))
+//        val posY = drive.localizer.pose.position.y + (-1.74 * cos(currentHeading*(1/RADIANS_TO_DEGREES)))
+        val turretRadius = 1.74
+        val posX = drive.localizer.pose.position.x + (turretRadius * sin(currentHeading))
+        val posY = drive.localizer.pose.position.y + (if (isRedGoal) -turretRadius else turretRadius) * cos(currentHeading)
 
 //      encoder pos in degrees + current heading
         val currentAngle = ((-encoder.currentPosition) / ticksPerDegree - encoderOffset) + (currentHeading*RADIANS_TO_DEGREES) + (turretOffset)
@@ -132,7 +146,10 @@ class Spin(hardwareMap: HardwareMap) {
 //      Angle of current position (robot) to target (goal)
         val targetXdiff = (targetX - posX)
         val targetYdiff = (targetY - posY)
-        val targetHeading = atan2(-targetYdiff,-targetXdiff) + (Math.PI/180 * (if (isRedGoal) (if (encoder.currentPosition/ticksPerDegree < -180) 0 else -4 + if (encoder.currentPosition/ticksPerDegree > -50) -2 else 0) else ((if (encoder.currentPosition/ticksPerDegree < -180) 10 else 0) + if (encoder.currentPosition/ticksPerDegree > -50) 5 /* <- Causes problems */ else 0)))
+
+        val encoderDegrees = encoder.currentPosition / ticksPerDegree
+        val targetHeading = atan2(-targetYdiff, -targetXdiff) + Math.toRadians(getTurretOffset(isRedGoal, encoderDegrees))
+        // LEVI HARD TO READ val targetHeading = atan2(-targetYdiff,-targetXdiff) + (Math.PI/180 * (if (isRedGoal) (if (encoder.currentPosition/ticksPerDegree < -180) 0 else -4 + if (encoder.currentPosition/ticksPerDegree > -50) -2 else 0) else ((if (encoder.currentPosition/ticksPerDegree < -180) 10 else 0) + if (encoder.currentPosition/ticksPerDegree > -50) 5 /* <- Causes problems */ else 0)))
         // if (encoder.currentPosition/ticksPerDegree < -180) 10 else 0 works on blue
         // if (encoder.currentPosition/ticksPerDegree > -50) -2 else 0 works on red
         // if (isRedGoal) (if (encoder.currentPosition/ticksPerDegree < -180) 10 else 0 + if (encoder.currentPosition/ticksPerDegree > -50) -2 else 0) else (if (encoder.currentPosition/ticksPerDegree < -180) 10 else 0 + if (encoder.currentPosition/ticksPerDegree > -50) 0 else 0)

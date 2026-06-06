@@ -126,6 +126,11 @@ public class FCRR extends LinearOpMode {
       }
     }
 
+    // I rearranged this,  basically all I did was move the Mechanun instantiation to the beginning and added a sleep.
+    // Making sure robot was completely still while pinpoint calibrated.
+    MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+    //  Allow for calibration of pinpoint
+    sleep(2000);
 
     Shooter shooter = new Shooter(hardwareMap);
     Intake intake = new Intake(hardwareMap);
@@ -137,19 +142,13 @@ public class FCRR extends LinearOpMode {
     Spin spin = new Spin(hardwareMap);
     spin.resetTimer();
 
-
-
-
     TouchSensor leftLimit = hardwareMap.get(TouchSensor.class, "leftLimit");
     TouchSensor rightLimit = hardwareMap.get(TouchSensor.class, "rightLimit");
 
     Actions.runBlocking(pew.set());
 
-
     camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
     camq.start();
-
-    MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
     FtcDashboard dash = FtcDashboard.getInstance();
     List<Action> runningActions = new ArrayList<>();
@@ -158,7 +157,8 @@ public class FCRR extends LinearOpMode {
     AtomicBoolean team = new AtomicBoolean(redTeam);
     AtomicInteger turretOffset = new AtomicInteger(0);
 
-    // Autonomous threading so that the camera can control the turret in a loop
+
+    // Telemetry output in this thread only.
     Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
       while(opModeIsActive())
       {
