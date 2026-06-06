@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-@Autonomous
+@Autonomous(preselectTeleOp = "FCRR")
 public final class BlueFarGateLoop extends LinearOpMode {
 
     @Override
