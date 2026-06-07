@@ -41,7 +41,7 @@ public class FCRR extends LinearOpMode {
     int selector = 0;
     boolean startFar = true;
     boolean redTeam = false;
-    boolean fieldDrive = true;
+    boolean fieldDrive = false;
     if (!RobotPose.updated) {
     while (opModeInInit()) {
       if (isStopRequested()) {break;}

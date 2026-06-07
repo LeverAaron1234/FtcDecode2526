@@ -172,7 +172,7 @@ class Spin(hardwareMap: HardwareMap) {
                 spin.power = -0.5
             } else {
                 spin.power = 0.001 // to make the turret not move
-                kIgain = 0.0
+                //kIgain = 0.0
             }
             if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
                 power = 0.0
@@ -235,10 +235,10 @@ class Spin(hardwareMap: HardwareMap) {
         spin.power = power
 
         //}
-        if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
+        /*if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
             power = 0.0
             spin.power = 0.0
-        }
+        }*/
 
         returnList.add(posX)
         returnList.add(posY)
