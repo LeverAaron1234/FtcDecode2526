@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-@Autonomous
+@Autonomous(preselectTeleOp = "FCRR")
 public final class RedCloseGateLoop extends LinearOpMode {
 
     @Override
