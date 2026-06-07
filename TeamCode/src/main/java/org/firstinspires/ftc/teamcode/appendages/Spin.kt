@@ -100,6 +100,7 @@ class Spin(hardwareMap: HardwareMap) {
     }
 
     private fun getTurretOffset(isRedGoal: Boolean, encoderDegrees: Double): Double {
+        return 0.00;
         return if (isRedGoal) {
             if (encoderDegrees < -180) 0.0
             else -4.0 + if (encoderDegrees > -50) -2.0 else 0.0
@@ -119,8 +120,8 @@ class Spin(hardwareMap: HardwareMap) {
         switched = true
         //val ticksPerDegree = 66.928104575163  // this is correct, putting math in so easier to understand
         val ticksPerDegree = 8192.0 * (150.0 / 51.0) / 360.0  //51 teeth, 150 teeth (turret) /360 degrees * tpi
-        val targetX = if (isRedGoal) -65.0 else -70.0     //Why is the goal in a different position, is this the problem or a symptom
-        val targetY = if (isRedGoal) 65.0 else -60.0
+        val targetX = if (isRedGoal) -65.0 else -65.0     //Why is the goal in a different position, is this the problem or a symptom
+        val targetY = if (isRedGoal) 65.0 else -65.0
         // TODO: MAKE TURRET SERVO MODE INSTEAD OF CONTINUOUS
         val returnList: MutableList<Double?> = ArrayList()
 
@@ -180,7 +181,8 @@ class Spin(hardwareMap: HardwareMap) {
             returnList.add(posY)
             returnList.add(targetX)
             returnList.add(targetY)
-            returnList.add(encoder.currentPosition/ticksPerDegree)
+            //returnList.add(encoder.currentPosition/ticksPerDegree)
+            returnList.add(encoder.currentPosition/1.0)
             returnList.add(currentAngle)
             returnList.add(currentHeading*RADIANS_TO_DEGREES)
             returnList.add(targetAngle)
@@ -188,40 +190,43 @@ class Spin(hardwareMap: HardwareMap) {
             return returnList
         }
 
-
+        // === CLEAN PID - No Creep - Better Final Accuracy ===
         kP = DriveConstants.spinP
         kI = DriveConstants.spinI
-        kD = DriveConstants.spinD
+        val kD = DriveConstants.spinD
+        val kF = DriveConstants.spinFF
 
         val deltaTime = timer.seconds()
         timer.reset()
         val error = targetAngle - currentAngle
 
-        /*if (abs(error) <= posTolorance) {
-            power = 0.0
-            spin.power = 0.001 // for breaking
-        } else if (abs(error) <= creepThreshhold) {
-            // creep code
-            power = sign(error) * creepSpeed
-            if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
-                power = 0.0
-            }
-            spin.power = power
-        } else {*/
-
         val Pterm = error * kP
 
+        // I Term - allows better final accuracy
         kIgain += error * deltaTime
-        kIgain = clamp(kIgain,-1.0,1.0)
+        kIgain = clamp(kIgain, -0.45, 0.45)     // Slightly tighter windup protection
+
         val Iterm = kIgain * kI
 
+        // D Term
         var Dterm = 0.0
-        if (deltaTime > 0) {
+        if (deltaTime > 0.001) {
             Dterm = ((error - lastError) / deltaTime) * kD
         }
         lastError = error
 
-        power = Range.clip(Pterm + Iterm + Dterm, -MAX_POWER, MAX_POWER)
+        // Feedforward
+        val Fterm = if (error > 3.0) kF else if (error < -3.0) -kF else 0.0
+
+        // Final power with small deadband for stability
+        val finalPower = if (abs(error) < 0.8) {     // Tight deadband for accuracy
+            0.0
+        } else {
+            Pterm + Iterm + Dterm + Fterm
+        }
+
+        power = Range.clip(finalPower, -0.85, 0.85)
+
 
         if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
             power = 0.0

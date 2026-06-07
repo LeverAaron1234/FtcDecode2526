@@ -16,6 +16,8 @@ public class DriveConstants {
   public static double spinP = 0.02;
   public static double spinI = 0.05;
   public static double spinD = 0.002;
+
+  public static double spinFF = 0.08;
   // For the camera tuning (uses x/y positions on the camera)
   // Camera tuning isn't currently used, so values are really off.
   public static double camSpinP = 0.006;
