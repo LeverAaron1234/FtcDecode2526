@@ -11,10 +11,13 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
+import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
 import org.firstinspires.ftc.teamcode.appendages.Angle;
 import org.firstinspires.ftc.teamcode.appendages.Intake;
 import org.firstinspires.ftc.teamcode.appendages.Pew;
@@ -145,6 +148,9 @@ public class FCRR extends LinearOpMode {
     TouchSensor leftLimit = hardwareMap.get(TouchSensor.class, "leftLimit");
     TouchSensor rightLimit = hardwareMap.get(TouchSensor.class, "rightLimit");
 
+    GoBildaPrismDriver prism = hardwareMap.get(GoBildaPrismDriver.class, "prism");
+    DigitalChannel beambreak = hardwareMap.get(DigitalChannel.class, "beambreak");
+
     Actions.runBlocking(pew.set());
 
     camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
@@ -159,10 +165,10 @@ public class FCRR extends LinearOpMode {
 
 
     // Telemetry output in this thread only.
-    Thread thread = new Thread(() -> { // () -> {...} is a lambda expression
+    Thread turret = new Thread(() -> { // () -> {...} is a lambda expression
       while(opModeIsActive())
       {
-        if (Thread.currentThread().isInterrupted()) {
+        if (Thread.currentThread().isInterrupted() || isStopRequested()) {
           // Update using odometry then add return data to telemetry
           /*if (camq.getLatestResult().isValid()) {
             List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
@@ -223,6 +229,35 @@ public class FCRR extends LinearOpMode {
     });
 
 
+    Thread Prism = new Thread(() -> {
+      PrismAnimations.Solid solid = new PrismAnimations.Solid();
+      TelemetryPacket packet = new TelemetryPacket();
+      prism.clearAllAnimations();
+      solid.setPrimaryColor(0, 0, 0);
+      solid.setBrightness(0);
+      prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
+      boolean laststate = false;
+      while (opModeIsActive()) {
+        if (isStopRequested()) {break;}
+        if (beambreak.getState() != laststate) {
+          if (!beambreak.getState()) {
+            solid.setPrimaryColor(0, 255, 0);
+            solid.setBrightness(100);
+          } else {
+            solid.setPrimaryColor(0, 0, 0);
+            solid.setBrightness(0);
+          }
+          laststate = beambreak.getState();
+          prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
+        }
+        packet.put("Beam value", beambreak.getState());
+        dash.sendTelemetryPacket(packet);
+      }
+      prism.clearAllAnimations();
+    });
+
+
+
     Actions.runBlocking(new ParallelAction(
             shooter.stop(),
             pew.set(),
@@ -238,7 +273,8 @@ public class FCRR extends LinearOpMode {
     /*=======================================WAIT FOR START=======================================*/
     waitForStart();
 
-    thread.start(); // start the above defined thread
+    turret.start(); // start the turret thread
+    Prism.start();
 
     runtime.reset();
     spin.resetTimer();
@@ -499,8 +535,10 @@ public class FCRR extends LinearOpMode {
     telemetry.update();
 
 
-
-
+    if (isStopRequested()) {
+      Prism.interrupt();
+      turret.interrupt();
+    }
   }
 
 }

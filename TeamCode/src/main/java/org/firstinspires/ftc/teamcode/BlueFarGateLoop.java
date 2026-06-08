@@ -78,7 +78,7 @@ public final class BlueFarGateLoop extends LinearOpMode {
             while(opModeIsActive()) // Same loop as teleOp
             {
                 // Always wrap things, so that when they go wrong, they don't break.
-                if (Thread.currentThread().isInterrupted()) {
+                if (Thread.currentThread().isInterrupted() || isStopRequested()) {
                     // Update using camera then add return data to telemetry (Not currently used)
           /*if (camq.getLatestResult().isValid()) {
             List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
@@ -196,7 +196,7 @@ public final class BlueFarGateLoop extends LinearOpMode {
                 new SequentialAction(
                         //shooter.varshooter(1.27), // Ready your weapons and magic, for the enemy draws near
                         //angle.varangle(0.11), // Peer down your All-Seeing orbs to track the enemy position
-                        new SleepAction(1.0), // wait for the shooter and turret to start up
+                        new SleepAction(3.0), // wait for the shooter and turret to start up
                         intake.on(), // Begin the casting ritual!!!
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!

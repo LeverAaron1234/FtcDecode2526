@@ -5,7 +5,9 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -70,14 +72,14 @@ public final class BlueCloseGateLoop extends LinearOpMode {
         AtomicBoolean turretLock = new AtomicBoolean(false);
 
         // So that you can offset the turret if needed.
-        AtomicInteger turretOffset = new AtomicInteger(-5);
+        AtomicInteger turretOffset = new AtomicInteger(0);
 
         // Autonomous threading so that the camera can control the turret in a loop
         Thread thread = new Thread(() -> { // Lambda, such a funny word
             while(opModeIsActive()) // Same loop as teleOp
             {
                 // Always wrap things, so that when they go wrong, they don't break.
-                if (Thread.currentThread().isInterrupted()) {
+                if (Thread.currentThread().isInterrupted() || isStopRequested()) {
                     // Update using camera then add return data to telemetry (Not currently used)
           /*if (camq.getLatestResult().isValid()) {
             List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
@@ -174,10 +176,10 @@ public final class BlueCloseGateLoop extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-                        shooter.varshooter(1.27),
+                        shooter.varshooter(1.2),
                         intake.on(),
                         pew.set(),
-                        angle.varangle(0.15),
+                        angle.varangle(0.10),
                         drive.actionBuilder(beginPose)
                                 .strafeToSplineHeading(firingPose.position,firingPose.heading)
                                 .build()
@@ -194,7 +196,7 @@ public final class BlueCloseGateLoop extends LinearOpMode {
                 new SequentialAction(
                         //shooter.varshooter(1.27), // Ready your weapons and magic, for the enemy draws near
                         //angle.varangle(0.11), // Peer down your All-Seeing orbs to track the enemy position
-                        new SleepAction(1.0), // wait for the shooter and turret to start up
+                        new SleepAction(0.5), // wait for the shooter and turret to start up
                         intake.on(), // Begin the casting ritual!!!
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -208,10 +210,8 @@ public final class BlueCloseGateLoop extends LinearOpMode {
         Actions.runBlocking( // grab middle set
                 new SequentialAction(
                         drive.actionBuilder(firingPose)
-                                .splineTo(new Vector2d(24,-24),Math.toRadians(-90))
-                                .strafeTo(new Vector2d(24,-60))
-                                .strafeTo(new Vector2d(24,-30))
-                                .strafeToSplineHeading(firingPose.position,firingPose.heading)
+                                .splineToSplineHeading(new Pose2d(24,-60,Math.toRadians(-90)), Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(9,-15,Math.toRadians(-80)),Math.toRadians(-90))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -227,10 +227,10 @@ public final class BlueCloseGateLoop extends LinearOpMode {
         //    if (isStopRequested()) {break;}
             Actions.runBlocking(
                 new SequentialAction(
-                        drive.actionBuilder(firingPose)
-                                .splineTo(new Vector2d(24,-30),Math.toRadians(-90))
-                                .strafeToSplineHeading(new Vector2d(20,-80),Math.toRadians(-130))
-                                .waitSeconds(0.2)
+                        drive.actionBuilder(new Pose2d(9,-15,Math.toRadians(-80)))
+                                .splineTo(new Vector2d(24,-50),Math.toRadians(-90))
+                                .strafeToSplineHeading(new Vector2d(20,-83),Math.toRadians(-130))
+                                .waitSeconds(0.5)
                                 .strafeTo(new Vector2d(24,-40))
                                 .strafeToSplineHeading(firingPose.position,firingPose.heading)
                                 .build(),
@@ -248,7 +248,7 @@ public final class BlueCloseGateLoop extends LinearOpMode {
         Actions.runBlocking( // grab closest set
                 new SequentialAction(
                         angle.varangle(0.2),
-                        drive.actionBuilder(new Pose2d(firingPose.position.x,firingPose.position.y,Math.toRadians(-90)))
+                        drive.actionBuilder(new Pose2d(0,firingPose.position.y,Math.toRadians(-90)))
                                 .strafeToSplineHeading(new Vector2d(0,-60),Math.toRadians(-90))
                                 //.strafeToSplineHeading(new Vector2d(-12,-24),Math.toRadians(0))
                                 .build()//,

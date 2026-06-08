@@ -169,7 +169,7 @@ class Spin(hardwareMap: HardwareMap) {
 
         if (lock || !initialized) {
             if (!initialized) {
-                spin.power = -0.5
+                spin.power = -1.0
             } else {
                 spin.power = 0.001 // to make the turret not move
                 //kIgain = 0.0
