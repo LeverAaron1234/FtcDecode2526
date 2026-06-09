@@ -45,6 +45,7 @@ class Spin(hardwareMap: HardwareMap) {
     private var camkIgain = 0.0
     private val goalX = 0.0
     private var lastError = 0.0
+    private var lastAngle = 0.0
     private var camLastError = 0.0
     private val deAcellSpeed = 0.01;
     private val angleTolerance = 0.1
@@ -177,6 +178,12 @@ class Spin(hardwareMap: HardwareMap) {
             if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
                 power = 0.0
             }
+            // Keep PID state fresh while holding so the first loop after
+            // unlocking doesn't see a huge stale dt / derivative spike
+            timer.reset()
+            lastAngle = currentAngle
+            kIgain = 0.0
+            
             returnList.add(posX)
             returnList.add(posY)
             returnList.add(targetX)
@@ -190,42 +197,59 @@ class Spin(hardwareMap: HardwareMap) {
             return returnList
         }
 
-        // === CLEAN PID - No Creep - Better Final Accuracy ===
+// === Turret position PID ===
+// CRServo is a velocity actuator driving a position loop, so P does most
+// of the work; kS (static FF) handles stiction, I/D are small trims.
         kP = DriveConstants.spinP
         kI = DriveConstants.spinI
         val kD = DriveConstants.spinD
-        val kF = DriveConstants.spinFF
+        val kS = DriveConstants.spinFF            // static/breakaway FF (was kF)
+
+// Tunables (good candidates to move into DriveConstants for live tuning)
+        val deadband = 0.8                        // deg: inside this we just hold
+        val iZone = 6.0                           // deg: only integrate when close
+        val iTermLimit = 0.15                     // max power the I term may add
+        val maxPower = 0.85
 
         val deltaTime = timer.seconds()
         timer.reset()
+
         val error = targetAngle - currentAngle
 
+// --- P ---
         val Pterm = error * kP
 
-        // I Term - allows better final accuracy
-        kIgain += error * deltaTime
-        kIgain = clamp(kIgain, -0.45, 0.45)     // Slightly tighter windup protection
-
-        val Iterm = kIgain * kI
-
-        // D Term
+// --- D on MEASUREMENT (not error) so a moving robot heading / target
+//     step doesn't cause a derivative kick. currentAngle is the turret angle. ---
         var Dterm = 0.0
         if (deltaTime > 0.001) {
-            Dterm = ((error - lastError) / deltaTime) * kD
+            Dterm = -((currentAngle - lastAngle) / deltaTime) * kD
         }
-        lastError = error
+        lastAngle = currentAngle
 
-        // Feedforward
-        val Fterm = if (error > 3.0) kF else if (error < -3.0) -kF else 0.0
+// --- I with anti-windup: only integrate near target, freeze it while the
+//     output is saturated, and dump it entirely on a big move. ---
+        val saturated = abs(power) >= maxPower    // 'power' holds last loop's output
+        if (abs(error) >= iZone) {
+            kIgain = 0.0
+        } else if (!saturated) {
+            kIgain += error * deltaTime
+        }
+        var Iterm = kIgain * kI
+        Iterm = clamp(Iterm, -iTermLimit, iTermLimit)
 
-        // Final power with small deadband for stability
-        val finalPower = if (abs(error) < 0.8) {     // Tight deadband for accuracy
+// --- Static feedforward, applied CONTINUOUSLY down to the deadband
+//     (no more cliff at 3 deg). sign() points it the right way. ---
+        val Fterm = if (abs(error) > deadband) kS * sign(error) else 0.0
+
+// --- Combine (deadband holds position) ---
+        val finalPower = if (abs(error) < deadband) {
             0.0
         } else {
             Pterm + Iterm + Dterm + Fterm
         }
 
-        power = Range.clip(finalPower, -0.85, 0.85)
+        power = Range.clip(finalPower, -maxPower, maxPower)
 
 
         if ((leftPressed && power < 0) || (rightPressed && power > 0)) {
