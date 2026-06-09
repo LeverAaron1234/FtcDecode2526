@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -29,8 +30,8 @@ public final class RedCloseGateLoop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // The starting position for the robot
-        Pose2d beginPose = new Pose2d(-61.5,41.25,0.0);
-        Pose2d firingPose = new Pose2d(-12, 12, 0.0);// Can be changed as the enemy move close or raises their shields
+        Pose2d beginPose = new Pose2d(-62.75,40.25,0.0);
+        Pose2d firingPose = new Pose2d(-18,18,Math.toRadians(45));// Can be changed as the enemy move close or raises their shields
 
         // Instantiating the classes from the appendages folder
         Shooter shooter = new Shooter(hardwareMap);
@@ -70,7 +71,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
         AtomicBoolean turretLock = new AtomicBoolean(false);
 
         // So that you can offset the turret if needed.
-        AtomicInteger turretOffset = new AtomicInteger(5);
+        AtomicInteger turretOffset = new AtomicInteger(0);
 
         // Autonomous threading so that the camera can control the turret in a loop
         Thread thread = new Thread(() -> { // Lambda, such a funny word
@@ -174,12 +175,13 @@ public final class RedCloseGateLoop extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-                        shooter.varshooter(1.27),
+                        shooter.varshooter(1.1),
                         intake.on(),
                         pew.set(),
-                        angle.varangle(0.11),
+                        angle.varangle(0.08),
                         drive.actionBuilder(beginPose)
-                                .strafeToSplineHeading(firingPose.position,firingPose.heading)
+                                .setTangent(0.0)
+                                .splineToSplineHeading(firingPose,Math.toRadians(-30))
                                 .build()
                 )
         );
@@ -194,28 +196,28 @@ public final class RedCloseGateLoop extends LinearOpMode {
                 new SequentialAction(
                         //shooter.varshooter(1.27), // Ready your weapons and magic, for the enemy draws near
                         //angle.varangle(0.11), // Peer down your All-Seeing orbs to track the enemy position
-                        new SleepAction(3.0), // wait for the shooter and turret to start up
+                        new SleepAction(0.5), // wait for the shooter and turret to start up
                         intake.on(), // Begin the casting ritual!!!
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
-                        new SleepAction(2.0), // Have patience, for the weary traveler needs time to rest
+                        new SleepAction(1.0), // Have patience, for the weary traveler needs time to rest
                         // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
                         stopper.Out(),
                         pew.launch(),
                         intake.on()
-        ));
+                ));
 
         Actions.runBlocking( // grab middle set
                 new SequentialAction(
                         drive.actionBuilder(firingPose)
-                                .splineTo(new Vector2d(3,12),Math.toRadians(90))
-                                .strafeTo(new Vector2d(3,50))
-                                .strafeTo(new Vector2d(3,20))
-                                .strafeToSplineHeading(firingPose.position,firingPose.heading)
+                                .setTangent(Math.toRadians(10))
+                                .splineToSplineHeading(new Pose2d(24,70,Math.toRadians(90)), Math.toRadians(90))
+                                .setTangent(Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(-18,18,Math.toRadians(45)),Math.toRadians(-150))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
-                        new SleepAction(2.0), // Have patience, for the weary traveler needs time to rest
+                        new SleepAction(1.0), // Have patience, for the weary traveler needs time to rest
                         // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
                         stopper.Out(),
                         pew.launch(),
@@ -223,42 +225,52 @@ public final class RedCloseGateLoop extends LinearOpMode {
                 )
         );
 
-        while(getRuntime() <= 23){ // take from goal
-            if (isStopRequested()) {break;}
-            Actions.runBlocking(
+        //while(getRuntime() <= 23){ // take from goal
+        //    if (isStopRequested()) {break;}
+        Actions.runBlocking(
                 new SequentialAction(
-                        drive.actionBuilder(firingPose)
-                                .splineTo(new Vector2d(0,12),Math.toRadians(90))
-                                .strafeToSplineHeading(new Vector2d(6,50),Math.toRadians(130))
-                                .waitSeconds(0.2)
-                                .strafeTo(new Vector2d(0,20))
-                                .strafeToSplineHeading(firingPose.position,firingPose.heading)
+                        drive.actionBuilder(new Pose2d(6,15,Math.toRadians(-80)))
+                                .setTangent(Math.toRadians(10))
+                                .splineToSplineHeading(new Pose2d(20,81,Math.toRadians(130)),Math.toRadians(100))
+                                .waitSeconds(1.5)
+                                .setTangent(Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(-18,18,Math.toRadians(45)),Math.toRadians(-150))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
-                        new SleepAction(2.0), // Have patience, for the weary traveler needs time to rest
+                        new SleepAction(1.0), // Have patience, for the weary traveler needs time to rest
                         // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
                         stopper.Out(),
                         pew.launch(),
                         intake.on()
-                        )
-            );
-        }
+                )
+        );
+        //}
 
         Actions.runBlocking( // grab closest set
                 new SequentialAction(
-                        angle.varangle(0.2),
-                        drive.actionBuilder(new Pose2d(firingPose.position.x,firingPose.position.y,Math.toRadians(90)))
-                                .strafeToSplineHeading(new Vector2d(-24,45),Math.toRadians(90))
-                                .strafeToSplineHeading(new Vector2d(-36,12),Math.toRadians(0))
+                        angle.varangle(0.08),
+                        shooter.varshooter(1.017),
+                        drive.actionBuilder(new Pose2d(0,firingPose.position.y,Math.toRadians(90)))
+                                .setTangent(Math.toRadians(90))
+                                .strafeToSplineHeading(new Vector2d(0,65),Math.toRadians(90),new TranslationalVelConstraint(20.0))
+                                .setTangent(Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(-36,6,Math.toRadians(0)),Math.toRadians(-120))
+                                //.strafeToSplineHeading(new Vector2d(-12,-24),Math.toRadians(0))
                                 .build(),
-                        stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
+                        intake.on(),
+                        stopper.In(),
+                        pew.launch(),
+                        new SleepAction(3.0)
+
+                        //,
+                        /*stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
                         new SleepAction(2.0), // Have patience, for the weary traveler needs time to rest
                         // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
                         stopper.Out(),
                         pew.launch(),
-                        intake.on()
+                        intake.on()*/
                 )
         );
 
