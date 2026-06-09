@@ -183,7 +183,7 @@ class Spin(hardwareMap: HardwareMap) {
             timer.reset()
             lastAngle = currentAngle
             kIgain = 0.0
-            
+
             returnList.add(posX)
             returnList.add(posY)
             returnList.add(targetX)
