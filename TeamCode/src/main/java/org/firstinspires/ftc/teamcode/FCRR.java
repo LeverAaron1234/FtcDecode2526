@@ -129,11 +129,11 @@ public class FCRR extends LinearOpMode {
       }
     }
 
-    // I rearranged this,  basically all I did was move the Mechanun instantiation to the beginning and added a sleep.
+    // I rearranged this,  basically all I did was move the Mechanum instantiation to the beginning and added a sleep.
     // Making sure robot was completely still while pinpoint calibrated.
     MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
     //  Allow for calibration of pinpoint
-    sleep(2000);
+    //sleep(2000);
 
     Shooter shooter = new Shooter(hardwareMap);
     Intake intake = new Intake(hardwareMap);

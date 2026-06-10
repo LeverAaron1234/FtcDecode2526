@@ -175,10 +175,10 @@ public final class RedCloseGateLoop extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-                        shooter.varshooter(1.1),
                         intake.on(),
                         pew.set(),
-                        angle.varangle(0.08),
+                        angle.varangle(0.065),
+                        shooter.varshooter(1.125),
                         drive.actionBuilder(beginPose)
                                 .setTangent(0.0)
                                 .splineToSplineHeading(firingPose,Math.toRadians(-30))
@@ -210,7 +210,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
         Actions.runBlocking( // grab middle set
                 new SequentialAction(
                         drive.actionBuilder(firingPose)
-                                .setTangent(Math.toRadians(10))
+                                .setTangent(Math.toRadians(45))
                                 .splineToSplineHeading(new Pose2d(2,50,Math.toRadians(90)), Math.toRadians(90))
                                 .setTangent(Math.toRadians(-90))
                                 .splineToSplineHeading(new Pose2d(-20,13,Math.toRadians(45)),Math.toRadians(-150))
@@ -230,8 +230,26 @@ public final class RedCloseGateLoop extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         drive.actionBuilder(new Pose2d(6,15,Math.toRadians(80)))
-                                .setTangent(Math.toRadians(45))
-                                .splineToSplineHeading(new Pose2d(0,50 /* Change by abt 4 in to 0*/,Math.toRadians(130)),Math.toRadians(100))
+                                .setTangent(Math.toRadians(60))
+                                .splineToSplineHeading(new Pose2d(6,45,Math.toRadians(110)),Math.toRadians(90))
+                                .waitSeconds(1.5)
+                                .setTangent(Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(-20,13,Math.toRadians(45)),Math.toRadians(-150))
+                                .build(),
+                        stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
+                        pew.launch(), // Fireball!!!
+                        new SleepAction(1.0), // Have patience, for the weary traveler needs time to rest
+                        // Cease firing your spells, but keep your guard up, for they must be ready to slay soon
+                        stopper.Out(),
+                        pew.launch(),
+                        intake.on()
+                )
+        );
+        Actions.runBlocking( // Take from goal #2
+                new SequentialAction(
+                        drive.actionBuilder(new Pose2d(6,15,Math.toRadians(80)))
+                                .setTangent(Math.toRadians(60))
+                                .splineToSplineHeading(new Pose2d(6,45,Math.toRadians(110)),Math.toRadians(90))
                                 .waitSeconds(1.5)
                                 .setTangent(Math.toRadians(-90))
                                 .splineToSplineHeading(new Pose2d(-20,13,Math.toRadians(45)),Math.toRadians(-150))
@@ -249,13 +267,13 @@ public final class RedCloseGateLoop extends LinearOpMode {
 
         Actions.runBlocking( // grab closest set
                 new SequentialAction(
-                        angle.varangle(0.08),
-                        shooter.varshooter(1.017),
-                        drive.actionBuilder(new Pose2d(0,firingPose.position.y,Math.toRadians(90)))
-                                .setTangent(Math.toRadians(90))
-                                .strafeToSplineHeading(new Vector2d(0,50),Math.toRadians(90),new TranslationalVelConstraint(20.0))
+                        angle.varangle(0.06),
+                        shooter.varshooter(1.11),
+                        drive.actionBuilder(new Pose2d(-20,13,Math.toRadians(45)))
+                                .setTangent(Math.toRadians(60))
+                                .splineToSplineHeading(new Pose2d(-24,40,Math.toRadians(90)),Math.toRadians(90),new TranslationalVelConstraint(20.0))
                                 .setTangent(Math.toRadians(-90))
-                                .splineToSplineHeading(new Pose2d(-36,6,Math.toRadians(0)),Math.toRadians(-120))
+                                .splineToSplineHeading(new Pose2d(-36,8,Math.toRadians(0)),Math.toRadians(-120))
                                 //.strafeToSplineHeading(new Vector2d(-12,-24),Math.toRadians(0))
                                 .build(),
                         intake.on(),

@@ -48,7 +48,7 @@ public final class PinpointLocalizer implements Localizer {
         driver.resetPosAndIMU();
 
         // Critical: Give the IMU time to calibrate while robot is perfectly still
-        sleep(450);  // 400-600ms recommended
+        sleep(1000);  // 400-600ms recommended
 
         // Optional: Extra check / telemetry (remove if you don't want to import ElapsedTime)
         // ElapsedTime timer = new ElapsedTime();
