@@ -54,6 +54,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
+import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
 
 import java.util.concurrent.TimeUnit;
 
@@ -120,6 +121,8 @@ Y -> slower drive
     helper = hardwareMap.get(CRServo.class, "helper");
     angle = hardwareMap.get(Servo.class, "angle");
     packet = new TelemetryPacket(true);
+    GoBildaPrismDriver prism = hardwareMap.get(GoBildaPrismDriver.class, "prism");
+    DigitalChannel beambreak = hardwareMap.get(DigitalChannel.class, "beambreak");
 
 
 //        inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
@@ -156,14 +159,37 @@ Y -> slower drive
     double tagArea = -1.0;
     int tagid = -1;
     LLResult result = camq.getLatestResult();
+    PrismAnimations.Solid solid = new PrismAnimations.Solid();
+    prism.clearAllAnimations();
+    solid.setPrimaryColor(0, 0, 0);
+    solid.setBrightness(0);
+    prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
 
+    Thread Prism = new Thread(() -> {
+      prism.clearAllAnimations();
+      solid.setPrimaryColor(0, 0, 0);
+      solid.setBrightness(0);
+      prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
+      boolean laststate = false;
+      while (opModeIsActive()) {
+        if (beambreak.getState() != laststate) {
+          if (!beambreak.getState()) {
+            solid.setPrimaryColor(0, 255, 0);
+            solid.setBrightness(100);
+          } else {
+            solid.setPrimaryColor(0, 0, 0);
+            solid.setBrightness(0);
+          }
+          laststate = beambreak.getState();
+          prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
+        }
+      }
+    });
 
-
-
-    
 
     waitForStart();
     runtime.reset();
+    Prism.start();
 
 //        spin.setPosition(0.5);
 //
