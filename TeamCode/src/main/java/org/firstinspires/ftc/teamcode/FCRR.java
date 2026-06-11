@@ -235,6 +235,7 @@ public class FCRR extends LinearOpMode {
       prism.clearAllAnimations();
       solid.setPrimaryColor(0, 0, 0);
       solid.setBrightness(0);
+      //prism.setDefaultBootArtboard(new PrismAnimations.Solid());
       prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
       boolean laststate = false;
       while (opModeIsActive()) {

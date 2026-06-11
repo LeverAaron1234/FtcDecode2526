@@ -405,7 +405,7 @@ public class GoBildaPrismDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSimpl
         deviceClient.write(Register.ARTBOARD_CONTROL.address, data);
     }
 
-    public void setDefaultBootArtboard(Artboard artboard)
+    /*public void setDefaultBootArtboard(PrismAnimations.Solid artboard) Missing bitmask
     {
         byte[] data = {
             0,
@@ -414,7 +414,7 @@ public class GoBildaPrismDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSimpl
             0
         };
         deviceClient.write(Register.ARTBOARD_CONTROL.address, data);
-    }
+    }*/
 
     public void enableDefaultBootArtboard(boolean enable)
     {
