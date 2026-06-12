@@ -71,7 +71,7 @@ public final class BlueFarGateLoop extends LinearOpMode {
         AtomicBoolean turretLock = new AtomicBoolean(false);
 
         // So that you can offset the turret if needed.
-        AtomicInteger turretOffset = new AtomicInteger(0);
+        AtomicInteger turretOffset = new AtomicInteger();
 
         // Autonomous threading so that the camera can control the turret in a loop
         Thread thread = new Thread(() -> { // Lambda, such a funny word
@@ -175,13 +175,13 @@ public final class BlueFarGateLoop extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-                        shooter.varshooter(1.4),
+                        shooter.varshooter(1.35),
                         intake.on(),
                         pew.set(),
-                        angle.varangle(0.3),
+                        angle.varangle(0.30),
                         drive.actionBuilder(beginPose)
-                                .strafeTo(firingPose.position)
-                                .turnTo(firingPose.heading)
+                                .setTangent(-180)
+                                .splineToSplineHeading(firingPose, Math.toRadians(180))
                                 .build()
                 )
         );
@@ -211,9 +211,9 @@ public final class BlueFarGateLoop extends LinearOpMode {
         Actions.runBlocking( // grab closest set
                 new SequentialAction(
                         drive.actionBuilder(firingPose)
-                                .strafeToSplineHeading(new Vector2d(47,-22),Math.toRadians(-90))
-                                .strafeTo(new Vector2d(47,-70))
-                                .strafeToSplineHeading(firingPose.position,firingPose.heading)
+                                .splineToSplineHeading(new Pose2d(47,-22,Math.toRadians(-90)),Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(47,-65,Math.toRadians(-90)),Math.toRadians(-90))
+                                .splineToSplineHeading(firingPose,Math.toRadians(90))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -228,9 +228,10 @@ public final class BlueFarGateLoop extends LinearOpMode {
         Actions.runBlocking(
             new SequentialAction(
                     drive.actionBuilder(firingPose)
-                            .strafeToSplineHeading(new Vector2d(75,-70),Math.toRadians(-90))
-                            .strafeTo(new Vector2d(75,-75))
-                            .strafeToSplineHeading(new Vector2d(60,-18),Math.toRadians(-60))
+                            .setTangent(-90)
+                            .splineToSplineHeading(new Pose2d(65,-72,Math.toRadians(-90)),Math.toRadians(-90))
+                            .setTangent(90)
+                            .splineToSplineHeading(new Pose2d(60,-18,Math.toRadians(-60)),Math.toRadians(90))
                             .build(),
                     stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                     pew.launch(), // Fireball!!!
@@ -244,10 +245,13 @@ public final class BlueFarGateLoop extends LinearOpMode {
 
         Actions.runBlocking( // grab last set
                 new SequentialAction(
+                        angle.varangle(0.3),
+                        shooter.varshooter(1.38),
                         drive.actionBuilder(new Pose2d(60,-18,Math.toRadians(-60)))
-                                .strafeToSplineHeading(new Vector2d(70,-18),Math.toRadians(-90))
-                                .strafeTo(new Vector2d(70,-70))
-                                .strafeToSplineHeading(new Vector2d(60,-18),Math.toRadians(-60))
+                                .setTangent(-90)
+                                .splineToSplineHeading(new Pose2d(68,-18,Math.toRadians(-90)),Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(68,-65,Math.toRadians(-90)),Math.toRadians(-90))
+                                .splineToSplineHeading(new Pose2d(60,-18,Math.toRadians(-60)),Math.toRadians(90))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -257,9 +261,9 @@ public final class BlueFarGateLoop extends LinearOpMode {
                         pew.launch(),
                         intake.on(),
                         drive.actionBuilder(new Pose2d(60,-18,Math.toRadians(-60)))
-                                .strafeTo(new Vector2d(30,-20))
-                                .build(),
-                        stopper.In()
+                                .setTangent(180)
+                                .splineToSplineHeading(new Pose2d(30,-25,Math.toRadians(-90)),Math.toRadians(-180))
+                                .build()
                 )
         );
 

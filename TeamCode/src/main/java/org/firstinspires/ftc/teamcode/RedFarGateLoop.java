@@ -195,7 +195,7 @@ public final class RedFarGateLoop extends LinearOpMode {
                 new SequentialAction(
                         //shooter.varshooter(1.27), // Ready your weapons and magic, for the enemy draws near
                         //angle.varangle(0.11), // Peer down your All-Seeing orbs to track the enemy position
-                        new SleepAction(3.0), // wait for the shooter and turret to start up
+                        new SleepAction(1.0), // wait for the shooter and turret to start up
                         intake.on(), // Begin the casting ritual!!!
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!

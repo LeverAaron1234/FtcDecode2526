@@ -128,6 +128,7 @@ public class FCRR extends LinearOpMode {
         beginPose = (!redTeam)? new Pose2d(-62.75,-40.25,0.0) : new Pose2d(-55.68,50.88,0.0);
       }
     }
+    RobotPose.updated = false;
 
     // I rearranged this,  basically all I did was move the Mechanum instantiation to the beginning and added a sleep.
     // Making sure robot was completely still while pinpoint calibrated.
@@ -381,8 +382,9 @@ public class FCRR extends LinearOpMode {
       // Angles and Speeds
 
       // Heatmap
+      // Sorry to anyone reading this...
       double goalDist;
-      goalDist = Math.sqrt(Math.pow((drive.localizer.getPose().position.x - ((redTeam)? -65.0 : -65.0)),2) + Math.pow((drive.localizer.getPose().position.y - ((redTeam)? 65.0 : -65.0)),2));
+      goalDist = Math.sqrt(Math.pow((drive.localizer.getPose().position.x - ((redTeam)? -53.0 : -72.0)),2) + Math.pow((drive.localizer.getPose().position.y - ((redTeam)? 75.0 : -72.0)),2));
       // pt 1
       double Aa = 0.0; // power
       double Ab = 58.41; // dist
@@ -420,6 +422,7 @@ public class FCRR extends LinearOpMode {
       } else {
         wheeelSpeed = Sm2_3 * goalDist + (-Sm2_3*Sc + Sc); // equation
       }
+      packet.put("goalDist", goalDist);
 
 
 /*      // Far
