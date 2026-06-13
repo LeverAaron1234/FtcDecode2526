@@ -231,12 +231,12 @@ public class FCRR extends LinearOpMode {
 
 
     Thread Prism = new Thread(() -> {
+      prism.enableDefaultBootArtboard(false); // Disable flashy boot animation lights (to conform with rules)
       PrismAnimations.Solid solid = new PrismAnimations.Solid();
       TelemetryPacket packet = new TelemetryPacket();
       prism.clearAllAnimations();
       solid.setPrimaryColor(0, 0, 0);
       solid.setBrightness(0);
-      //prism.setDefaultBootArtboard(new PrismAnimations.Solid());
       prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
       boolean laststate = false;
       while (opModeIsActive()) {
