@@ -384,7 +384,7 @@ public class FCRR extends LinearOpMode {
       // Heatmap
       // Sorry to anyone reading this...
       double goalDist;
-      goalDist = Math.sqrt(Math.pow((drive.localizer.getPose().position.x - ((redTeam)? -53.0 : -72.0)),2) + Math.pow((drive.localizer.getPose().position.y - ((redTeam)? 75.0 : -72.0)),2));
+      goalDist = Math.sqrt(Math.pow((drive.localizer.getPose().position.x - ((redTeam)? -53.0 : -72.0)),2) + Math.pow((drive.localizer.getPose().position.y - ((redTeam)? 69.0 : -72.0)),2));
       // pt 1
       double Aa = 0.0; // power
       double Ab = 58.41; // dist
