@@ -121,9 +121,8 @@ class Spin(hardwareMap: HardwareMap) {
         switched = true
         //val ticksPerDegree = 66.928104575163  // this is correct, putting math in so easier to understand
         val ticksPerDegree = 8192.0 * (150.0 / 51.0) / 360.0  //51 teeth, 150 teeth (turret) /360 degrees * tpi
-        val targetX = if (isRedGoal) -53.0 else -72.0     //Why is the goal in a different position, is this the problem or a symptom
+        val targetX = if (isRedGoal) -57.0 else -72.0     //Why is the goal in a different position, is this the problem or a symptom
         val targetY = if (isRedGoal) 69.0 else -72.0
-        // TODO: MAKE TURRET SERVO MODE INSTEAD OF CONTINUOUS
         val returnList: MutableList<Double?> = ArrayList()
 
 //      Field heading as a complex number

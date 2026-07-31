@@ -255,6 +255,7 @@ public final class RedFarGateLoop extends LinearOpMode {
                         stopper.Out(),
                         pew.launch(),
                         intake.on(),
+                        angle.varangle(0.5),
 
                         drive.actionBuilder(new Pose2d(50,18,Math.toRadians(60)))
                                 .strafeTo(new Vector2d(30,20))
@@ -267,7 +268,7 @@ public final class RedFarGateLoop extends LinearOpMode {
         thread.interrupt(); // make sure that the thread isn't running anymore, we don't need it.
 
         RobotPose.lastRobotPose = drive.localizer.getPose(); // update the robot pose
-        RobotPose.redTeam = false;
+        RobotPose.redTeam = true;
         RobotPose.startFar = true;
         RobotPose.updated = true; // tell the updated pose that it was changed, because yes.
     }

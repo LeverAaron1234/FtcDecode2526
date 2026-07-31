@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.appendages.Pew;
 import org.firstinspires.ftc.teamcode.appendages.Shooter;
 import org.firstinspires.ftc.teamcode.appendages.Spin;
 import org.firstinspires.ftc.teamcode.appendages.Stopper;
+import org.opencv.core.Mat;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,7 +32,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // The starting position for the robot
         Pose2d beginPose = new Pose2d(-62.75,40.25,0.0);
-        Pose2d firingPose = new Pose2d(-20,13,Math.toRadians(45));// Can be changed as the enemy move close or raises their shields
+        Pose2d firingPose = new Pose2d(-20,13,Math.toRadians(-45));// Can be changed as the enemy move close or raises their shields
 
         // Instantiating the classes from the appendages folder
         Shooter shooter = new Shooter(hardwareMap);
@@ -177,7 +178,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
                 new ParallelAction(
                         intake.on(),
                         pew.set(),
-                        angle.varangle(0.03),
+                        angle.varangle(0.01),
                         shooter.varshooter(1.15),
                         drive.actionBuilder(beginPose)
                                 .setTangent(0.0)
@@ -213,7 +214,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
                                 .setTangent(Math.toRadians(45))
                                 .splineToSplineHeading(new Pose2d(2,50,Math.toRadians(90)), Math.toRadians(90))
                                 .setTangent(Math.toRadians(-90))
-                                .splineToSplineHeading(new Pose2d(-20,13,Math.toRadians(45)),Math.toRadians(-150))
+                                .splineToSplineHeading(new Pose2d(-20,13,Math.toRadians(-45)),Math.toRadians(-150))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -229,13 +230,12 @@ public final class RedCloseGateLoop extends LinearOpMode {
         //    if (isStopRequested()) {break;}
         Actions.runBlocking(
                 new SequentialAction(
-                        angle.varangle(0.03),
                         drive.actionBuilder(new Pose2d(6,15,Math.toRadians(80)))
                                 .setTangent(Math.toRadians(60))
-                                .splineToSplineHeading(new Pose2d(6,45,Math.toRadians(110)),Math.toRadians(90))
+                                .splineToSplineHeading(new Pose2d(5,52,Math.toRadians(114)),Math.toRadians(90))
                                 .waitSeconds(1.5)
                                 .setTangent(Math.toRadians(-90))
-                                .splineToSplineHeading(new Pose2d(-20,13,Math.toRadians(45)),Math.toRadians(-150))
+                                .splineToSplineHeading(new Pose2d(-20,13,Math.toRadians(-45)),Math.toRadians(-150))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -244,17 +244,16 @@ public final class RedCloseGateLoop extends LinearOpMode {
                         stopper.Out(),
                         pew.launch(),
                         intake.on()
-                )//.03
-                //1.15
+                )
         );
         Actions.runBlocking( // Take from goal #2
                 new SequentialAction(
-                        drive.actionBuilder(new Pose2d(6,15,Math.toRadians(80)))
+                        drive.actionBuilder(new Pose2d(5,15,Math.toRadians(80)))
                                 .setTangent(Math.toRadians(60))
-                                .splineToSplineHeading(new Pose2d(6,45,Math.toRadians(110)),Math.toRadians(90))
+                                .splineToSplineHeading(new Pose2d(5,52,Math.toRadians(114)),Math.toRadians(90))
                                 .waitSeconds(1.5)
                                 .setTangent(Math.toRadians(-90))
-                                .splineToSplineHeading(new Pose2d(-20,13,Math.toRadians(45)),Math.toRadians(-150))
+                                .splineToSplineHeading(new Pose2d(-20,13,Math.toRadians(-45)),Math.toRadians(-150))
                                 .build(),
                         stopper.In(), // Don't let your magic overcome you, keep the flow steady to inflict maximum damage
                         pew.launch(), // Fireball!!!
@@ -269,7 +268,7 @@ public final class RedCloseGateLoop extends LinearOpMode {
 
         Actions.runBlocking( // grab closest set
                 new SequentialAction(
-                        angle.varangle(0.06),
+                        angle.varangle(0.03),
                         shooter.varshooter(1.11),
                         drive.actionBuilder(new Pose2d(-20,13,Math.toRadians(45)))
                                 .setTangent(Math.toRadians(60))
