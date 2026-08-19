@@ -33,20 +33,43 @@
 // Importing things
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
+import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
+import org.firstinspires.ftc.teamcode.appendages.Angle;
+import org.firstinspires.ftc.teamcode.appendages.Intake;
+import org.firstinspires.ftc.teamcode.appendages.Pew;
+import org.firstinspires.ftc.teamcode.appendages.Shooter;
+import org.firstinspires.ftc.teamcode.appendages.Spin;
+import org.firstinspires.ftc.teamcode.appendages.Stopper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 // Setup
@@ -55,276 +78,345 @@ public class Outreach extends LinearOpMode {
 
   private final ElapsedTime runtime = new ElapsedTime();
 
-  private DcMotor frontLeftDrive = null;
-  private DcMotor backLeftDrive = null;
-  private DcMotor frontRightDrive = null;
-  private DcMotor backRightDrive = null;
-  private DcMotor armSwing = null;
-  private DcMotor inOutLeft = null;
-  private DcMotor inOutRight = null;
-  private Servo teeth = null;
-  private Servo spin = null;
-  private Servo wrist = null;
-  private RevTouchSensor limL;
-  private RevTouchSensor limR;
-
-  //timer
-  private final ElapsedTime timer = new ElapsedTime();
-
-  /*
-  Controls:
-
-   /=\<[B1/T2][B2/T2]>/=\
-  /===\______________/===\
-  |    ^           [Y]   |
-  |  < * >       [X] [B] |
-  |    v           [A]   |
-  \     _(*)____(*)_     /
-   \___/ [LS]  [RS] \___/
-
-LS:
-x -> Strafe
-y -> Drive Forward*
-RS:
-x -> Turn*
-A -> Open/Close Claw
-B -> Turn Claw
-X -> Operate Wrist
-B1 -> Lower Arm
-B2 -> Raise Arm
-T1 -> Slides In
-T2 -> Slides Out
-* these are technically opposite
-  */
   @Override
-
   public void runOpMode() {
 
+    Pose2d beginPose = null;
 
-    // Defining motors
-    frontLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
-    backLeftDrive = hardwareMap.get(DcMotor.class, "rightBack");
-    frontRightDrive = hardwareMap.get(DcMotor.class, "leftFront");
-    backRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
-    armSwing = hardwareMap.get(DcMotor.class, "armSwing");
-    inOutLeft = hardwareMap.get(DcMotor.class, "inOutLeft");
-    inOutRight = hardwareMap.get(DcMotor.class, "inOutRight");
-    teeth = hardwareMap.get(Servo.class, "teeth");
-    spin = hardwareMap.get(Servo.class, "spin");
-    wrist = hardwareMap.get(Servo.class, "wrist");
-    limL = hardwareMap.get(RevTouchSensor.class, "limL");
-    limR = hardwareMap.get(RevTouchSensor.class,"limR");
+    boolean startFar = false;
+    boolean redTeam = false;
+    boolean fieldDrive = true;
 
-    int slow = 1;
+    if (startFar) {
+      beginPose = new Pose2d(61.95,((redTeam)?-1:1) * -18.62, 0.0);
+    } else {
+      beginPose = (!redTeam)? new Pose2d(-62.75,-40.25,0.0) : new Pose2d(-55.68,50.88,0.0);
+    }
 
 
-    // Motor directions
-    frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-    backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-    frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-    backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-    inOutLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-    inOutRight.setDirection(DcMotorSimple.Direction.FORWARD);
-    armSwing.setDirection(DcMotorSimple.Direction.REVERSE);
+    // I rearranged this,  basically all I did was move the Mechanum instantiation to the beginning and added a sleep.
+    // Making sure robot was completely still while pinpoint calibrated.
+    MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+    //  Allow for calibration of pinpoint
+    //sleep(2000);
+
+    Shooter shooter = new Shooter(hardwareMap);
+    Intake intake = new Intake(hardwareMap);
+    Pew pew = new Pew(hardwareMap);
+    Angle angle = new Angle(hardwareMap);
+    Stopper stopper = new Stopper(hardwareMap);
+
+    Limelight3A camq = hardwareMap.get(Limelight3A.class, "limelight");
+    Spin spin = new Spin(hardwareMap);
+    spin.resetTimer();
+
+    TouchSensor leftLimit = hardwareMap.get(TouchSensor.class, "leftLimit");
+    TouchSensor rightLimit = hardwareMap.get(TouchSensor.class, "rightLimit");
+
+    GoBildaPrismDriver prism = hardwareMap.get(GoBildaPrismDriver.class, "prism");
+    DigitalChannel beambreak = hardwareMap.get(DigitalChannel.class, "beambreak");
+
+    Actions.runBlocking(pew.set());
+
+    camq.pipelineSwitch(3);// {0: "goal", 1: "obelisk", 2: "RedGoal", 3: "BlueGoal"}
+    camq.start();
+
+    FtcDashboard dash = FtcDashboard.getInstance();
+    List<Action> runningActions = new ArrayList<>();
+
+    AtomicBoolean turretLock = new AtomicBoolean(false);
+    AtomicBoolean team = new AtomicBoolean(redTeam);
+    AtomicInteger turretOffset = new AtomicInteger(0);
+
+
+    // Telemetry output in this thread only.
+    Thread turret = new Thread(() -> { // () -> {...} is a lambda expression
+      while(opModeIsActive())
+      {
+        if (Thread.currentThread().isInterrupted() || isStopRequested()) {
+          // Update using odometry then add return data to telemetry
+          /*if (camq.getLatestResult().isValid()) {
+            List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+            telemetry.addData("Turret data",
+                    "\nspinP (%.2f)" +
+                            "\nspinI (%.2f)" +
+                            "\nspinD (%.2f)" +
+                            "\nspin power (%.2f)",
+                    vals.toArray()
+            );
+            break;
+
+          } else {*/
+          List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          telemetry.addData("Turret data",
+                  "\nposX (%.2f)" +
+                          "\nposY (%.2f)" +
+                          "\ntargetX (%.2f)" +
+                          "\ntargetY (%.2f)" +
+                          "\nencoder pos (%.2f)" +
+                          "\nRobot Heading (%.2f)" +
+                          "\nCurrent angle (%.2f)" +
+                          "\nTarget angle (%.2f)" +
+                          "\nspin power (%.2f)",
+                  vals.toArray()
+          );
+          break;
+          //}
+        }
+
+        // Update using odometry then add return data to telemetry
+        /*if (camq.getLatestResult().isValid()) {
+          List vals = spin.camUpdate(camq.getLatestResult(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+          telemetry.addData("Turret data",
+                  "\nspinP (%.2f)" +
+                          "\nspinI (%.2f)" +
+                          "\nspinD (%.2f)" +
+                          "\nspin power (%.2f)",
+                  vals.toArray()
+          );
+        } else {*/
+        List vals = spin.odomUpdate(drive, team.get(), turretOffset.get(), leftLimit.isPressed(), rightLimit.isPressed(), turretLock.get());
+        telemetry.addData("Turret data",
+                "\nposX (%.2f)" +
+                        "\nposY (%.2f)" +
+                        "\ntargetX (%.2f)" +
+                        "\ntargetY (%.2f)" +
+                        "\nencoder pos (%.2f)" +
+                        "\nRobot Heading (%.2f)" +
+                        "\nCurrent angle (%.2f)" +
+                        "\nTarget angle (%.2f)" +
+                        "\nspin power (%.2f)",
+                vals.toArray()
+        );
+        //}
+        telemetry.update();
+      }
+    });
+
+
+    Thread Prism = new Thread(() -> {
+      prism.enableDefaultBootArtboard(false); // Disable flashy boot animation lights (to conform with rules)
+      PrismAnimations.Solid solid = new PrismAnimations.Solid();
+      TelemetryPacket packet = new TelemetryPacket();
+      prism.clearAllAnimations();
+      solid.setPrimaryColor(0, 0, 0);
+      solid.setBrightness(0);
+      prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
+      boolean laststate = false;
+      while (opModeIsActive()) {
+        if (isStopRequested()) {break;}
+        if (beambreak.getState() != laststate) {
+          if (!beambreak.getState()) {
+            solid.setPrimaryColor(0, 255, 0);
+            solid.setBrightness(100);
+          } else {
+            solid.setPrimaryColor(0, 0, 0);
+            solid.setBrightness(0);
+          }
+          laststate = beambreak.getState();
+          prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid);
+        }
+        packet.put("Beam value", beambreak.getState());
+        dash.sendTelemetryPacket(packet);
+      }
+      prism.clearAllAnimations();
+    });
 
 
 
+    Actions.runBlocking(new ParallelAction(
+            shooter.stop(),
+            pew.set(),
+            intake.off(),
+            angle.close(),
+            stopper.Out()
+    ));
+
+
+    telemetry.update();
+
+
+    /*=======================================WAIT FOR START=======================================*/
     waitForStart();
+
+    turret.start(); // start the turret thread
+    Prism.start();
+
     runtime.reset();
-
-    spin.setPosition(0.5);
-
-    wrist.setPosition(0);
-
-    // Reset encoders
-
-    inOutLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    inOutRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    armSwing.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-    inOutLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    inOutRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-    // Run with encoder
+    spin.resetTimer();
 
 
-    // Declare random variables
-    boolean changed = false;
-    boolean changed1 = false;
-    boolean changed2 = false;
-    boolean changed4 = false;
-    boolean backarm = false;
+    //  ----------Define Variables----------
 
-    double drive;
+    double drivevar;
     double strafe;
     double turn;
-    double frontLeftPower;
-    double frontRightPower;
-    double backLeftPower;
-    double backRightPower;
-    double armPower;
-    int inOutPosition = 0;
-    double teethPos = 0;
-    int armSwingPosition = 100;
-    double bumper = 0;
+
+    double wheeelSpeed;
+    double anglePos;
+    wheeelSpeed = 0;
+    anglePos = 0.0;
 
 
+    boolean changed = false;
+    boolean changed2 = false;
+    boolean changed3 = false;
+    boolean changed4 = false;
+    boolean changed5 = false;
+    boolean changed6 = false;
+    boolean changed7 = false;
+    boolean changed8 = false;
+    boolean changed9 = false;
+    boolean changed10 = false;
+
+    boolean slow = false;
+
+    PoseVelocity2d movement = new PoseVelocity2d(new Vector2d(0,0),0);
+
+    /*===================================WHILE OPMODE IS RUNNING==================================*/
     while (opModeIsActive()) {
 
 
-      // Drive variables
-      drive = -gamepad1.left_stick_x;
-      strafe = gamepad1.left_stick_y;
-      turn = gamepad1.right_stick_x;
+      TelemetryPacket packet = new TelemetryPacket();
 
-      // Setting the 3 intake servos
+      /// Movement
+      drivevar = gamepad1.left_stick_x * -1;
+      strafe = gamepad1.left_stick_y * 1;
+      turn = -gamepad1.right_stick_x;
 
-      // slow mode forever...
-      slow = 3;
-      // Slides
-      if (gamepad1.left_trigger - gamepad1.right_trigger != 0){
-        if (gamepad1.left_trigger != 0){
-          inOutPosition -= 80;
-        }
-        else{
-          inOutPosition += 80;
-        }
-      }
-      if (inOutPosition < 0 && limL.isPressed() && limR.isPressed()){
-        inOutLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        inOutRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        inOutPosition = 40;}
-      if (inOutPosition >= 2550)
-        inOutPosition = 2500;
-
-
-      if (gamepad1.b && !changed1) {
-        if (spin.getPosition() == 1) spin.setPosition(0);
-        else spin.setPosition(1);
-        changed1 = true;
-      } else if (!gamepad1.b) changed1 = false;
-
-      if(gamepad1.x && !changed4){
-
-        if(wrist.getPosition() == 0.8) {
-          wrist.setPosition(0.6);
-          changed4 = true;
-          backarm = false;
-        }
-        else{
-          wrist.setPosition(0.8);
-          changed4 = true;
-          backarm = true;
-        }
-      }
-
-      else if(!gamepad1.x)
-        changed4 = false;
-
-      if (armSwingPosition < -2200 && !backarm){
-        wrist.setPosition(0.3);
-      }
-
-      if (gamepad1.a && !changed2) {
-        if (teethPos == 1) teethPos = 0;
-        else teethPos = 1;
+      /// Intake
+      if (gamepad1.x && !changed2 && !changed8) {
+        runningActions.add(intake.on());
+        runningActions.add(pew.launch());
+        runningActions.add(stopper.Out());
         changed2 = true;
-      } else if(!gamepad1.a) changed2 = false;
-
-      if(gamepad1.left_bumper)
-        bumper = 1;
-      else if(gamepad1.right_bumper)
-        bumper = -1;
-      else
-        bumper = 0;
-
-      if(bumper != 0){
-        if (bumper > 0){
-          armSwingPosition += 20;
-        }
-        else {
-          armSwingPosition -= 20;
-        }
-        if (armSwingPosition >= 20){
-          armSwingPosition = -20;
-        }
-      }
-      if (armSwingPosition < -2350){
-        armSwingPosition = -2330;
+      } else if (!gamepad1.x && changed2) {
+        runningActions.add(pew.set());
+        runningActions.add(intake.off());
+        changed2 = false;
       }
 
+      // Run artifacts backwards
+      if ((gamepad1.dpad_down && gamepad1.x) && !changed8 && !changed2) {
+        runningActions.add(pew.back());
+        runningActions.add(intake.back());
+        changed8 = true;
+      } else if (!(gamepad1.dpad_down && gamepad1.x) && changed8) {
+        runningActions.add(intake.off());
+        runningActions.add(pew.set());
+        changed8 = false;
+      }
+
+      /// Firing
+      if (gamepad1.b && !changed6) {
+        runningActions.add(pew.launch());
+        runningActions.add(intake.on());
+        runningActions.add(stopper.In());
+        changed6 = true;
+      } else if (!gamepad1.b && changed6) {
+        runningActions.add(pew.set());
+        runningActions.add(intake.off());
+        runningActions.add(stopper.Out());
+        changed6 = false;
+      }
+
+      /// Flywheel
+      if (gamepad2.right_trigger >= 0.2) {
+        wheeelSpeed = Math.max(wheeelSpeed + 0.01, 1);
+      }
+      if (gamepad2.left_trigger >= 0.2) {
+        wheeelSpeed = Math.min(wheeelSpeed - 0.01, 0);
+      }
+
+      /// Angle / Hood
+      if (gamepad2.right_bumper) {
+        anglePos = Math.max(anglePos + 0.01, 1);
+      }
+
+      if (gamepad2.left_bumper) {
+        anglePos = Math.min(anglePos - 0.01, 0);
+      }
 
 
+      //////////////////////////////////
+      slow = false;
+      // During slow mode, everything is slowed
+      if (slow) {
+        drivevar *= 0.2;
+        strafe *= 0.2;
+        turn *= 0.2;
+      }
 
 
-      armPower = 1;
+      // Stop the launcher and lower the hood
+      if (gamepad1.y) {
+        anglePos = 0.0;
+        wheeelSpeed = 0.0;
+      }
 
-      armSwing.setTargetPosition(armSwingPosition);
+      if (gamepad2.dpad_left) {
+        turretOffset.set(turretOffset.get()-1);
+      }
 
-      inOutRight.setTargetPosition(inOutPosition);
-      inOutLeft.setTargetPosition(inOutPosition);
-
-      armSwing.setPower(armPower);
-
-      inOutRight.setPower(1);
-      inOutLeft.setPower(1);
-
-      armSwing.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-      inOutRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-      inOutLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+      if (gamepad2.dpad_right) {
+        turretOffset.set(turretOffset.get()+1);
+      }
 
 
+      if (gamepad1.right_stick_button && !changed9) {
+        spin.setInitialized(false);
+        changed9 = true;
+      } else if (!gamepad1.right_stick_button && changed9) {
+        changed9 = false;
+      }
+
+      /////////////////////////////////////////////////////////
+
+      double heading = drive.localizer.getPose().heading.toDouble();
+      double newdrivevar = strafe * Math.cos(heading) - drivevar * Math.sin(heading);
+      double newstrafe = strafe * Math.sin(heading) + drivevar * Math.cos(heading);
+
+      movement = new PoseVelocity2d(
+              new Vector2d(
+                      (fieldDrive)? newstrafe : strafe,
+                      (fieldDrive) ? newdrivevar : drivevar
+              ),
+              turn
+      );
+
+      anglePos = Range.clip(anglePos,0.0,1.0);
+      runningActions.add(angle.varangle(anglePos));
+      runningActions.add(shooter.varshooter(wheeelSpeed));
+
+      if ((DriveConstants.p != shooter.getPID().p) || (DriveConstants.i != shooter.getPID().i) || (DriveConstants.d != shooter.getPID().d)) {
+        shooter.resetPID(DriveConstants.p,DriveConstants.i,DriveConstants.d);
+      }
+
+      drive.setDrivePowers(movement);
+      drive.updatePoseEstimate();
+
+      // update running actions
+      List<Action> newActions = new ArrayList<>();
+      for (Action action : runningActions) {
+        action.preview(packet.fieldOverlay());
+        if (action.run(packet)) {
+          newActions.add(action);
+        }
+      }
+      runningActions = newActions;
+
+      dash.sendTelemetryPacket(packet);
+    }
+
+    drive.localizer.update();
 
 
+    telemetry.update();
 
 
-
-
-
-
-
-      teeth.setPosition(teethPos);
-
-
-
-      // Drive equations
-      frontLeftPower = Range.clip((drive + strafe - turn) / slow, -1, 1);
-      frontRightPower = Range.clip((drive - strafe - turn) / slow, -1, 1);
-      backLeftPower = Range.clip((drive - strafe + turn) / slow, -1, 1);
-      backRightPower = Range.clip((drive + strafe + turn) / slow, -1, 1);
-
-      frontLeftDrive.setPower(frontLeftPower);
-      backLeftDrive.setPower(backLeftPower);
-      frontRightDrive.setPower(frontRightPower);
-      backRightDrive.setPower(backRightPower);
-
-
-      // TELEMETRY
-      telemetry.addData("Runtime",runtime);
-      telemetry.addLine(" /=\\<[B1/T2][B2/T2]>/=\\");
-      telemetry.addLine("/===\\______________/===\\");
-      telemetry.addLine("|      ^                     [Y]   |");
-      telemetry.addLine("|  < * >             [X] [B] |");
-      telemetry.addLine("|      v                     [A]   |");
-      telemetry.addLine("\\         _(*)____(*)_          /");
-      telemetry.addLine(" \\___/ [LS]  [RS] \\___/");
-      telemetry.addLine("LS:");
-      telemetry.addLine("x -> Strafe");
-      telemetry.addLine("y -> Drive Forward");
-      telemetry.addLine("RS:");
-      telemetry.addLine("x -> Turn");
-      telemetry.addLine("A -> Open/Close Claw");
-      telemetry.addLine("B -> Turn Claw");
-      telemetry.addLine("X -> Operate Wrist");
-      telemetry.addLine("B1 -> Lower Arm");
-      telemetry.addLine("B2 -> Raise Arm");
-      telemetry.addLine("T1 -> Slides In");
-      telemetry.addLine("T2 -> Slides Out");
-
-
-
-
-      telemetry.update();
+    if (isStopRequested()) {
+      Prism.interrupt();
+      turret.interrupt();
     }
   }
 
